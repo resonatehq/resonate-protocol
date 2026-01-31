@@ -1,11 +1,11 @@
-import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
+import { z } from "zod";
 
 // =============================================================================
 // SHARED SCHEMAS
 // =============================================================================
 
 export const ValueSchema = z.object({
-  headers: z.record(z.string()),
+  headers: z.record(z.string(), z.string()),
   data: z.string(),
 });
 
@@ -42,7 +42,7 @@ export const PromiseRecordSchema = z.object({
   state: PromiseStateSchema,
   param: ValueSchema,
   value: ValueSchema,
-  tags: z.record(z.string()),
+  tags: z.record(z.string(), z.string()),
   timeoutAt: z.number(),
   createdAt: z.number(),
   settledAt: z.number().nullable(),
@@ -65,7 +65,7 @@ export const ScheduleRecordSchema = z.object({
   promiseId: z.string(),
   promiseTimeout: z.number(),
   promiseParam: ValueSchema,
-  promiseTags: z.record(z.string()),
+  promiseTags: z.record(z.string(), z.string()),
   createdAt: z.number(),
   nextRunAt: z.number(),
   lastRunAt: z.number().nullable(),
@@ -102,7 +102,7 @@ export const PromiseCreateReqSchema = z.object({
     id: z.string().min(1, "Promise ID is required"),
     timeoutAt: z.number().int().nonnegative("TimeoutAt must be a non-negative integer"),
     param: ValueSchema.optional(),
-    tags: z.record(z.string()).optional(),
+    tags: z.record(z.string(), z.string()).optional(),
   }),
 });
 
@@ -262,7 +262,7 @@ export const ScheduleCreateReqSchema = z.object({
     promiseId: z.string().min(1, "Promise ID template is required"),
     promiseTimeout: z.number().int().nonnegative("Promise timeout must be a non-negative integer"),
     promiseParam: ValueSchema.optional(),
-    promiseTags: z.record(z.string()).optional(),
+    promiseTags: z.record(z.string(), z.string()).optional(),
   }),
 });
 
@@ -310,70 +310,133 @@ export type Request = z.infer<typeof RequestSchema>;
 // RESPONSE HEAD
 // =============================================================================
 
-export const ResponseHeadSchema = z.object({
+export const ResponseHeadSchema = <S extends number>(status: S) => z.object({
   corrId: z.string(),
-  status: z.number().int(),
+  status: z.literal(status),
   version: z.string(),
 });
-
-// =============================================================================
-// RESPONSE SCHEMA HELPER
-// =============================================================================
-
-const createResponseSchema = <K extends string>(
-  kind: K,
-  responses: Record<number, z.ZodTypeAny>
-) => {
-  const schemas = Object.entries(responses).map(([status, data]) =>
-    z.object({
-      kind: z.literal(kind),
-      head: ResponseHeadSchema.extend({ status: z.literal(Number(status)) }),
-      data,
-    })
-  );
-  return z.union(schemas as unknown as [z.ZodTypeAny, z.ZodTypeAny, ...z.ZodTypeAny[]]);
-};
 
 // =============================================================================
 // RESPONSE SCHEMAS - PROMISE
 // =============================================================================
 
-export const PromiseGetResSchema = createResponseSchema("promise.get", {
-  200: z.object({ promise: PromiseRecordSchema }),
-  404: z.string(),
-  500: z.string(),
-});
+export const PromiseGetResSchema = z.discriminatedUnion("kind", [
+  z.object({
+    kind: z.literal("promise.get"),
+    head: ResponseHeadSchema(200),
+    data: z.object({ promise: PromiseRecordSchema }),
+  }),
+  z.object({
+    kind: z.literal("promise.get"),
+    head: ResponseHeadSchema(400),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("promise.get"),
+    head: ResponseHeadSchema(404),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("promise.get"),
+    head: ResponseHeadSchema(500),
+    data: z.string(),
+  }),
+]);
 
 export type PromiseGetRes = z.infer<typeof PromiseGetResSchema>;
 
-export const PromiseCreateResSchema = createResponseSchema("promise.create", {
-  200: z.object({ promise: PromiseRecordSchema }),
-  500: z.string(),
-});
+export const PromiseCreateResSchema = z.discriminatedUnion("kind", [
+  z.object({
+    kind: z.literal("promise.create"),
+    head: ResponseHeadSchema(200),
+    data: z.object({ promise: PromiseRecordSchema }),
+  }),
+  z.object({
+    kind: z.literal("promise.create"),
+    head: ResponseHeadSchema(400),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("promise.create"),
+    head: ResponseHeadSchema(500),
+    data: z.string(),
+  }),
+]);
 
 export type PromiseCreateRes = z.infer<typeof PromiseCreateResSchema>;
 
-export const PromiseSettleResSchema = createResponseSchema("promise.settle", {
-  200: z.object({ promise: PromiseRecordSchema }),
-  404: z.string(),
-  500: z.string(),
-});
+export const PromiseSettleResSchema = z.discriminatedUnion("kind", [
+  z.object({
+    kind: z.literal("promise.settle"),
+    head: ResponseHeadSchema(200),
+    data: z.object({ promise: PromiseRecordSchema }),
+  }),
+  z.object({
+    kind: z.literal("promise.settle"),
+    head: ResponseHeadSchema(400),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("promise.settle"),
+    head: ResponseHeadSchema(404),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("promise.settle"),
+    head: ResponseHeadSchema(500),
+    data: z.string(),
+  }),
+]);
 
 export type PromiseSettleRes = z.infer<typeof PromiseSettleResSchema>;
 
-export const PromiseRegisterResSchema = createResponseSchema("promise.register", {
-  200: z.object({ promise: PromiseRecordSchema }),
-  404: z.string(),
-  500: z.string(),
-});
+export const PromiseRegisterResSchema = z.discriminatedUnion("kind", [
+  z.object({
+    kind: z.literal("promise.register"),
+    head: ResponseHeadSchema(200),
+    data: z.object({ promise: PromiseRecordSchema }),
+  }),
+  z.object({
+    kind: z.literal("promise.register"),
+    head: ResponseHeadSchema(400),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("promise.register"),
+    head: ResponseHeadSchema(404),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("promise.register"),
+    head: ResponseHeadSchema(500),
+    data: z.string(),
+  }),
+]);
 
 export type PromiseRegisterRes = z.infer<typeof PromiseRegisterResSchema>;
 
-export const PromiseSubscribeResSchema = createResponseSchema("promise.subscribe", {
-  200: z.object({ promise: PromiseRecordSchema }),
-  404: z.string(),
-  500: z.string(),
-});
+export const PromiseSubscribeResSchema = z.discriminatedUnion("kind", [
+  z.object({
+    kind: z.literal("promise.subscribe"),
+    head: ResponseHeadSchema(200),
+    data: z.object({ promise: PromiseRecordSchema }),
+  }),
+  z.object({
+    kind: z.literal("promise.subscribe"),
+    head: ResponseHeadSchema(400),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("promise.subscribe"),
+    head: ResponseHeadSchema(404),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("promise.subscribe"),
+    head: ResponseHeadSchema(500),
+    data: z.string(),
+  }),
+]);
 
 export type PromiseSubscribeRes = z.infer<typeof PromiseSubscribeResSchema>;
 
@@ -381,79 +444,231 @@ export type PromiseSubscribeRes = z.infer<typeof PromiseSubscribeResSchema>;
 // RESPONSE SCHEMAS - TASK
 // =============================================================================
 
-export const TaskGetResSchema = createResponseSchema("task.get", {
-  200: z.object({ task: TaskRecordSchema }),
-  404: z.string(),
-  500: z.string(),
-});
+export const TaskGetResSchema = z.discriminatedUnion("kind", [
+  z.object({
+    kind: z.literal("task.get"),
+    head: ResponseHeadSchema(200),
+    data: z.object({ task: TaskRecordSchema }),
+  }),
+  z.object({
+    kind: z.literal("task.get"),
+    head: ResponseHeadSchema(400),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("task.get"),
+    head: ResponseHeadSchema(404),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("task.get"),
+    head: ResponseHeadSchema(500),
+    data: z.string(),
+  }),
+]);
 
 export type TaskGetRes = z.infer<typeof TaskGetResSchema>;
 
-export const TaskCreateResSchema = createResponseSchema("task.create", {
-  200: z.object({ task: TaskRecordSchema, promise: PromiseRecordSchema }),
-  500: z.string(),
-});
+export const TaskCreateResSchema = z.discriminatedUnion("kind", [
+  z.object({
+    kind: z.literal("task.create"),
+    head: ResponseHeadSchema(200),
+    data: z.object({ task: TaskRecordSchema, promise: PromiseRecordSchema }),
+  }),
+  z.object({
+    kind: z.literal("task.create"),
+    head: ResponseHeadSchema(400),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("task.create"),
+    head: ResponseHeadSchema(500),
+    data: z.string(),
+  }),
+]);
 
 export type TaskCreateRes = z.infer<typeof TaskCreateResSchema>;
 
-export const TaskAcquireResSchema = createResponseSchema("task.acquire", {
-  200: z.object({
-    kind: z.enum(["invoke", "resume"]),
+export const TaskAcquireResSchema = z.discriminatedUnion("kind", [
+  z.object({
+    kind: z.literal("task.acquire"),
+    head: ResponseHeadSchema(200),
     data: z.object({
-      promise: PromiseRecordSchema,
-      preload: z.array(PromiseRecordSchema),
+      kind: z.enum(["invoke", "resume"]),
+      data: z.object({
+        promise: PromiseRecordSchema,
+        preload: z.array(PromiseRecordSchema),
+      }),
     }),
   }),
-  404: z.string(),
-  409: z.string(),
-  500: z.string(),
-});
+  z.object({
+    kind: z.literal("task.acquire"),
+    head: ResponseHeadSchema(400),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("task.acquire"),
+    head: ResponseHeadSchema(404),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("task.acquire"),
+    head: ResponseHeadSchema(409),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("task.acquire"),
+    head: ResponseHeadSchema(500),
+    data: z.string(),
+  }),
+]);
 
 export type TaskAcquireRes = z.infer<typeof TaskAcquireResSchema>;
 
-export const TaskSuspendResSchema = createResponseSchema("task.suspend", {
-  200: z.object({}),
-  300: z.object({}),
-  404: z.string(),
-  409: z.string(),
-  500: z.string(),
-});
+export const TaskSuspendResSchema = z.discriminatedUnion("kind", [
+  z.object({
+    kind: z.literal("task.suspend"),
+    head: ResponseHeadSchema(200),
+    data: z.object({}),
+  }),
+  z.object({
+    kind: z.literal("task.suspend"),
+    head: ResponseHeadSchema(300),
+    data: z.object({}),
+  }),
+  z.object({
+    kind: z.literal("task.suspend"),
+    head: ResponseHeadSchema(400),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("task.suspend"),
+    head: ResponseHeadSchema(404),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("task.suspend"),
+    head: ResponseHeadSchema(409),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("task.suspend"),
+    head: ResponseHeadSchema(500),
+    data: z.string(),
+  }),
+]);
 
 export type TaskSuspendRes = z.infer<typeof TaskSuspendResSchema>;
 
-export const TaskFulfillResSchema = createResponseSchema("task.fulfill", {
-  200: z.object({ promise: PromiseRecordSchema }),
-  404: z.string(),
-  409: z.string(),
-  500: z.string(),
-});
+export const TaskFulfillResSchema = z.discriminatedUnion("kind", [
+  z.object({
+    kind: z.literal("task.fulfill"),
+    head: ResponseHeadSchema(200),
+    data: z.object({ promise: PromiseRecordSchema }),
+  }),
+  z.object({
+    kind: z.literal("task.fulfill"),
+    head: ResponseHeadSchema(400),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("task.fulfill"),
+    head: ResponseHeadSchema(404),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("task.fulfill"),
+    head: ResponseHeadSchema(409),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("task.fulfill"),
+    head: ResponseHeadSchema(500),
+    data: z.string(),
+  }),
+]);
 
 export type TaskFulfillRes = z.infer<typeof TaskFulfillResSchema>;
 
-export const TaskReleaseResSchema = createResponseSchema("task.release", {
-  200: z.object({}),
-  404: z.string(),
-  409: z.string(),
-  500: z.string(),
-});
+export const TaskReleaseResSchema = z.discriminatedUnion("kind", [
+  z.object({
+    kind: z.literal("task.release"),
+    head: ResponseHeadSchema(200),
+    data: z.object({}),
+  }),
+  z.object({
+    kind: z.literal("task.release"),
+    head: ResponseHeadSchema(400),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("task.release"),
+    head: ResponseHeadSchema(404),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("task.release"),
+    head: ResponseHeadSchema(409),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("task.release"),
+    head: ResponseHeadSchema(500),
+    data: z.string(),
+  }),
+]);
 
 export type TaskReleaseRes = z.infer<typeof TaskReleaseResSchema>;
 
-export const TaskFenceResSchema = createResponseSchema("task.fence", {
-  200: z.object({
-    action: z.union([PromiseCreateResSchema, PromiseSettleResSchema]),
+export const TaskFenceResSchema = z.discriminatedUnion("kind", [
+  z.object({
+    kind: z.literal("task.fence"),
+    head: ResponseHeadSchema(200),
+    data: z.object({
+      action: z.union([PromiseCreateResSchema, PromiseSettleResSchema]),
+    }),
   }),
-  404: z.string(),
-  412: z.string(),
-  500: z.string(),
-});
+  z.object({
+    kind: z.literal("task.fence"),
+    head: ResponseHeadSchema(400),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("task.fence"),
+    head: ResponseHeadSchema(404),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("task.fence"),
+    head: ResponseHeadSchema(412),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("task.fence"),
+    head: ResponseHeadSchema(500),
+    data: z.string(),
+  }),
+]);
 
 export type TaskFenceRes = z.infer<typeof TaskFenceResSchema>;
 
-export const TaskHeartbeatResSchema = createResponseSchema("task.heartbeat", {
-  200: z.object({}),
-  500: z.string(),
-});
+export const TaskHeartbeatResSchema = z.discriminatedUnion("kind", [
+  z.object({
+    kind: z.literal("task.heartbeat"),
+    head: ResponseHeadSchema(200),
+    data: z.object({}),
+  }),
+  z.object({
+    kind: z.literal("task.heartbeat"),
+    head: ResponseHeadSchema(400),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("task.heartbeat"),
+    head: ResponseHeadSchema(500),
+    data: z.string(),
+  }),
+]);
 
 export type TaskHeartbeatRes = z.infer<typeof TaskHeartbeatResSchema>;
 
@@ -461,26 +676,73 @@ export type TaskHeartbeatRes = z.infer<typeof TaskHeartbeatResSchema>;
 // RESPONSE SCHEMAS - SCHEDULE
 // =============================================================================
 
-export const ScheduleGetResSchema = createResponseSchema("schedule.get", {
-  200: z.object({ schedule: ScheduleRecordSchema }),
-  404: z.string(),
-  500: z.string(),
-});
+export const ScheduleGetResSchema = z.discriminatedUnion("kind", [
+  z.object({
+    kind: z.literal("schedule.get"),
+    head: ResponseHeadSchema(200),
+    data: z.object({ schedule: ScheduleRecordSchema }),
+  }),
+  z.object({
+    kind: z.literal("schedule.get"),
+    head: ResponseHeadSchema(400),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("schedule.get"),
+    head: ResponseHeadSchema(404),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("schedule.get"),
+    head: ResponseHeadSchema(500),
+    data: z.string(),
+  }),
+]);
 
 export type ScheduleGetRes = z.infer<typeof ScheduleGetResSchema>;
 
-export const ScheduleCreateResSchema = createResponseSchema("schedule.create", {
-  200: z.object({ schedule: ScheduleRecordSchema }),
-  500: z.string(),
-});
+export const ScheduleCreateResSchema = z.discriminatedUnion("kind", [
+  z.object({
+    kind: z.literal("schedule.create"),
+    head: ResponseHeadSchema(200),
+    data: z.object({ schedule: ScheduleRecordSchema }),
+  }),
+  z.object({
+    kind: z.literal("schedule.create"),
+    head: ResponseHeadSchema(400),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("schedule.create"),
+    head: ResponseHeadSchema(500),
+    data: z.string(),
+  }),
+]);
 
 export type ScheduleCreateRes = z.infer<typeof ScheduleCreateResSchema>;
 
-export const ScheduleDeleteResSchema = createResponseSchema("schedule.delete", {
-  200: z.object({}),
-  404: z.string(),
-  500: z.string(),
-});
+export const ScheduleDeleteResSchema = z.discriminatedUnion("kind", [
+  z.object({
+    kind: z.literal("schedule.delete"),
+    head: ResponseHeadSchema(200),
+    data: z.object({}),
+  }),
+  z.object({
+    kind: z.literal("schedule.delete"),
+    head: ResponseHeadSchema(400),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("schedule.delete"),
+    head: ResponseHeadSchema(404),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("schedule.delete"),
+    head: ResponseHeadSchema(500),
+    data: z.string(),
+  }),
+]);
 
 export type ScheduleDeleteRes = z.infer<typeof ScheduleDeleteResSchema>;
 
@@ -488,7 +750,7 @@ export type ScheduleDeleteRes = z.infer<typeof ScheduleDeleteResSchema>;
 // COMBINED RESPONSE SCHEMA
 // =============================================================================
 
-export const ResponseSchema = z.union([
+export const ResponseSchema = z.discriminatedUnion("kind", [
   // Promise
   PromiseGetResSchema,
   PromiseCreateResSchema,
