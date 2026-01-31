@@ -4,19 +4,36 @@
 
 A transport-agnostic durable execution protocol.
 
+## Types
+
+Zod schemas for runtime validation of protocol requests, responses, and messages.
+
+| File | Description |
+|------|-------------|
+| [types.ts](types.ts) | Zod schemas for all protocol types including requests, responses, records, and messages |
+
+## State Transitions
+
+Formal state machine specifications for promises and tasks.
+
+| File | Description |
+|------|-------------|
+| [transitions-promises.md](transitions-promises.md) | Promise state transitions, including side effects and response statuses |
+| [transitions-tasks.md](transitions-tasks.md) | Task state transitions, including side effects and response statuses |
+
 ### Request Structure
 
 All requests follow a common structure:
 
 ```ts
-interface Request {
+interface Request<T> {
   kind: string;
   head: {
     auth?: string;
     corrId: string;
     version: string;
   };
-  data: { ... };
+  data: T;
 }
 ```
 
@@ -37,14 +54,14 @@ interface Request {
 All responses follow a common structure:
 
 ```ts
-interface Response {
+interface Response<T> {
   kind: string;
   head: {
     corrId: string;
     status: number;
     version: string;
   };
-  data: { ... };
+  data: T;
 }
 ```
 
@@ -102,17 +119,6 @@ type Res =
   | ScheduleGetRes
   | ScheduleCreateRes
   | ScheduleDeleteRes
-  | Error
-
-interface Error {
-  kind: string;
-  head: {
-    corrId: string;
-    status: 400 | 404 | 409 | 429 | 500;
-    version: string;
-  };
-  data: string;
-}
 ```
 
 ## Promises
