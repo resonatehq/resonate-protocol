@@ -557,13 +557,13 @@ interface TaskCreateRes {
     version: string;
   };
   data: {
-    task?: Task;
+    task: Task;
     promise: Promise;
   };
 }
 ```
 
-Returns the task and its associated promise. If a task is returned, a lease has been successfully acquired. If a task with the same promise identifier already exists, returns only the promise (idempotent).
+Returns the task and its associated promise.
 
 ### Acquire
 
@@ -864,9 +864,9 @@ Returns the result of the fenced operation.
 
    Task not found.
 
-**409**
+**412**
 
-   Version mismatch.
+   Fence precondition check failed.
 
 ### Heartbeat
 

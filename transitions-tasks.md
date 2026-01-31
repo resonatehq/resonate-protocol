@@ -19,6 +19,8 @@
 | l | TTL (time to live) |
 | v | Version |
 | c | Current (Invoke or Resume) |
+| i | Invoke message |
+| r | Resume message |
 | R | Set of Resumes |
 | P | Set of Promises |
 
@@ -33,8 +35,9 @@ TaskSuspend(v, P)
 TaskFence(v)
 TaskHeartbeat(t, v)
 TaskFulfill(v)
-Enqueue(Invoke, t, l)
-Enqueue(Resume, t, l)
+EnqueueInvoke(t, l, i)
+EnqueueResume(t, l, r)
+EnqueueSettle()
 Tick(t)
 ```
 
@@ -42,8 +45,8 @@ Tick(t)
 
 | Side Effect | Description |
 |-------------|-------------|
-| Send(Invoke) | Send invoke message |
-| Send(Resume) | Send resume message |
+| Send(i) | Send invoke message |
+| Send(r) | Send resume message |
 
 ## Transitions
 
@@ -54,11 +57,11 @@ Tick(t)
 | TaskGet() | ⟨a, e, l, v, c, R⟩ | ⟨a, e, l, v, c, R⟩ | 200 | |
 | TaskGet() | ⟨s, ⊥, ⊥, v, ⊥, ∅⟩ | ⟨s, ⊥, ⊥, v, ⊥, ∅⟩ | 200 | |
 | TaskGet() | ⟨f, ⊥, ⊥, ⊥, ⊥, ∅⟩ | ⟨f, ⊥, ⊥, ⊥, ⊥, ∅⟩ | 200 | |
-| TaskCreate(t, l) | ⊥ | ⟨a, t+l, l, 0, Invoke, ∅⟩ | 200 | |
-| TaskCreate(t, l) | ⟨p, e, l, v, c, R⟩ | ⟨p, e, l, v, c, R⟩ | 200 | |
-| TaskCreate(t, l) | ⟨a, e, l, v, c, R⟩ | ⟨a, e, l, v, c, R⟩ | 200 | |
-| TaskCreate(t, l) | ⟨s, ⊥, ⊥, v, ⊥, ∅⟩ | ⟨s, ⊥, ⊥, v, ⊥, ∅⟩ | 200 | |
-| TaskCreate(t, l) | ⟨f, ⊥, ⊥, ⊥, ⊥, ∅⟩ | ⟨f, ⊥, ⊥, ⊥, ⊥, ∅⟩ | 200 | |
+| TaskCreate(t, l) | ⊥ | ⟨a, t+l, l, 0, i, ∅⟩ | 200 | |
+| TaskCreate(t, l) | ⟨p, e, l, v, c, R⟩ | ⟨p, e, l, v, c, R⟩ | 409 | |
+| TaskCreate(t, l) | ⟨a, e, l, v, c, R⟩ | ⟨a, e, l, v, c, R⟩ | 409 | |
+| TaskCreate(t, l) | ⟨s, ⊥, ⊥, v, ⊥, ∅⟩ | ⟨s, ⊥, ⊥, v, ⊥, ∅⟩ | 409 | |
+| TaskCreate(t, l) | ⟨f, ⊥, ⊥, ⊥, ⊥, ∅⟩ | ⟨f, ⊥, ⊥, ⊥, ⊥, ∅⟩ | 409 | |
 | TaskAcquire(t, l, v) | ⊥ | ⊥ | 404 | |
 | TaskAcquire(t, l, v) | ⟨p, e, l, v, c, R⟩ | ⟨a, t+l, l, v, c, R⟩ | 200 | |
 | TaskAcquire(t, l, v') | ⟨p, e, l, v, c, R⟩ | ⟨p, e, l, v, c, R⟩ | 409 | |
@@ -70,8 +73,8 @@ Tick(t)
 | TaskRelease(t, l, v) | ⊥ | ⊥ | 404 | |
 | TaskRelease(t, l, v) | ⟨p, e, l, v, c, R⟩ | ⟨p, e, l, v, c, R⟩ | 409 | |
 | TaskRelease(t, l, v') | ⟨p, e, l, v, c, R⟩ | ⟨p, e, l, v, c, R⟩ | 409 | |
-| TaskRelease(t, l, v) | ⟨a, e, l, v, Invoke, R⟩ | ⟨p, t+l, l, v+1, Invoke, R⟩ | 200 | Send(Invoke) |
-| TaskRelease(t, l, v) | ⟨a, e, l, v, Resume, R⟩ | ⟨p, t+l, l, v+1, Resume, R⟩ | 200 | Send(Resume) |
+| TaskRelease(t, l, v) | ⟨a, e, l, v, i, R⟩ | ⟨p, t+l, l, v+1, i, R⟩ | 200 | Send(i) |
+| TaskRelease(t, l, v) | ⟨a, e, l, v, r, R⟩ | ⟨p, t+l, l, v+1, r, R⟩ | 200 | Send(r) |
 | TaskRelease(t, l, v') | ⟨a, e, l, v, c, R⟩ | ⟨a, e, l, v, c, R⟩ | 409 | |
 | TaskRelease(t, l, v) | ⟨s, ⊥, ⊥, v, ⊥, ∅⟩ | ⟨s, ⊥, ⊥, v, ⊥, ∅⟩ | 409 | |
 | TaskRelease(t, l, v') | ⟨s, ⊥, ⊥, v, ⊥, ∅⟩ | ⟨s, ⊥, ⊥, v, ⊥, ∅⟩ | 409 | |
@@ -80,20 +83,20 @@ Tick(t)
 | TaskSuspend(v, P) | ⟨p, e, l, v, c, R⟩ | ⟨p, e, l, v, c, R⟩ | 409 | |
 | TaskSuspend(v', P) | ⟨p, e, l, v, c, R⟩ | ⟨p, e, l, v, c, R⟩ | 409 | |
 | TaskSuspend(v, P) | ⟨a, e, l, v, c, ∅⟩ : Pending(p) ∀p∈P | ⟨s, ⊥, ⊥, v, ⊥, ∅⟩ | 200 | |
-| TaskSuspend(v, P) | ⟨a, e, l, v, c, ∅⟩ : Settled(p) ∃p∈P | ⟨a, e, l, v, Resume, ∅⟩ | 300 | |
+| TaskSuspend(v, P) | ⟨a, e, l, v, c, ∅⟩ : Settled(p) ∃p∈P | ⟨a, e, l, v, r, ∅⟩ | 300 | |
 | TaskSuspend(v, P) | ⟨a, e, l, v, c, c'::R'⟩ | ⟨a, e, l, v, c', R'⟩ | 300 | |
 | TaskSuspend(v', P) | ⟨a, e, l, v, c, R⟩ | ⟨a, e, l, v, c, R⟩ | 409 | |
 | TaskSuspend(v, P) | ⟨s, ⊥, ⊥, v, ⊥, ∅⟩ | ⟨s, ⊥, ⊥, v, ⊥, ∅⟩ | 409 | |
 | TaskSuspend(v', P) | ⟨s, ⊥, ⊥, v, ⊥, ∅⟩ | ⟨s, ⊥, ⊥, v, ⊥, ∅⟩ | 409 | |
 | TaskSuspend(v, P) | ⟨f, ⊥, ⊥, ⊥, ⊥, ∅⟩ | ⟨f, ⊥, ⊥, ⊥, ⊥, ∅⟩ | 409 | |
 | TaskFence(v) | ⊥ | ⊥ | 404 | |
-| TaskFence(v) | ⟨p, e, l, v, c, R⟩ | ⟨p, e, l, v, c, R⟩ | 409 | |
-| TaskFence(v') | ⟨p, e, l, v, c, R⟩ | ⟨p, e, l, v, c, R⟩ | 409 | |
+| TaskFence(v) | ⟨p, e, l, v, c, R⟩ | ⟨p, e, l, v, c, R⟩ | 412 | |
+| TaskFence(v') | ⟨p, e, l, v, c, R⟩ | ⟨p, e, l, v, c, R⟩ | 412 | |
 | TaskFence(v) | ⟨a, e, l, v, c, R⟩ | ⟨a, e, l, v, c, R⟩ | 200 | |
-| TaskFence(v') | ⟨a, e, l, v, c, R⟩ | ⟨a, e, l, v, c, R⟩ | 409 | |
-| TaskFence(v) | ⟨s, ⊥, ⊥, v, ⊥, ∅⟩ | ⟨s, ⊥, ⊥, v, ⊥, ∅⟩ | 409 | |
-| TaskFence(v') | ⟨s, ⊥, ⊥, v, ⊥, ∅⟩ | ⟨s, ⊥, ⊥, v, ⊥, ∅⟩ | 409 | |
-| TaskFence(v) | ⟨f, ⊥, ⊥, ⊥, ⊥, ∅⟩ | ⟨f, ⊥, ⊥, ⊥, ⊥, ∅⟩ | 409 | |
+| TaskFence(v') | ⟨a, e, l, v, c, R⟩ | ⟨a, e, l, v, c, R⟩ | 412 | |
+| TaskFence(v) | ⟨s, ⊥, ⊥, v, ⊥, ∅⟩ | ⟨s, ⊥, ⊥, v, ⊥, ∅⟩ | 412 | |
+| TaskFence(v') | ⟨s, ⊥, ⊥, v, ⊥, ∅⟩ | ⟨s, ⊥, ⊥, v, ⊥, ∅⟩ | 412 | |
+| TaskFence(v) | ⟨f, ⊥, ⊥, ⊥, ⊥, ∅⟩ | ⟨f, ⊥, ⊥, ⊥, ⊥, ∅⟩ | 412 | |
 | TaskHeartbeat(t, v) | ⊥ | ⊥ | 404 | |
 | TaskHeartbeat(t, v) | ⟨p, e, l, v, c, R⟩ | ⟨p, e, l, v, c, R⟩ | 200 | |
 | TaskHeartbeat(t, v') | ⟨p, e, l, v, c, R⟩ | ⟨p, e, l, v, c, R⟩ | 200 | |
@@ -110,22 +113,27 @@ Tick(t)
 | TaskFulfill(v) | ⟨s, ⊥, ⊥, v, ⊥, ∅⟩ | ⟨s, ⊥, ⊥, v, ⊥, ∅⟩ | 409 | |
 | TaskFulfill(v') | ⟨s, ⊥, ⊥, v, ⊥, ∅⟩ | ⟨s, ⊥, ⊥, v, ⊥, ∅⟩ | 409 | |
 | TaskFulfill(v) | ⟨f, ⊥, ⊥, ⊥, ⊥, ∅⟩ | ⟨f, ⊥, ⊥, ⊥, ⊥, ∅⟩ | 409 | |
-| Enqueue(Invoke, t, l) | ⊥ | ⟨p, t+l, l, 0, Invoke, ∅⟩ | | Send(Invoke) |
-| Enqueue(Invoke, t, l) | ⟨p, e, l, v, c, R⟩ | ⟨p, e, l, v, c, R⟩ | | |
-| Enqueue(Invoke, t, l) | ⟨a, e, l, v, c, R⟩ | ⟨a, e, l, v, c, R⟩ | | |
-| Enqueue(Invoke, t, l) | ⟨s, ⊥, ⊥, v, ⊥, ∅⟩ | ⟨s, ⊥, ⊥, v, ⊥, ∅⟩ | | |
-| Enqueue(Invoke, t, l) | ⟨f, ⊥, ⊥, ⊥, ⊥, ∅⟩ | ⟨f, ⊥, ⊥, ⊥, ⊥, ∅⟩ | | |
-| ~~Enqueue(Resume, t, l)~~ | ~~⊥~~ | ~~⊥~~ | | |
-| Enqueue(Resume, t, l) | ⟨p, e, l, v, c, R⟩ | ⟨p, e, l, v, c, R::Resume⟩ | | |
-| Enqueue(Resume, t, l) | ⟨a, e, l, v, c, R⟩ | ⟨a, e, l, v, c, R::Resume⟩ | | |
-| Enqueue(Resume, t, l) | ⟨s, ⊥, ⊥, v, ⊥, ∅⟩ | ⟨p, t+l, l, v+1, Resume, ∅⟩ | | Send(Resume) |
-| Enqueue(Resume, t, l) | ⟨f, ⊥, ⊥, ⊥, ⊥, ∅⟩ | ⟨f, ⊥, ⊥, ⊥, ⊥, ∅⟩ | | |
+| EnqueueInvoke(t, l, i) | ⊥ | ⟨p, t+l, l, 0, i, ∅⟩ | | Send(i) |
+| EnqueueInvoke(t, l, i) | ⟨p, e, l, v, c, R⟩ | ⟨p, e, l, v, c, R⟩ | | |
+| EnqueueInvoke(t, l, i) | ⟨a, e, l, v, c, R⟩ | ⟨a, e, l, v, c, R⟩ | | |
+| EnqueueInvoke(t, l, i) | ⟨s, ⊥, ⊥, v, ⊥, ∅⟩ | ⟨s, ⊥, ⊥, v, ⊥, ∅⟩ | | |
+| EnqueueInvoke(t, l, i) | ⟨f, ⊥, ⊥, ⊥, ⊥, ∅⟩ | ⟨f, ⊥, ⊥, ⊥, ⊥, ∅⟩ | | |
+| ~~EnqueueResume(t, l, r)~~ | ~~⊥~~ | ~~⊥~~ | | |
+| EnqueueResume(t, l, r) | ⟨p, e, l, v, c, R⟩ | ⟨p, e, l, v, c, R::r⟩ | | |
+| EnqueueResume(t, l, r) | ⟨a, e, l, v, c, R⟩ | ⟨a, e, l, v, c, R::r⟩ | | |
+| EnqueueResume(t, l, r) | ⟨s, ⊥, ⊥, v, ⊥, ∅⟩ | ⟨p, t+l, l, v+1, r, ∅⟩ | | Send(r) |
+| EnqueueResume(t, l, r) | ⟨f, ⊥, ⊥, ⊥, ⊥, ∅⟩ | ⟨f, ⊥, ⊥, ⊥, ⊥, ∅⟩ | | |
+| ~~EnqueueSettle()~~ | ~~⊥~~ | ~~⊥~~ | | |
+| EnqueueSettle() | ⟨p, e, l, v, c, R⟩ | ⟨f, ⊥, ⊥, ⊥, ⊥, ∅⟩ | | |
+| EnqueueSettle() | ⟨a, e, l, v, c, R⟩ | ⟨f, ⊥, ⊥, ⊥, ⊥, ∅⟩ | | |
+| EnqueueSettle() | ⟨s, ⊥, ⊥, v, ⊥, ∅⟩ | ⟨f, ⊥, ⊥, ⊥, ⊥, ∅⟩ | | |
+| EnqueueSettle() | ⟨f, ⊥, ⊥, ⊥, ⊥, ∅⟩ | ⟨f, ⊥, ⊥, ⊥, ⊥, ∅⟩ | | |
 | Tick(t) | ⊥ | ⊥ | | |
 | Tick(t) | ⟨p, e, l, v, c, R⟩ : t < e | ⟨p, e, l, v, c, R⟩ | | |
-| Tick(t) | ⟨p, e, l, v, Invoke, R⟩ : t ≥ e | ⟨p, t+l, l, v, Invoke, R⟩ | | Send(Invoke) |
-| Tick(t) | ⟨p, e, l, v, Resume, R⟩ : t ≥ e | ⟨p, t+l, l, v, Resume, R⟩ | | Send(Resume) |
+| Tick(t) | ⟨p, e, l, v, i, R⟩ : t ≥ e | ⟨p, t+l, l, v, i, R⟩ | | Send(i) |
+| Tick(t) | ⟨p, e, l, v, r, R⟩ : t ≥ e | ⟨p, t+l, l, v, r, R⟩ | | Send(r) |
 | Tick(t) | ⟨a, e, l, v, c, R⟩ : t < e | ⟨a, e, l, v, c, R⟩ | | |
-| Tick(t) | ⟨a, e, l, v, Invoke, R⟩ : t ≥ e | ⟨p, t+l, l, v+1, Invoke, R⟩ | | Send(Invoke) |
-| Tick(t) | ⟨a, e, l, v, Resume, R⟩ : t ≥ e | ⟨p, t+l, l, v+1, Resume, R⟩ | | Send(Resume) |
+| Tick(t) | ⟨a, e, l, v, i, R⟩ : t ≥ e | ⟨p, t+l, l, v+1, i, R⟩ | | Send(i) |
+| Tick(t) | ⟨a, e, l, v, r, R⟩ : t ≥ e | ⟨p, t+l, l, v+1, r, R⟩ | | Send(r) |
 | Tick(t) | ⟨s, ⊥, ⊥, v, ⊥, ∅⟩ | ⟨s, ⊥, ⊥, v, ⊥, ∅⟩ | | |
 | Tick(t) | ⟨f, ⊥, ⊥, ⊥, ⊥, ∅⟩ | ⟨f, ⊥, ⊥, ⊥, ⊥, ∅⟩ | | |
