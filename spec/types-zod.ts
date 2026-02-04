@@ -54,11 +54,6 @@ export const TaskRecordSchema = z.object({
   version: z.number().int(),
 });
 
-export const TaskRefSchema = z.object({
-  id: z.string(),
-  version: z.number().int(),
-});
-
 export const ScheduleRecordSchema = z.object({
   id: z.string(),
   cron: z.string(),
@@ -233,7 +228,7 @@ export const TaskHeartbeatReqSchema = z.object({
   head: RequestHeadSchema,
   data: z.object({
     pid: z.string().min(1, "Process ID is required"),
-    tasks: z.array(TaskRefSchema),
+    tasks: z.array(TaskRecordSchema.pick({ id: true, version: true })),
   }),
 });
 
@@ -338,6 +333,11 @@ export const PromiseGetResSchema = z.discriminatedUnion("kind", [
   }),
   z.object({
     kind: z.literal("promise.get"),
+    head: ResponseHeadSchema(429),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("promise.get"),
     head: ResponseHeadSchema(500),
     data: z.string(),
   }),
@@ -354,6 +354,11 @@ export const PromiseCreateResSchema = z.discriminatedUnion("kind", [
   z.object({
     kind: z.literal("promise.create"),
     head: ResponseHeadSchema(400),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("promise.create"),
+    head: ResponseHeadSchema(429),
     data: z.string(),
   }),
   z.object({
@@ -383,6 +388,11 @@ export const PromiseSettleResSchema = z.discriminatedUnion("kind", [
   }),
   z.object({
     kind: z.literal("promise.settle"),
+    head: ResponseHeadSchema(429),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("promise.settle"),
     head: ResponseHeadSchema(500),
     data: z.string(),
   }),
@@ -404,6 +414,11 @@ export const PromiseRegisterResSchema = z.discriminatedUnion("kind", [
   z.object({
     kind: z.literal("promise.register"),
     head: ResponseHeadSchema(404),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("promise.register"),
+    head: ResponseHeadSchema(429),
     data: z.string(),
   }),
   z.object({
@@ -433,7 +448,17 @@ export const PromiseSubscribeResSchema = z.discriminatedUnion("kind", [
   }),
   z.object({
     kind: z.literal("promise.subscribe"),
+    head: ResponseHeadSchema(429),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("promise.subscribe"),
     head: ResponseHeadSchema(500),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("promise.subscribe"),
+    head: ResponseHeadSchema(501),
     data: z.string(),
   }),
 ]);
@@ -462,6 +487,11 @@ export const TaskGetResSchema = z.discriminatedUnion("kind", [
   }),
   z.object({
     kind: z.literal("task.get"),
+    head: ResponseHeadSchema(429),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("task.get"),
     head: ResponseHeadSchema(500),
     data: z.string(),
   }),
@@ -482,7 +512,17 @@ export const TaskCreateResSchema = z.discriminatedUnion("kind", [
   }),
   z.object({
     kind: z.literal("task.create"),
+    head: ResponseHeadSchema(429),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("task.create"),
     head: ResponseHeadSchema(500),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("task.create"),
+    head: ResponseHeadSchema(501),
     data: z.string(),
   }),
 ]);
@@ -514,6 +554,11 @@ export const TaskAcquireResSchema = z.discriminatedUnion("kind", [
   z.object({
     kind: z.literal("task.acquire"),
     head: ResponseHeadSchema(409),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("task.acquire"),
+    head: ResponseHeadSchema(429),
     data: z.string(),
   }),
   z.object({
@@ -553,6 +598,11 @@ export const TaskSuspendResSchema = z.discriminatedUnion("kind", [
   }),
   z.object({
     kind: z.literal("task.suspend"),
+    head: ResponseHeadSchema(429),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("task.suspend"),
     head: ResponseHeadSchema(500),
     data: z.string(),
   }),
@@ -583,6 +633,11 @@ export const TaskFulfillResSchema = z.discriminatedUnion("kind", [
   }),
   z.object({
     kind: z.literal("task.fulfill"),
+    head: ResponseHeadSchema(429),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("task.fulfill"),
     head: ResponseHeadSchema(500),
     data: z.string(),
   }),
@@ -609,6 +664,11 @@ export const TaskReleaseResSchema = z.discriminatedUnion("kind", [
   z.object({
     kind: z.literal("task.release"),
     head: ResponseHeadSchema(409),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("task.release"),
+    head: ResponseHeadSchema(429),
     data: z.string(),
   }),
   z.object({
@@ -645,6 +705,11 @@ export const TaskFenceResSchema = z.discriminatedUnion("kind", [
   }),
   z.object({
     kind: z.literal("task.fence"),
+    head: ResponseHeadSchema(429),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("task.fence"),
     head: ResponseHeadSchema(500),
     data: z.string(),
   }),
@@ -661,6 +726,11 @@ export const TaskHeartbeatResSchema = z.discriminatedUnion("kind", [
   z.object({
     kind: z.literal("task.heartbeat"),
     head: ResponseHeadSchema(400),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("task.heartbeat"),
+    head: ResponseHeadSchema(429),
     data: z.string(),
   }),
   z.object({
@@ -694,7 +764,17 @@ export const ScheduleGetResSchema = z.discriminatedUnion("kind", [
   }),
   z.object({
     kind: z.literal("schedule.get"),
+    head: ResponseHeadSchema(429),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("schedule.get"),
     head: ResponseHeadSchema(500),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("schedule.get"),
+    head: ResponseHeadSchema(501),
     data: z.string(),
   }),
 ]);
@@ -714,7 +794,17 @@ export const ScheduleCreateResSchema = z.discriminatedUnion("kind", [
   }),
   z.object({
     kind: z.literal("schedule.create"),
+    head: ResponseHeadSchema(429),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("schedule.create"),
     head: ResponseHeadSchema(500),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("schedule.create"),
+    head: ResponseHeadSchema(501),
     data: z.string(),
   }),
 ]);
@@ -739,7 +829,17 @@ export const ScheduleDeleteResSchema = z.discriminatedUnion("kind", [
   }),
   z.object({
     kind: z.literal("schedule.delete"),
+    head: ResponseHeadSchema(429),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("schedule.delete"),
     head: ResponseHeadSchema(500),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("schedule.delete"),
+    head: ResponseHeadSchema(501),
     data: z.string(),
   }),
 ]);
@@ -784,7 +884,7 @@ export const InvokeMsgSchema = z.object({
   kind: z.literal("invoke"),
   head: MessageHeadSchema,
   data: z.object({
-    task: TaskRecordSchema,
+    task: TaskRecordSchema.pick({ id: true, version: true }),
   }),
 });
 
@@ -794,7 +894,7 @@ export const ResumeMsgSchema = z.object({
   kind: z.literal("resume"),
   head: MessageHeadSchema,
   data: z.object({
-    task: TaskRecordSchema,
+    task: TaskRecordSchema.pick({ id: true, version: true }),
   }),
 });
 
