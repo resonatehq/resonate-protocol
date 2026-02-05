@@ -9,37 +9,13 @@ export const ValueSchema = z.object({
   data: z.string().optional(),
 });
 
-// Protocol states for settlement requests
-export const SettlementStateSchema = z.enum([
-  "resolved",
-  "rejected",
-  "rejected_canceled",
-]);
-
-// All possible promise states
-export const PromiseStateSchema = z.enum([
-  "pending",
-  "resolved",
-  "rejected",
-  "rejected_canceled",
-  "rejected_timedout",
-]);
-
-// All possible task states
-export const TaskStateSchema = z.enum([
-  "pending",
-  "acquired",
-  "suspended",
-  "fulfilled",
-]);
-
 // =============================================================================
 // RECORD SCHEMAS
 // =============================================================================
 
 export const PromiseRecordSchema = z.object({
   id: z.string(),
-  state: PromiseStateSchema,
+  state: z.enum(["pending", "resolved", "rejected", "rejected_canceled", "rejected_timedout"]),
   param: ValueSchema,
   value: ValueSchema,
   tags: z.record(z.string(), z.string()),
@@ -50,7 +26,7 @@ export const PromiseRecordSchema = z.object({
 
 export const TaskRecordSchema = z.object({
   id: z.string(),
-  state: TaskStateSchema,
+  state: z.enum(["pending", "acquired", "suspended", "fulfilled"]),
   version: z.number().int(),
 });
 
@@ -108,7 +84,7 @@ export const PromiseSettleReqSchema = z.object({
   head: RequestHeadSchema,
   data: z.object({
     id: z.string().min(1, "Promise ID is required"),
-    state: SettlementStateSchema,
+    state: z.enum(["resolved", "rejected", "rejected_canceled"]),
     value: ValueSchema.optional(),
   }),
 });
@@ -228,7 +204,7 @@ export const TaskHeartbeatReqSchema = z.object({
   head: RequestHeadSchema,
   data: z.object({
     pid: z.string().min(1, "Process ID is required"),
-    tasks: z.array(TaskRecordSchema.pick({ id: true, version: true })),
+    tasks: z.array(z.object({ id: z.string(), version: z.number().int() })),
   }),
 });
 
@@ -392,6 +368,11 @@ export const PromiseGetResSchema = z.discriminatedUnion("kind", [
 ]);
 
 export type PromiseGetRes = z.infer<typeof PromiseGetResSchema>;
+export type PromiseGetRes200 = Extract<PromiseGetRes, { head: { status: 200 } }>;
+export type PromiseGetRes400 = Extract<PromiseGetRes, { head: { status: 400 } }>;
+export type PromiseGetRes404 = Extract<PromiseGetRes, { head: { status: 404 } }>;
+export type PromiseGetRes429 = Extract<PromiseGetRes, { head: { status: 429 } }>;
+export type PromiseGetRes500 = Extract<PromiseGetRes, { head: { status: 500 } }>;
 
 export const PromiseCreateResSchema = z.discriminatedUnion("kind", [
   z.object({
@@ -417,6 +398,10 @@ export const PromiseCreateResSchema = z.discriminatedUnion("kind", [
 ]);
 
 export type PromiseCreateRes = z.infer<typeof PromiseCreateResSchema>;
+export type PromiseCreateRes200 = Extract<PromiseCreateRes, { head: { status: 200 } }>;
+export type PromiseCreateRes400 = Extract<PromiseCreateRes, { head: { status: 400 } }>;
+export type PromiseCreateRes429 = Extract<PromiseCreateRes, { head: { status: 429 } }>;
+export type PromiseCreateRes500 = Extract<PromiseCreateRes, { head: { status: 500 } }>;
 
 export const PromiseSettleResSchema = z.discriminatedUnion("kind", [
   z.object({
@@ -447,6 +432,11 @@ export const PromiseSettleResSchema = z.discriminatedUnion("kind", [
 ]);
 
 export type PromiseSettleRes = z.infer<typeof PromiseSettleResSchema>;
+export type PromiseSettleRes200 = Extract<PromiseSettleRes, { head: { status: 200 } }>;
+export type PromiseSettleRes400 = Extract<PromiseSettleRes, { head: { status: 400 } }>;
+export type PromiseSettleRes404 = Extract<PromiseSettleRes, { head: { status: 404 } }>;
+export type PromiseSettleRes429 = Extract<PromiseSettleRes, { head: { status: 429 } }>;
+export type PromiseSettleRes500 = Extract<PromiseSettleRes, { head: { status: 500 } }>;
 
 export const PromiseRegisterResSchema = z.discriminatedUnion("kind", [
   z.object({
@@ -477,6 +467,11 @@ export const PromiseRegisterResSchema = z.discriminatedUnion("kind", [
 ]);
 
 export type PromiseRegisterRes = z.infer<typeof PromiseRegisterResSchema>;
+export type PromiseRegisterRes200 = Extract<PromiseRegisterRes, { head: { status: 200 } }>;
+export type PromiseRegisterRes400 = Extract<PromiseRegisterRes, { head: { status: 400 } }>;
+export type PromiseRegisterRes404 = Extract<PromiseRegisterRes, { head: { status: 404 } }>;
+export type PromiseRegisterRes429 = Extract<PromiseRegisterRes, { head: { status: 429 } }>;
+export type PromiseRegisterRes500 = Extract<PromiseRegisterRes, { head: { status: 500 } }>;
 
 export const PromiseSubscribeResSchema = z.discriminatedUnion("kind", [
   z.object({
@@ -512,6 +507,12 @@ export const PromiseSubscribeResSchema = z.discriminatedUnion("kind", [
 ]);
 
 export type PromiseSubscribeRes = z.infer<typeof PromiseSubscribeResSchema>;
+export type PromiseSubscribeRes200 = Extract<PromiseSubscribeRes, { head: { status: 200 } }>;
+export type PromiseSubscribeRes400 = Extract<PromiseSubscribeRes, { head: { status: 400 } }>;
+export type PromiseSubscribeRes404 = Extract<PromiseSubscribeRes, { head: { status: 404 } }>;
+export type PromiseSubscribeRes429 = Extract<PromiseSubscribeRes, { head: { status: 429 } }>;
+export type PromiseSubscribeRes500 = Extract<PromiseSubscribeRes, { head: { status: 500 } }>;
+export type PromiseSubscribeRes501 = Extract<PromiseSubscribeRes, { head: { status: 501 } }>;
 
 // =============================================================================
 // RESPONSE SCHEMAS - TASK
@@ -546,6 +547,11 @@ export const TaskGetResSchema = z.discriminatedUnion("kind", [
 ]);
 
 export type TaskGetRes = z.infer<typeof TaskGetResSchema>;
+export type TaskGetRes200 = Extract<TaskGetRes, { head: { status: 200 } }>;
+export type TaskGetRes400 = Extract<TaskGetRes, { head: { status: 400 } }>;
+export type TaskGetRes404 = Extract<TaskGetRes, { head: { status: 404 } }>;
+export type TaskGetRes429 = Extract<TaskGetRes, { head: { status: 429 } }>;
+export type TaskGetRes500 = Extract<TaskGetRes, { head: { status: 500 } }>;
 
 export const TaskCreateResSchema = z.discriminatedUnion("kind", [
   z.object({
@@ -576,6 +582,11 @@ export const TaskCreateResSchema = z.discriminatedUnion("kind", [
 ]);
 
 export type TaskCreateRes = z.infer<typeof TaskCreateResSchema>;
+export type TaskCreateRes200 = Extract<TaskCreateRes, { head: { status: 200 } }>;
+export type TaskCreateRes400 = Extract<TaskCreateRes, { head: { status: 400 } }>;
+export type TaskCreateRes429 = Extract<TaskCreateRes, { head: { status: 429 } }>;
+export type TaskCreateRes500 = Extract<TaskCreateRes, { head: { status: 500 } }>;
+export type TaskCreateRes501 = Extract<TaskCreateRes, { head: { status: 501 } }>;
 
 export const TaskAcquireResSchema = z.discriminatedUnion("kind", [
   z.object({
@@ -617,6 +628,12 @@ export const TaskAcquireResSchema = z.discriminatedUnion("kind", [
 ]);
 
 export type TaskAcquireRes = z.infer<typeof TaskAcquireResSchema>;
+export type TaskAcquireRes200 = Extract<TaskAcquireRes, { head: { status: 200 } }>;
+export type TaskAcquireRes400 = Extract<TaskAcquireRes, { head: { status: 400 } }>;
+export type TaskAcquireRes404 = Extract<TaskAcquireRes, { head: { status: 404 } }>;
+export type TaskAcquireRes409 = Extract<TaskAcquireRes, { head: { status: 409 } }>;
+export type TaskAcquireRes429 = Extract<TaskAcquireRes, { head: { status: 429 } }>;
+export type TaskAcquireRes500 = Extract<TaskAcquireRes, { head: { status: 500 } }>;
 
 export const TaskSuspendResSchema = z.discriminatedUnion("kind", [
   z.object({
@@ -657,6 +674,13 @@ export const TaskSuspendResSchema = z.discriminatedUnion("kind", [
 ]);
 
 export type TaskSuspendRes = z.infer<typeof TaskSuspendResSchema>;
+export type TaskSuspendRes200 = Extract<TaskSuspendRes, { head: { status: 200 } }>;
+export type TaskSuspendRes300 = Extract<TaskSuspendRes, { head: { status: 300 } }>;
+export type TaskSuspendRes400 = Extract<TaskSuspendRes, { head: { status: 400 } }>;
+export type TaskSuspendRes404 = Extract<TaskSuspendRes, { head: { status: 404 } }>;
+export type TaskSuspendRes409 = Extract<TaskSuspendRes, { head: { status: 409 } }>;
+export type TaskSuspendRes429 = Extract<TaskSuspendRes, { head: { status: 429 } }>;
+export type TaskSuspendRes500 = Extract<TaskSuspendRes, { head: { status: 500 } }>;
 
 export const TaskFulfillResSchema = z.discriminatedUnion("kind", [
   z.object({
@@ -692,6 +716,12 @@ export const TaskFulfillResSchema = z.discriminatedUnion("kind", [
 ]);
 
 export type TaskFulfillRes = z.infer<typeof TaskFulfillResSchema>;
+export type TaskFulfillRes200 = Extract<TaskFulfillRes, { head: { status: 200 } }>;
+export type TaskFulfillRes400 = Extract<TaskFulfillRes, { head: { status: 400 } }>;
+export type TaskFulfillRes404 = Extract<TaskFulfillRes, { head: { status: 404 } }>;
+export type TaskFulfillRes409 = Extract<TaskFulfillRes, { head: { status: 409 } }>;
+export type TaskFulfillRes429 = Extract<TaskFulfillRes, { head: { status: 429 } }>;
+export type TaskFulfillRes500 = Extract<TaskFulfillRes, { head: { status: 500 } }>;
 
 export const TaskReleaseResSchema = z.discriminatedUnion("kind", [
   z.object({
@@ -727,6 +757,12 @@ export const TaskReleaseResSchema = z.discriminatedUnion("kind", [
 ]);
 
 export type TaskReleaseRes = z.infer<typeof TaskReleaseResSchema>;
+export type TaskReleaseRes200 = Extract<TaskReleaseRes, { head: { status: 200 } }>;
+export type TaskReleaseRes400 = Extract<TaskReleaseRes, { head: { status: 400 } }>;
+export type TaskReleaseRes404 = Extract<TaskReleaseRes, { head: { status: 404 } }>;
+export type TaskReleaseRes409 = Extract<TaskReleaseRes, { head: { status: 409 } }>;
+export type TaskReleaseRes429 = Extract<TaskReleaseRes, { head: { status: 429 } }>;
+export type TaskReleaseRes500 = Extract<TaskReleaseRes, { head: { status: 500 } }>;
 
 export const TaskFenceResSchema = z.discriminatedUnion("kind", [
   z.object({
@@ -764,6 +800,12 @@ export const TaskFenceResSchema = z.discriminatedUnion("kind", [
 ]);
 
 export type TaskFenceRes = z.infer<typeof TaskFenceResSchema>;
+export type TaskFenceRes200 = Extract<TaskFenceRes, { head: { status: 200 } }>;
+export type TaskFenceRes400 = Extract<TaskFenceRes, { head: { status: 400 } }>;
+export type TaskFenceRes404 = Extract<TaskFenceRes, { head: { status: 404 } }>;
+export type TaskFenceRes412 = Extract<TaskFenceRes, { head: { status: 412 } }>;
+export type TaskFenceRes429 = Extract<TaskFenceRes, { head: { status: 429 } }>;
+export type TaskFenceRes500 = Extract<TaskFenceRes, { head: { status: 500 } }>;
 
 export const TaskHeartbeatResSchema = z.discriminatedUnion("kind", [
   z.object({
@@ -789,6 +831,10 @@ export const TaskHeartbeatResSchema = z.discriminatedUnion("kind", [
 ]);
 
 export type TaskHeartbeatRes = z.infer<typeof TaskHeartbeatResSchema>;
+export type TaskHeartbeatRes200 = Extract<TaskHeartbeatRes, { head: { status: 200 } }>;
+export type TaskHeartbeatRes400 = Extract<TaskHeartbeatRes, { head: { status: 400 } }>;
+export type TaskHeartbeatRes429 = Extract<TaskHeartbeatRes, { head: { status: 429 } }>;
+export type TaskHeartbeatRes500 = Extract<TaskHeartbeatRes, { head: { status: 500 } }>;
 
 // =============================================================================
 // RESPONSE SCHEMAS - SCHEDULE
@@ -828,6 +874,12 @@ export const ScheduleGetResSchema = z.discriminatedUnion("kind", [
 ]);
 
 export type ScheduleGetRes = z.infer<typeof ScheduleGetResSchema>;
+export type ScheduleGetRes200 = Extract<ScheduleGetRes, { head: { status: 200 } }>;
+export type ScheduleGetRes400 = Extract<ScheduleGetRes, { head: { status: 400 } }>;
+export type ScheduleGetRes404 = Extract<ScheduleGetRes, { head: { status: 404 } }>;
+export type ScheduleGetRes429 = Extract<ScheduleGetRes, { head: { status: 429 } }>;
+export type ScheduleGetRes500 = Extract<ScheduleGetRes, { head: { status: 500 } }>;
+export type ScheduleGetRes501 = Extract<ScheduleGetRes, { head: { status: 501 } }>;
 
 export const ScheduleCreateResSchema = z.discriminatedUnion("kind", [
   z.object({
@@ -858,6 +910,11 @@ export const ScheduleCreateResSchema = z.discriminatedUnion("kind", [
 ]);
 
 export type ScheduleCreateRes = z.infer<typeof ScheduleCreateResSchema>;
+export type ScheduleCreateRes200 = Extract<ScheduleCreateRes, { head: { status: 200 } }>;
+export type ScheduleCreateRes400 = Extract<ScheduleCreateRes, { head: { status: 400 } }>;
+export type ScheduleCreateRes429 = Extract<ScheduleCreateRes, { head: { status: 429 } }>;
+export type ScheduleCreateRes500 = Extract<ScheduleCreateRes, { head: { status: 500 } }>;
+export type ScheduleCreateRes501 = Extract<ScheduleCreateRes, { head: { status: 501 } }>;
 
 export const ScheduleDeleteResSchema = z.discriminatedUnion("kind", [
   z.object({
@@ -893,6 +950,12 @@ export const ScheduleDeleteResSchema = z.discriminatedUnion("kind", [
 ]);
 
 export type ScheduleDeleteRes = z.infer<typeof ScheduleDeleteResSchema>;
+export type ScheduleDeleteRes200 = Extract<ScheduleDeleteRes, { head: { status: 200 } }>;
+export type ScheduleDeleteRes400 = Extract<ScheduleDeleteRes, { head: { status: 400 } }>;
+export type ScheduleDeleteRes404 = Extract<ScheduleDeleteRes, { head: { status: 404 } }>;
+export type ScheduleDeleteRes429 = Extract<ScheduleDeleteRes, { head: { status: 429 } }>;
+export type ScheduleDeleteRes500 = Extract<ScheduleDeleteRes, { head: { status: 500 } }>;
+export type ScheduleDeleteRes501 = Extract<ScheduleDeleteRes, { head: { status: 501 } }>;
 
 // =============================================================================
 // RESPONSE SCHEMAS - DEBUG
@@ -927,6 +990,11 @@ export const DebugStartResSchema = z.discriminatedUnion("kind", [
 ]);
 
 export type DebugStartRes = z.infer<typeof DebugStartResSchema>;
+export type DebugStartRes200 = Extract<DebugStartRes, { head: { status: 200 } }>;
+export type DebugStartRes400 = Extract<DebugStartRes, { head: { status: 400 } }>;
+export type DebugStartRes429 = Extract<DebugStartRes, { head: { status: 429 } }>;
+export type DebugStartRes500 = Extract<DebugStartRes, { head: { status: 500 } }>;
+export type DebugStartRes501 = Extract<DebugStartRes, { head: { status: 501 } }>;
 
 export const DebugResetResSchema = z.discriminatedUnion("kind", [
   z.object({
@@ -957,6 +1025,11 @@ export const DebugResetResSchema = z.discriminatedUnion("kind", [
 ]);
 
 export type DebugResetRes = z.infer<typeof DebugResetResSchema>;
+export type DebugResetRes200 = Extract<DebugResetRes, { head: { status: 200 } }>;
+export type DebugResetRes400 = Extract<DebugResetRes, { head: { status: 400 } }>;
+export type DebugResetRes429 = Extract<DebugResetRes, { head: { status: 429 } }>;
+export type DebugResetRes500 = Extract<DebugResetRes, { head: { status: 500 } }>;
+export type DebugResetRes501 = Extract<DebugResetRes, { head: { status: 501 } }>;
 
 export const DebugTickActionSchema = z.discriminatedUnion("kind", [
   z.object({
@@ -1013,6 +1086,11 @@ export const DebugTickResSchema = z.discriminatedUnion("kind", [
 ]);
 
 export type DebugTickRes = z.infer<typeof DebugTickResSchema>;
+export type DebugTickRes200 = Extract<DebugTickRes, { head: { status: 200 } }>;
+export type DebugTickRes400 = Extract<DebugTickRes, { head: { status: 400 } }>;
+export type DebugTickRes429 = Extract<DebugTickRes, { head: { status: 429 } }>;
+export type DebugTickRes500 = Extract<DebugTickRes, { head: { status: 500 } }>;
+export type DebugTickRes501 = Extract<DebugTickRes, { head: { status: 501 } }>;
 
 export const DebugSnapResSchema = z.discriminatedUnion("kind", [
   z.object({
@@ -1022,7 +1100,7 @@ export const DebugSnapResSchema = z.discriminatedUnion("kind", [
       promises: z.array(PromiseRecordSchema),
       promiseTimeouts: z.array(z.object({ id: z.string(), timeout: z.number() })),
       tasks: z.array(TaskRecordSchema),
-      taskTimeouts: z.array(z.object({ id: z.string(), type: z.union([z.literal(1), z.literal(2)]), timeout: z.number() })),
+      taskTimeouts: z.array(z.object({ id: z.string(), type: z.number(), timeout: z.number() })),
       messages: z.array(z.object({ id: z.string(), version: z.number().int(), address: z.string() })),
     }),
   }),
@@ -1049,6 +1127,11 @@ export const DebugSnapResSchema = z.discriminatedUnion("kind", [
 ]);
 
 export type DebugSnapRes = z.infer<typeof DebugSnapResSchema>;
+export type DebugSnapRes200 = Extract<DebugSnapRes, { head: { status: 200 } }>;
+export type DebugSnapRes400 = Extract<DebugSnapRes, { head: { status: 400 } }>;
+export type DebugSnapRes429 = Extract<DebugSnapRes, { head: { status: 429 } }>;
+export type DebugSnapRes500 = Extract<DebugSnapRes, { head: { status: 500 } }>;
+export type DebugSnapRes501 = Extract<DebugSnapRes, { head: { status: 501 } }>;
 
 export const DebugStopResSchema = z.discriminatedUnion("kind", [
   z.object({
@@ -1079,6 +1162,11 @@ export const DebugStopResSchema = z.discriminatedUnion("kind", [
 ]);
 
 export type DebugStopRes = z.infer<typeof DebugStopResSchema>;
+export type DebugStopRes200 = Extract<DebugStopRes, { head: { status: 200 } }>;
+export type DebugStopRes400 = Extract<DebugStopRes, { head: { status: 400 } }>;
+export type DebugStopRes429 = Extract<DebugStopRes, { head: { status: 429 } }>;
+export type DebugStopRes500 = Extract<DebugStopRes, { head: { status: 500 } }>;
+export type DebugStopRes501 = Extract<DebugStopRes, { head: { status: 501 } }>;
 
 // =============================================================================
 // COMBINED RESPONSE SCHEMA
@@ -1124,7 +1212,7 @@ export const InvokeMsgSchema = z.object({
   kind: z.literal("invoke"),
   head: MessageHeadSchema,
   data: z.object({
-    task: TaskRecordSchema.pick({ id: true, version: true }),
+    task: z.object({ id: z.string(), version: z.number().int() }),
   }),
 });
 
@@ -1134,7 +1222,7 @@ export const ResumeMsgSchema = z.object({
   kind: z.literal("resume"),
   head: MessageHeadSchema,
   data: z.object({
-    task: TaskRecordSchema.pick({ id: true, version: true }),
+    task: z.object({ id: z.string(), version: z.number().int() }),
   }),
 });
 

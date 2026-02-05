@@ -1316,7 +1316,7 @@ type DebugSnapRes = {
     promises: Promise[];
     promiseTimeouts: { id: string; timeout: number }[];
     tasks: Task[];
-    taskTimeouts: { id: string; type: 1 | 2; timeout: number }[];
+    taskTimeouts: { id: string; type: number; timeout: number }[];
     messages: { id: string; version: number; address: string }[];
   };
 }
