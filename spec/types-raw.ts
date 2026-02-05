@@ -3,8 +3,8 @@
 // =============================================================================
 
 export type Value = {
-  headers: Record<string, string>;
-  data: string;
+  headers?: Record<string, string>;
+  data?: string;
 };
 
 export type SettlementState = "resolved" | "rejected" | "rejected_canceled";
@@ -219,6 +219,36 @@ export type ScheduleDeleteReq = {
 };
 
 // =============================================================================
+// REQUESTS - DEBUG
+// =============================================================================
+
+export type DebugStartReq = {
+  kind: "debug.start";
+  head: RequestHead;
+};
+
+export type DebugResetReq = {
+  kind: "debug.reset";
+  head: RequestHead;
+};
+
+export type DebugTickReq = {
+  kind: "debug.tick";
+  head: RequestHead;
+  data: { time: number };
+};
+
+export type DebugSnapReq = {
+  kind: "debug.snap";
+  head: RequestHead;
+};
+
+export type DebugStopReq = {
+  kind: "debug.stop";
+  head: RequestHead;
+};
+
+// =============================================================================
 // REQUEST UNION
 // =============================================================================
 
@@ -238,7 +268,12 @@ export type Request =
   | TaskHeartbeatReq
   | ScheduleGetReq
   | ScheduleCreateReq
-  | ScheduleDeleteReq;
+  | ScheduleDeleteReq
+  | DebugStartReq
+  | DebugResetReq
+  | DebugTickReq
+  | DebugSnapReq
+  | DebugStopReq;
 
 // =============================================================================
 // RESPONSE HEAD
@@ -382,6 +417,60 @@ export type ScheduleDeleteRes =
   | { kind: "schedule.delete"; head: ResponseHead<501>; data: string };
 
 // =============================================================================
+// RESPONSES - DEBUG
+// =============================================================================
+
+export type DebugStartRes =
+  | { kind: "debug.start"; head: ResponseHead<200>; data: Record<string, never> }
+  | { kind: "debug.start"; head: ResponseHead<400>; data: string }
+  | { kind: "debug.start"; head: ResponseHead<429>; data: string }
+  | { kind: "debug.start"; head: ResponseHead<500>; data: string }
+  | { kind: "debug.start"; head: ResponseHead<501>; data: string };
+
+export type DebugResetRes =
+  | { kind: "debug.reset"; head: ResponseHead<200>; data: Record<string, never> }
+  | { kind: "debug.reset"; head: ResponseHead<400>; data: string }
+  | { kind: "debug.reset"; head: ResponseHead<429>; data: string }
+  | { kind: "debug.reset"; head: ResponseHead<500>; data: string }
+  | { kind: "debug.reset"; head: ResponseHead<501>; data: string };
+
+export type DebugTickAction =
+  | { kind: "promise.settle"; data: { id: string; state: "rejected_timedout" | "resolved" } }
+  | { kind: "task.release"; data: { id: string; version: number } }
+  | { kind: "task.retry"; data: { id: string; version: number } };
+
+export type DebugTickRes =
+  | { kind: "debug.tick"; head: ResponseHead<200>; data: DebugTickAction[] }
+  | { kind: "debug.tick"; head: ResponseHead<400>; data: string }
+  | { kind: "debug.tick"; head: ResponseHead<429>; data: string }
+  | { kind: "debug.tick"; head: ResponseHead<500>; data: string }
+  | { kind: "debug.tick"; head: ResponseHead<501>; data: string };
+
+export type DebugSnapRes =
+  | {
+      kind: "debug.snap";
+      head: ResponseHead<200>;
+      data: {
+        promises: PromiseRecord[];
+        promiseTimeouts: { id: string; timeout: number }[];
+        tasks: TaskRecord[];
+        taskTimeouts: { id: string; type: 1 | 2; timeout: number }[];
+        messages: { id: string; version: number; address: string }[];
+      };
+    }
+  | { kind: "debug.snap"; head: ResponseHead<400>; data: string }
+  | { kind: "debug.snap"; head: ResponseHead<429>; data: string }
+  | { kind: "debug.snap"; head: ResponseHead<500>; data: string }
+  | { kind: "debug.snap"; head: ResponseHead<501>; data: string };
+
+export type DebugStopRes =
+  | { kind: "debug.stop"; head: ResponseHead<200>; data: Record<string, never> }
+  | { kind: "debug.stop"; head: ResponseHead<400>; data: string }
+  | { kind: "debug.stop"; head: ResponseHead<429>; data: string }
+  | { kind: "debug.stop"; head: ResponseHead<500>; data: string }
+  | { kind: "debug.stop"; head: ResponseHead<501>; data: string };
+
+// =============================================================================
 // RESPONSE UNION
 // =============================================================================
 
@@ -401,7 +490,12 @@ export type Response =
   | TaskHeartbeatRes
   | ScheduleGetRes
   | ScheduleCreateRes
-  | ScheduleDeleteRes;
+  | ScheduleDeleteRes
+  | DebugStartRes
+  | DebugResetRes
+  | DebugTickRes
+  | DebugSnapRes
+  | DebugStopRes;
 
 // =============================================================================
 // MESSAGES

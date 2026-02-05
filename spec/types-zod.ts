@@ -5,8 +5,8 @@ import { z } from "zod";
 // =============================================================================
 
 export const ValueSchema = z.object({
-  headers: z.record(z.string(), z.string()),
-  data: z.string(),
+  headers: z.record(z.string(), z.string()).optional(),
+  data: z.string().optional(),
 });
 
 // Protocol states for settlement requests
@@ -274,6 +274,48 @@ export const ScheduleDeleteReqSchema = z.object({
 export type ScheduleDeleteReq = z.infer<typeof ScheduleDeleteReqSchema>;
 
 // =============================================================================
+// REQUEST SCHEMAS - DEBUG
+// =============================================================================
+
+export const DebugStartReqSchema = z.object({
+  kind: z.literal("debug.start"),
+  head: RequestHeadSchema,
+});
+
+export type DebugStartReq = z.infer<typeof DebugStartReqSchema>;
+
+export const DebugResetReqSchema = z.object({
+  kind: z.literal("debug.reset"),
+  head: RequestHeadSchema,
+});
+
+export type DebugResetReq = z.infer<typeof DebugResetReqSchema>;
+
+export const DebugTickReqSchema = z.object({
+  kind: z.literal("debug.tick"),
+  head: RequestHeadSchema,
+  data: z.object({
+    time: z.number().int().nonnegative("Time must be a non-negative integer"),
+  }),
+});
+
+export type DebugTickReq = z.infer<typeof DebugTickReqSchema>;
+
+export const DebugSnapReqSchema = z.object({
+  kind: z.literal("debug.snap"),
+  head: RequestHeadSchema,
+});
+
+export type DebugSnapReq = z.infer<typeof DebugSnapReqSchema>;
+
+export const DebugStopReqSchema = z.object({
+  kind: z.literal("debug.stop"),
+  head: RequestHeadSchema,
+});
+
+export type DebugStopReq = z.infer<typeof DebugStopReqSchema>;
+
+// =============================================================================
 // COMBINED REQUEST SCHEMA
 // =============================================================================
 
@@ -297,6 +339,12 @@ export const RequestSchema = z.discriminatedUnion("kind", [
   ScheduleGetReqSchema,
   ScheduleCreateReqSchema,
   ScheduleDeleteReqSchema,
+  // Debug
+  DebugStartReqSchema,
+  DebugResetReqSchema,
+  DebugTickReqSchema,
+  DebugSnapReqSchema,
+  DebugStopReqSchema,
 ]);
 
 export type Request = z.infer<typeof RequestSchema>;
@@ -847,6 +895,192 @@ export const ScheduleDeleteResSchema = z.discriminatedUnion("kind", [
 export type ScheduleDeleteRes = z.infer<typeof ScheduleDeleteResSchema>;
 
 // =============================================================================
+// RESPONSE SCHEMAS - DEBUG
+// =============================================================================
+
+export const DebugStartResSchema = z.discriminatedUnion("kind", [
+  z.object({
+    kind: z.literal("debug.start"),
+    head: ResponseHeadSchema(200),
+    data: z.object({}),
+  }),
+  z.object({
+    kind: z.literal("debug.start"),
+    head: ResponseHeadSchema(400),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("debug.start"),
+    head: ResponseHeadSchema(429),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("debug.start"),
+    head: ResponseHeadSchema(500),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("debug.start"),
+    head: ResponseHeadSchema(501),
+    data: z.string(),
+  }),
+]);
+
+export type DebugStartRes = z.infer<typeof DebugStartResSchema>;
+
+export const DebugResetResSchema = z.discriminatedUnion("kind", [
+  z.object({
+    kind: z.literal("debug.reset"),
+    head: ResponseHeadSchema(200),
+    data: z.object({}),
+  }),
+  z.object({
+    kind: z.literal("debug.reset"),
+    head: ResponseHeadSchema(400),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("debug.reset"),
+    head: ResponseHeadSchema(429),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("debug.reset"),
+    head: ResponseHeadSchema(500),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("debug.reset"),
+    head: ResponseHeadSchema(501),
+    data: z.string(),
+  }),
+]);
+
+export type DebugResetRes = z.infer<typeof DebugResetResSchema>;
+
+export const DebugTickActionSchema = z.discriminatedUnion("kind", [
+  z.object({
+    kind: z.literal("promise.settle"),
+    data: z.object({
+      id: z.string(),
+      state: z.enum(["rejected_timedout", "resolved"]),
+    }),
+  }),
+  z.object({
+    kind: z.literal("task.release"),
+    data: z.object({
+      id: z.string(),
+      version: z.number().int(),
+    }),
+  }),
+  z.object({
+    kind: z.literal("task.retry"),
+    data: z.object({
+      id: z.string(),
+      version: z.number().int(),
+    }),
+  }),
+]);
+
+export type DebugTickAction = z.infer<typeof DebugTickActionSchema>;
+
+export const DebugTickResSchema = z.discriminatedUnion("kind", [
+  z.object({
+    kind: z.literal("debug.tick"),
+    head: ResponseHeadSchema(200),
+    data: z.array(DebugTickActionSchema),
+  }),
+  z.object({
+    kind: z.literal("debug.tick"),
+    head: ResponseHeadSchema(400),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("debug.tick"),
+    head: ResponseHeadSchema(429),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("debug.tick"),
+    head: ResponseHeadSchema(500),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("debug.tick"),
+    head: ResponseHeadSchema(501),
+    data: z.string(),
+  }),
+]);
+
+export type DebugTickRes = z.infer<typeof DebugTickResSchema>;
+
+export const DebugSnapResSchema = z.discriminatedUnion("kind", [
+  z.object({
+    kind: z.literal("debug.snap"),
+    head: ResponseHeadSchema(200),
+    data: z.object({
+      promises: z.array(PromiseRecordSchema),
+      promiseTimeouts: z.array(z.object({ id: z.string(), timeout: z.number() })),
+      tasks: z.array(TaskRecordSchema),
+      taskTimeouts: z.array(z.object({ id: z.string(), type: z.union([z.literal(1), z.literal(2)]), timeout: z.number() })),
+      messages: z.array(z.object({ id: z.string(), version: z.number().int(), address: z.string() })),
+    }),
+  }),
+  z.object({
+    kind: z.literal("debug.snap"),
+    head: ResponseHeadSchema(400),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("debug.snap"),
+    head: ResponseHeadSchema(429),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("debug.snap"),
+    head: ResponseHeadSchema(500),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("debug.snap"),
+    head: ResponseHeadSchema(501),
+    data: z.string(),
+  }),
+]);
+
+export type DebugSnapRes = z.infer<typeof DebugSnapResSchema>;
+
+export const DebugStopResSchema = z.discriminatedUnion("kind", [
+  z.object({
+    kind: z.literal("debug.stop"),
+    head: ResponseHeadSchema(200),
+    data: z.object({}),
+  }),
+  z.object({
+    kind: z.literal("debug.stop"),
+    head: ResponseHeadSchema(400),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("debug.stop"),
+    head: ResponseHeadSchema(429),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("debug.stop"),
+    head: ResponseHeadSchema(500),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("debug.stop"),
+    head: ResponseHeadSchema(501),
+    data: z.string(),
+  }),
+]);
+
+export type DebugStopRes = z.infer<typeof DebugStopResSchema>;
+
+// =============================================================================
 // COMBINED RESPONSE SCHEMA
 // =============================================================================
 
@@ -870,6 +1104,12 @@ export const ResponseSchema = z.discriminatedUnion("kind", [
   ScheduleGetResSchema,
   ScheduleCreateResSchema,
   ScheduleDeleteResSchema,
+  // Debug
+  DebugStartResSchema,
+  DebugResetResSchema,
+  DebugTickResSchema,
+  DebugSnapResSchema,
+  DebugStopResSchema,
 ]);
 
 export type Response = z.infer<typeof ResponseSchema>;

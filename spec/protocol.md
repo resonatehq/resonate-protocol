@@ -5,7 +5,7 @@
 All requests follow a common structure:
 
 ```ts
-interface Request<T> {
+type Request<T> = {
   kind: string;
   head: {
     auth?: string;
@@ -33,7 +33,7 @@ interface Request<T> {
 All responses follow a common structure:
 
 ```ts
-interface Response<T> {
+type Response<T> = {
   kind: string;
   head: {
     corrId: string;
@@ -75,7 +75,7 @@ The following errors may be returned by any operation.
 ## Requests
 
 ```ts
-type Req =
+type Request =
   | PromiseGetReq
   | PromiseCreateReq
   | PromiseSettleReq
@@ -92,12 +92,17 @@ type Req =
   | ScheduleGetReq
   | ScheduleCreateReq
   | ScheduleDeleteReq
+  | DebugStartReq
+  | DebugResetReq
+  | DebugTickReq
+  | DebugSnapReq
+  | DebugStopReq
 ```
 
 ## Responses
 
 ```ts
-type Res =
+type Response =
   | PromiseGetRes
   | PromiseCreateRes
   | PromiseSettleRes
@@ -114,6 +119,11 @@ type Res =
   | ScheduleGetRes
   | ScheduleCreateRes
   | ScheduleDeleteRes
+  | DebugStartRes
+  | DebugResetRes
+  | DebugTickRes
+  | DebugSnapRes
+  | DebugStopRes
 ```
 
 ## Promises
@@ -123,11 +133,11 @@ type Res =
 **Promise**
 
 ```ts
-interface Promise {
+type Promise = {
   id: string;
   state: "pending" | "resolved" | "rejected" | "rejected_canceled" | "rejected_timedout";
-  param: { headers: { [key: string]: string }; data: string };
-  value: { headers: { [key: string]: string }; data: string };
+  param: { headers?: { [key: string]: string }; data?: string };
+  value: { headers?: { [key: string]: string }; data?: string };
   tags: { [key: string]: string };
   timeoutAt: number;
   createdAt: number;
@@ -174,7 +184,7 @@ Retrieves a promise by its identifier.
 **Request**
 
 ```ts
-interface PromiseGetReq {
+type PromiseGetReq = {
   kind: "promise.get";
   head: {
     auth?: string;
@@ -194,7 +204,7 @@ interface PromiseGetReq {
 **Response**
 
 ```ts
-interface PromiseGetRes {
+type PromiseGetRes = {
   kind: "promise.get",
   head: {
     corrId: string;
@@ -222,7 +232,7 @@ Creates a new promise with the specified identifier.
 **Request**
 
 ```ts
-interface PromiseCreateReq {
+type PromiseCreateReq = {
   kind: "promise.create";
   head: {
     auth?: string;
@@ -231,7 +241,7 @@ interface PromiseCreateReq {
   };
   data: {
     id: string;
-    param: { headers: { [key: string]: string }; data: string };
+    param: { headers?: { [key: string]: string }; data?: string };
     tags: { [key: string]: string };
     timeoutAt: number;
   };
@@ -260,7 +270,7 @@ interface PromiseCreateReq {
 **Response**
 
 ```ts
-interface PromiseCreateRes {
+type PromiseCreateRes = {
   kind: "promise.create";
   head: {
     corrId: string;
@@ -282,7 +292,7 @@ Settles a pending promise with a terminal state.
 **Request**
 
 ```ts
-interface PromiseSettleReq {
+type PromiseSettleReq = {
   kind: "promise.settle";
   head: {
     auth?: string;
@@ -292,7 +302,7 @@ interface PromiseSettleReq {
   data: {
     id: string;
     state: "resolved" | "rejected" | "rejected_canceled";
-    value: { headers: { [key: string]: string }; data: string };
+    value: { headers?: { [key: string]: string }; data?: string };
   };
 }
 ```
@@ -318,7 +328,7 @@ interface PromiseSettleReq {
 **Response**
 
 ```ts
-interface PromiseSettleRes {
+type PromiseSettleRes = {
   kind: "promise.settle";
   head: {
     corrId: string;
@@ -340,7 +350,7 @@ Registers a dependency between two promises, indicating that the awaiter is wait
 **Request**
 
 ```ts
-interface PromiseRegisterReq {
+type PromiseRegisterReq = {
   kind: "promise.register";
   head: {
     auth?: string;
@@ -365,7 +375,7 @@ interface PromiseRegisterReq {
 **Response**
 
 ```ts
-interface PromiseRegisterRes {
+type PromiseRegisterRes = {
   kind: "promise.register";
   head: {
     corrId: string;
@@ -393,7 +403,7 @@ Subscribes to a promise, receiving a notification when it settles.
 **Request**
 
 ```ts
-interface PromiseSubscribeReq {
+type PromiseSubscribeReq = {
   kind: "promise.subscribe";
   head: {
     auth?: string;
@@ -418,7 +428,7 @@ interface PromiseSubscribeReq {
 **Response**
 
 ```ts
-interface PromiseSubscribeRes {
+type PromiseSubscribeRes = {
   kind: "promise.subscribe";
   head: {
     corrId: string;
@@ -439,6 +449,10 @@ Returns the awaited promise. If the awaited promise is already settled, no subsc
 
    Promise not found.
 
+**501**
+
+   Not implemented.
+
 ## Tasks
 
 ### Types
@@ -446,7 +460,7 @@ Returns the awaited promise. If the awaited promise is already settled, no subsc
 **Task**
 
 ```ts
-interface Task {
+type Task = {
   id: string;
   state: "pending" | "acquired" | "suspended" | "fulfilled";
   version: number;
@@ -472,7 +486,7 @@ Retrieves a task by its identifier.
 **Request**
 
 ```ts
-interface TaskGetReq {
+type TaskGetReq = {
   kind: "task.get";
   head: {
     auth?: string;
@@ -492,7 +506,7 @@ interface TaskGetReq {
 **Response**
 
 ```ts
-interface TaskGetRes {
+type TaskGetRes = {
   kind: "task.get";
   head: {
     corrId: string;
@@ -520,7 +534,7 @@ Creates a new task and its associated promise.
 **Request**
 
 ```ts
-interface TaskCreateReq {
+type TaskCreateReq = {
   kind: "task.create";
   head: {
     auth?: string;
@@ -550,7 +564,7 @@ interface TaskCreateReq {
 **Response**
 
 ```ts
-interface TaskCreateRes {
+type TaskCreateRes = {
   kind: "task.create";
   head: {
     corrId: string;
@@ -566,6 +580,12 @@ interface TaskCreateRes {
 
 Returns the task and its associated promise.
 
+**Errors**
+
+**501**
+
+   Not implemented.
+
 ### Acquire
 
 Acquires a lease on a pending task.
@@ -573,7 +593,7 @@ Acquires a lease on a pending task.
 **Request**
 
 ```ts
-interface TaskAcquireReq {
+type TaskAcquireReq = {
   kind: "task.acquire";
   head: {
     auth?: string;
@@ -608,7 +628,7 @@ interface TaskAcquireReq {
 **Response**
 
 ```ts
-interface TaskAcquireRes {
+type TaskAcquireRes = {
   kind: "task.acquire";
   head: {
     corrId: string;
@@ -641,7 +661,7 @@ Suspends a task while waiting for one or more promises to settle.
 **Request**
 
 ```ts
-interface TaskSuspendReq {
+type TaskSuspendReq = {
   kind: "task.suspend";
   head: {
     auth?: string;
@@ -671,7 +691,7 @@ interface TaskSuspendReq {
 **Response**
 
 ```ts
-interface TaskSuspendRes {
+type TaskSuspendRes = {
   kind: "task.suspend";
   head: {
     corrId: string;
@@ -700,7 +720,7 @@ Completes a task and settles its associated promise.
 **Request**
 
 ```ts
-interface TaskFulfillReq {
+type TaskFulfillReq = {
   kind: "task.fulfill";
   head: {
     auth?: string;
@@ -730,7 +750,7 @@ interface TaskFulfillReq {
 **Response**
 
 ```ts
-interface TaskFulfillRes {
+type TaskFulfillRes = {
   kind: "task.fulfill";
   head: {
     corrId: string;
@@ -762,7 +782,7 @@ Releases a task's lease without completing it, allowing the task to be re-acquir
 **Request**
 
 ```ts
-interface TaskReleaseReq {
+type TaskReleaseReq = {
   kind: "task.release";
   head: {
     auth?: string;
@@ -787,7 +807,7 @@ interface TaskReleaseReq {
 **Response**
 
 ```ts
-interface TaskReleaseRes {
+type TaskReleaseRes = {
   kind: "task.release";
   head: {
     corrId: string;
@@ -814,7 +834,7 @@ Executes a promise operation only if the task's lease is still valid.
 **Request**
 
 ```ts
-interface TaskFenceReq {
+type TaskFenceReq = {
   kind: "task.fence";
   head: {
     auth?: string;
@@ -844,7 +864,7 @@ interface TaskFenceReq {
 **Response**
 
 ```ts
-interface TaskFenceRes {
+type TaskFenceRes = {
   kind: "task.fence";
   head: {
     corrId: string;
@@ -876,7 +896,7 @@ Extends the lease for one or more tasks.
 **Request**
 
 ```ts
-interface TaskHeartbeatReq {
+type TaskHeartbeatReq = {
   kind: "task.heartbeat";
   head: {
     auth?: string;
@@ -901,7 +921,7 @@ interface TaskHeartbeatReq {
 **Response**
 
 ```ts
-interface TaskHeartbeatRes {
+type TaskHeartbeatRes = {
   kind: "task.heartbeat";
   head: {
     corrId: string;
@@ -918,12 +938,12 @@ interface TaskHeartbeatRes {
 **Schedule**
 
 ```ts
-interface Schedule {
+type Schedule = {
   id: string;
   cron: string;
   promiseId: string;
   promiseTimeout: number;
-  promiseParam: { headers: { [key: string]: string }; data: string };
+  promiseParam: { headers?: { [key: string]: string }; data?: string };
   promiseTags: { [key: string]: string };
   createdAt: number;
   nextRunAt: number;
@@ -974,7 +994,7 @@ Retrieves a schedule by its identifier.
 **Request**
 
 ```ts
-interface ScheduleGetReq {
+type ScheduleGetReq = {
   kind: "schedule.get";
   head: {
     auth?: string;
@@ -994,7 +1014,7 @@ interface ScheduleGetReq {
 **Response**
 
 ```ts
-interface ScheduleGetRes {
+type ScheduleGetRes = {
   kind: "schedule.get";
   head: {
     corrId: string;
@@ -1015,6 +1035,10 @@ Returns the schedule if found.
 
    Schedule not found.
 
+**501**
+
+   Not implemented.
+
 ### Create
 
 Creates a new schedule that creates promises on a recurring basis.
@@ -1022,7 +1046,7 @@ Creates a new schedule that creates promises on a recurring basis.
 **Request**
 
 ```ts
-interface ScheduleCreateReq {
+type ScheduleCreateReq = {
   kind: "schedule.create";
   head: {
     auth?: string;
@@ -1034,7 +1058,7 @@ interface ScheduleCreateReq {
     cron: string;
     promiseId: string;
     promiseTimeout: number;
-    promiseParam: { headers: { [key: string]: string }; data: string };
+    promiseParam: { headers?: { [key: string]: string }; data?: string };
     promiseTags: { [key: string]: string };
   };
 }
@@ -1067,7 +1091,7 @@ interface ScheduleCreateReq {
 **Response**
 
 ```ts
-interface ScheduleCreateRes {
+type ScheduleCreateRes = {
   kind: "schedule.create";
   head: {
     corrId: string;
@@ -1082,6 +1106,12 @@ interface ScheduleCreateRes {
 
 Returns the schedule. If a schedule with the same identifier already exists, returns the existing schedule (idempotent).
 
+**Errors**
+
+**501**
+
+   Not implemented.
+
 ### Delete
 
 Deletes a schedule.
@@ -1089,7 +1119,7 @@ Deletes a schedule.
 **Request**
 
 ```ts
-interface ScheduleDeleteReq {
+type ScheduleDeleteReq = {
   kind: "schedule.delete";
   head: {
     auth?: string;
@@ -1109,7 +1139,7 @@ interface ScheduleDeleteReq {
 **Response**
 
 ```ts
-interface ScheduleDeleteRes {
+type ScheduleDeleteRes = {
   kind: "schedule.delete";
   head: {
     corrId: string;
@@ -1125,6 +1155,219 @@ interface ScheduleDeleteRes {
 
    Schedule not found.
 
+**501**
+
+   Not implemented.
+
+## Debug
+
+Optional debug operations for testing and development.
+
+### Start
+
+Starts the debug session.
+
+**Request**
+
+```ts
+type DebugStartReq = {
+  kind: "debug.start";
+  head: {
+    auth?: string;
+    corrId: string;
+    version: string;
+  };
+}
+```
+
+**Response**
+
+```ts
+type DebugStartRes = {
+  kind: "debug.start";
+  head: {
+    corrId: string;
+    status: 200;
+    version: string;
+  };
+}
+```
+
+**Errors**
+
+**501**
+
+   Not implemented.
+
+### Reset
+
+Resets the debug session.
+
+**Request**
+
+```ts
+type DebugResetReq = {
+  kind: "debug.reset";
+  head: {
+    auth?: string;
+    corrId: string;
+    version: string;
+  };
+}
+```
+
+**Response**
+
+```ts
+type DebugResetRes = {
+  kind: "debug.reset";
+  head: {
+    corrId: string;
+    status: 200;
+    version: string;
+  };
+}
+```
+
+**Errors**
+
+**501**
+
+   Not implemented.
+
+### Tick
+
+Times out promises and tasks that have exceeded the specified timestamp.
+
+**Request**
+
+```ts
+type DebugTickReq = {
+  kind: "debug.tick";
+  head: {
+    auth?: string;
+    corrId: string;
+    version: string;
+  };
+  data: {
+    time: number;
+  };
+}
+```
+
+**time**
+
+   Unix timestamp in milliseconds to advance to.
+
+**Response**
+
+```ts
+type DebugTickRes = {
+  kind: "debug.tick";
+  head: {
+    corrId: string;
+    status: 200;
+    version: string;
+  };
+  data: Array<
+    | { kind: "promise.settle"; data: { id: string; state: "rejected_timedout" | "resolved" } }
+    | { kind: "task.release"; data: { id: string; version: number } }
+    | { kind: "task.retry"; data: { id: string; version: number } }
+  >;
+}
+```
+
+Returns an array of actions taken during the tick.
+
+**Errors**
+
+**501**
+
+   Not implemented.
+
+### Snap
+
+Takes a snapshot of the current debug session state.
+
+**Request**
+
+```ts
+type DebugSnapReq = {
+  kind: "debug.snap";
+  head: {
+    auth?: string;
+    corrId: string;
+    version: string;
+  };
+}
+```
+
+**Response**
+
+```ts
+type DebugSnapRes = {
+  kind: "debug.snap";
+  head: {
+    corrId: string;
+    status: 200;
+    version: string;
+  };
+  data: {
+    promises: Promise[];
+    promiseTimeouts: { id: string; timeout: number }[];
+    tasks: Task[];
+    taskTimeouts: { id: string; type: 1 | 2; timeout: number }[];
+    messages: { id: string; version: number; address: string }[];
+  };
+}
+```
+
+Returns the current state of all promises, tasks, their timeouts, and pending messages.
+
+**Errors**
+
+**501**
+
+   Not implemented.
+
+### Stop
+
+Stops the debug session.
+
+**Request**
+
+```ts
+type DebugStopReq = {
+  kind: "debug.stop";
+  head: {
+    auth?: string;
+    corrId: string;
+    version: string;
+  };
+  data: {};
+}
+```
+
+**Response**
+
+```ts
+type DebugStopRes = {
+  kind: "debug.stop";
+  head: {
+    corrId: string;
+    status: 200;
+    version: string;
+  };
+  data: {};
+}
+```
+
+**Errors**
+
+**501**
+
+   Not implemented.
+
 ## Messages
 
 ```ts
@@ -1136,7 +1379,7 @@ type Message = InvokeMessage | ResumeMessage | NotifyMessage;
 Sent to the address specified in the `resonate:invoke` tag when a promise is created.
 
 ```ts
-interface InvokeMessage {
+type InvokeMessage = {
   kind: "invoke";
   head: {};
   data: {
@@ -1150,7 +1393,7 @@ interface InvokeMessage {
 Sent to the address specified in the `resonate:invoke` tag when a previously awaited promise settles.
 
 ```ts
-interface ResumeMessage {
+type ResumeMessage = {
   kind: "resume";
   head: {};
   data: {
@@ -1164,7 +1407,7 @@ interface ResumeMessage {
 Sent to the address specified in a `promise.subscribe` request when the promise settles.
 
 ```ts
-interface NotifyMessage {
+type NotifyMessage = {
   kind: "notify";
   head: {};
   data: {
