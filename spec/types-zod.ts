@@ -9,6 +9,8 @@ export const ValueSchema = z.object({
   data: z.string().optional(),
 });
 
+export type Value = z.infer<typeof ValueSchema>;
+
 // =============================================================================
 // RECORD SCHEMAS
 // =============================================================================
@@ -21,7 +23,7 @@ export const PromiseRecordSchema = z.object({
   tags: z.record(z.string(), z.string()),
   timeoutAt: z.number(),
   createdAt: z.number(),
-  settledAt: z.number().nullable(),
+  settledAt: z.number().optional(),
 });
 
 export const TaskRecordSchema = z.object({
@@ -39,7 +41,7 @@ export const ScheduleRecordSchema = z.object({
   promiseTags: z.record(z.string(), z.string()),
   createdAt: z.number(),
   nextRunAt: z.number(),
-  lastRunAt: z.number().nullable(),
+  lastRunAt: z.number().optional(),
 });
 
 // =============================================================================
@@ -72,8 +74,8 @@ export const PromiseCreateReqSchema = z.object({
   data: z.object({
     id: z.string().min(1, "Promise ID is required"),
     timeoutAt: z.number().int().nonnegative("TimeoutAt must be a non-negative integer"),
-    param: ValueSchema.optional(),
-    tags: z.record(z.string(), z.string()).optional(),
+    param: ValueSchema,
+    tags: z.record(z.string(), z.string()),
   }),
 });
 
@@ -85,7 +87,7 @@ export const PromiseSettleReqSchema = z.object({
   data: z.object({
     id: z.string().min(1, "Promise ID is required"),
     state: z.enum(["resolved", "rejected", "rejected_canceled"]),
-    value: ValueSchema.optional(),
+    value: ValueSchema,
   }),
 });
 
@@ -232,8 +234,8 @@ export const ScheduleCreateReqSchema = z.object({
     cron: z.string().min(1, "Cron expression is required"),
     promiseId: z.string().min(1, "Promise ID template is required"),
     promiseTimeout: z.number().int().nonnegative("Promise timeout must be a non-negative integer"),
-    promiseParam: ValueSchema.optional(),
-    promiseTags: z.record(z.string(), z.string()).optional(),
+    promiseParam: ValueSchema,
+    promiseTags: z.record(z.string(), z.string()),
   }),
 });
 

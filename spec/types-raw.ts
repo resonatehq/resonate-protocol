@@ -19,7 +19,7 @@ export type PromiseRecord = {
   tags: Record<string, string>;
   timeoutAt: number;
   createdAt: number;
-  settledAt: number | null;
+  settledAt?: number;
 };
 
 export type TaskRecord = {
@@ -37,7 +37,7 @@ export type ScheduleRecord = {
   promiseTags: Record<string, string>;
   createdAt: number;
   nextRunAt: number;
-  lastRunAt: number | null;
+  lastRunAt?: number;
 };
 
 // =============================================================================
@@ -66,8 +66,8 @@ export type PromiseCreateReq = {
   data: {
     id: string;
     timeoutAt: number;
-    param?: Value;
-    tags?: Record<string, string>;
+    param: Value;
+    tags: Record<string, string>;
   };
 };
 
@@ -77,7 +77,7 @@ export type PromiseSettleReq = {
   data: {
     id: string;
     state: "resolved" | "rejected" | "rejected_canceled";
-    value?: Value;
+    value: Value;
   };
 };
 
@@ -196,8 +196,8 @@ export type ScheduleCreateReq = {
     cron: string;
     promiseId: string;
     promiseTimeout: number;
-    promiseParam?: Value;
-    promiseTags?: Record<string, string>;
+    promiseParam: Value;
+    promiseTags: Record<string, string>;
   };
 };
 
