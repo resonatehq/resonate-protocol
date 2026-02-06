@@ -369,7 +369,7 @@ export type TaskCreateRes500 = Extract<TaskCreateRes, { head: { status: 500 } }>
 export type TaskCreateRes501 = Extract<TaskCreateRes, { head: { status: 501 } }>;
 
 export type TaskAcquireRes =
-  | { kind: "task.acquire"; head: ResponseHead<200>; data: { kind: "invoke" | "resume"; data: { promise: PromiseRecord; preload: PromiseRecord[] } } }
+  | { kind: "task.acquire"; head: ResponseHead<200>; data: { promise: PromiseRecord; preload: PromiseRecord[] } }
   | { kind: "task.acquire"; head: ResponseHead<400>; data: string }
   | { kind: "task.acquire"; head: ResponseHead<404>; data: string }
   | { kind: "task.acquire"; head: ResponseHead<409>; data: string }
@@ -606,14 +606,8 @@ export type Response =
 
 export type MessageHead = Record<string, never>;
 
-export type InvokeMsg = {
-  kind: "invoke";
-  head: MessageHead;
-  data: { task: { id: string; version: number } };
-};
-
-export type ResumeMsg = {
-  kind: "resume";
+export type InvokeOrResumeMsg = {
+  kind: "invoke_or_resume";
   head: MessageHead;
   data: { task: { id: string; version: number } };
 };
@@ -624,4 +618,4 @@ export type NotifyMsg = {
   data: { promise: PromiseRecord };
 };
 
-export type Message = InvokeMsg | ResumeMsg | NotifyMsg;
+export type Message = InvokeOrResumeMsg | NotifyMsg;

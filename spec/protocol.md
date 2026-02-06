@@ -259,8 +259,7 @@ type PromiseCreateReq = {
 **tags**
 
    Key-value metadata for the promise.
-   - If a `resonate:target` tag is present, an `InvokeMessage` is sent to the specified address on creation.
-   - If a `resonate:delay` tag is present with a unix timestamp in milliseconds, the `InvokeMessage` is delayed until that time.
+   - If a `resonate:target` tag is present, an `InvokeOrResumeMessage` is sent to the specified address on invocation and resumption.
    - If a `resonate:timer` tag is set to `true`, the promise transitions to `resolved` instead of `rejected_timedout` when the timeout is reached.
 
 **timeoutAt**
@@ -640,13 +639,13 @@ type TaskAcquireRes = {
     version: string;
   };
   data: {
-    kind: "invoke" | "resume";
-    data: { promise: Promise, preload: Promise[] };
-  }
+    promise: Promise;
+    preload: Promise[];
+  };
 }
 ```
 
-Returns either an `invoke` or `resume` payload. An `invoke` is returned when the task is being executed for the first time. A `resume` is returned when the task is resuming after a previously awaited promise has settled.
+Returns the task's associated promise and any preloaded promises that have settled since the task was last suspended.
 
 **Errors**
 
@@ -1375,30 +1374,16 @@ type DebugStopRes = {
 ## Messages
 
 ```ts
-type Message = InvokeMessage | ResumeMessage | NotifyMessage;
+type Message = InvokeOrResumeMessage | NotifyMessage;
 ```
 
-### InvokeMessage
+### InvokeOrResumeMessage
 
-Sent to the address specified in the `resonate:invoke` tag when a promise is created.
-
-```ts
-type InvokeMessage = {
-  kind: "invoke";
-  head: {};
-  data: {
-    task: { id: string; version: number };
-  };
-}
-```
-
-### ResumeMessage
-
-Sent to the address specified in the `resonate:invoke` tag when a previously awaited promise settles.
+Sent to the address specified in the `resonate:target` tag when a promise is created.
 
 ```ts
-type ResumeMessage = {
-  kind: "resume";
+type InvokeOrResumeMessage = {
+  kind: "invoke_or_resume";
   head: {};
   data: {
     task: { id: string; version: number };

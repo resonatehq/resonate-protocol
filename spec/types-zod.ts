@@ -599,11 +599,8 @@ export const TaskAcquireResSchema = z.discriminatedUnion("kind", [
     kind: z.literal("task.acquire"),
     head: ResponseHeadSchema(200),
     data: z.object({
-      kind: z.enum(["invoke", "resume"]),
-      data: z.object({
-        promise: PromiseRecordSchema,
-        preload: z.array(PromiseRecordSchema),
-      }),
+      promise: PromiseRecordSchema,
+      preload: z.array(PromiseRecordSchema),
     }),
   }),
   z.object({
@@ -1214,25 +1211,15 @@ export type Response = z.infer<typeof ResponseSchema>;
 
 export const MessageHeadSchema = z.object({});
 
-export const InvokeMsgSchema = z.object({
-  kind: z.literal("invoke"),
+export const InvokeOrResumeMsgSchema = z.object({
+  kind: z.literal("invoke_or_resume"),
   head: MessageHeadSchema,
   data: z.object({
     task: z.object({ id: z.string(), version: z.number().int() }),
   }),
 });
 
-export type InvokeMsg = z.infer<typeof InvokeMsgSchema>;
-
-export const ResumeMsgSchema = z.object({
-  kind: z.literal("resume"),
-  head: MessageHeadSchema,
-  data: z.object({
-    task: z.object({ id: z.string(), version: z.number().int() }),
-  }),
-});
-
-export type ResumeMsg = z.infer<typeof ResumeMsgSchema>;
+export type InvokeOrResumeMsg = z.infer<typeof InvokeOrResumeMsgSchema>;
 
 export const NotifyMsgSchema = z.object({
   kind: z.literal("notify"),
@@ -1245,8 +1232,7 @@ export const NotifyMsgSchema = z.object({
 export type NotifyMsg = z.infer<typeof NotifyMsgSchema>;
 
 export const MessageSchema = z.discriminatedUnion("kind", [
-  InvokeMsgSchema,
-  ResumeMsgSchema,
+  InvokeOrResumeMsgSchema,
   NotifyMsgSchema,
 ]);
 
