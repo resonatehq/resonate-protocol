@@ -1212,17 +1212,17 @@ export type Response = z.infer<typeof ResponseSchema>;
 // MESSAGES
 // =============================================================================
 
-export const MessageHeadSchema = z.object({});
+export const MessageHeadSchema = z.object({ serverUrl: z.string().optional() });
 
-export const InvokeOrResumeMsgSchema = z.object({
-  kind: z.literal("invoke_or_resume"),
+export const ExecuteMsgSchema = z.object({
+  kind: z.literal("execute"),
   head: MessageHeadSchema,
   data: z.object({
     task: z.object({ id: z.string(), version: z.number().int() }),
   }),
 });
 
-export type InvokeOrResumeMsg = z.infer<typeof InvokeOrResumeMsgSchema>;
+export type ExecuteMsg = z.infer<typeof ExecuteMsgSchema>;
 
 export const NotifyMsgSchema = z.object({
   kind: z.literal("notify"),
@@ -1235,7 +1235,7 @@ export const NotifyMsgSchema = z.object({
 export type NotifyMsg = z.infer<typeof NotifyMsgSchema>;
 
 export const MessageSchema = z.discriminatedUnion("kind", [
-  InvokeOrResumeMsgSchema,
+  ExecuteMsgSchema,
   NotifyMsgSchema,
 ]);
 

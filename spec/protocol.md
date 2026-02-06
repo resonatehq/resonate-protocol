@@ -1375,17 +1375,17 @@ type DebugStopRes = {
 ## Messages
 
 ```ts
-type Message = InvokeOrResumeMessage | NotifyMessage;
+type Message = ExecuteMessage | NotifyMessage;
 ```
 
-### InvokeOrResumeMessage
+### ExecuteMessage
 
 Sent to the address specified in the `resonate:target` tag when a promise is created.
 
 ```ts
-type InvokeOrResumeMessage = {
-  kind: "invoke_or_resume";
-  head: {};
+type ExecuteMessage = {
+  kind: "execute";
+  head: { serverUrl?: string };
   data: {
     task: { id: string; version: number };
   };
@@ -1399,7 +1399,7 @@ Sent to the address specified in a `promise.subscribe` request when the promise 
 ```ts
 type NotifyMessage = {
   kind: "notify";
-  head: {};
+  head: { serverUrl?: string };
   data: {
     promise: Promise;
   };

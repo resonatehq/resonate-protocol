@@ -605,10 +605,10 @@ export type Response =
 // MESSAGES
 // =============================================================================
 
-export type MessageHead = Record<string, never>;
+export type MessageHead = { serverUrl?: string };
 
-export type InvokeOrResumeMsg = {
-  kind: "invoke_or_resume";
+export type ExecuteMsg = {
+  kind: "execute";
   head: MessageHead;
   data: { task: { id: string; version: number } };
 };
@@ -619,7 +619,7 @@ export type NotifyMsg = {
   data: { promise: PromiseRecord };
 };
 
-export type Message = InvokeOrResumeMsg | NotifyMsg;
+export type Message = ExecuteMsg | NotifyMsg;
 
 // =============================================================================
 // TYPE GUARDS
