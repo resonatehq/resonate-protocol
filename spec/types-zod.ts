@@ -566,6 +566,11 @@ export const TaskCreateResSchema = z.discriminatedUnion("kind", [
   }),
   z.object({
     kind: z.literal("task.create"),
+    head: ResponseHeadSchema(409),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("task.create"),
     head: ResponseHeadSchema(429),
     data: z.string(),
   }),
@@ -584,6 +589,7 @@ export const TaskCreateResSchema = z.discriminatedUnion("kind", [
 export type TaskCreateRes = z.infer<typeof TaskCreateResSchema>;
 export type TaskCreateRes200 = Extract<TaskCreateRes, { head: { status: 200 } }>;
 export type TaskCreateRes400 = Extract<TaskCreateRes, { head: { status: 400 } }>;
+export type TaskCreateRes409 = Extract<TaskCreateRes, { head: { status: 409 } }>;
 export type TaskCreateRes429 = Extract<TaskCreateRes, { head: { status: 429 } }>;
 export type TaskCreateRes500 = Extract<TaskCreateRes, { head: { status: 500 } }>;
 export type TaskCreateRes501 = Extract<TaskCreateRes, { head: { status: 501 } }>;

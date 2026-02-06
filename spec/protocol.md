@@ -582,6 +582,10 @@ Returns the task and its associated promise.
 
 **Errors**
 
+**409**
+
+   Already exists.
+
 **501**
 
    Not implemented.

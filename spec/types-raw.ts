@@ -357,11 +357,13 @@ export type TaskGetRes500 = Extract<TaskGetRes, { head: { status: 500 } }>;
 export type TaskCreateRes =
   | { kind: "task.create"; head: ResponseHead<200>; data: { task: TaskRecord; promise: PromiseRecord } }
   | { kind: "task.create"; head: ResponseHead<400>; data: string }
+  | { kind: "task.create"; head: ResponseHead<409>; data: string }
   | { kind: "task.create"; head: ResponseHead<429>; data: string }
   | { kind: "task.create"; head: ResponseHead<500>; data: string }
   | { kind: "task.create"; head: ResponseHead<501>; data: string };
 export type TaskCreateRes200 = Extract<TaskCreateRes, { head: { status: 200 } }>;
 export type TaskCreateRes400 = Extract<TaskCreateRes, { head: { status: 400 } }>;
+export type TaskCreateRes409 = Extract<TaskCreateRes, { head: { status: 409 } }>;
 export type TaskCreateRes429 = Extract<TaskCreateRes, { head: { status: 429 } }>;
 export type TaskCreateRes500 = Extract<TaskCreateRes, { head: { status: 500 } }>;
 export type TaskCreateRes501 = Extract<TaskCreateRes, { head: { status: 501 } }>;
