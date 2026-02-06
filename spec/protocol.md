@@ -1318,6 +1318,7 @@ type DebugSnapRes = {
   data: {
     promises: Promise[];
     promiseTimeouts: { id: string; timeout: number }[];
+    callbacks: { awaiter: string; awaited: string }[];
     tasks: Task[];
     taskTimeouts: { id: string; type: number; timeout: number }[];
     messages: { id: string; version: number; address: string }[];

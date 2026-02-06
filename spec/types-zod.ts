@@ -1104,6 +1104,7 @@ export const DebugSnapResSchema = z.discriminatedUnion("kind", [
     data: z.object({
       promises: z.array(PromiseRecordSchema),
       promiseTimeouts: z.array(z.object({ id: z.string(), timeout: z.number() })),
+      callbacks: z.array(z.object({ awaiter: z.string(), awaited: z.string() })),
       tasks: z.array(TaskRecordSchema),
       taskTimeouts: z.array(z.object({ id: z.string(), type: z.number(), timeout: z.number() })),
       messages: z.array(z.object({ id: z.string(), version: z.number().int(), address: z.string() })),
