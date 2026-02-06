@@ -619,3 +619,162 @@ export type NotifyMsg = {
 };
 
 export type Message = InvokeOrResumeMsg | NotifyMsg;
+
+// =============================================================================
+// TYPE GUARDS
+// =============================================================================
+
+// Promise Get
+export function isPromiseGetRes200(res: PromiseGetRes): res is PromiseGetRes200 { return res.head.status === 200; }
+export function isPromiseGetRes400(res: PromiseGetRes): res is PromiseGetRes400 { return res.head.status === 400; }
+export function isPromiseGetRes404(res: PromiseGetRes): res is PromiseGetRes404 { return res.head.status === 404; }
+export function isPromiseGetRes429(res: PromiseGetRes): res is PromiseGetRes429 { return res.head.status === 429; }
+export function isPromiseGetRes500(res: PromiseGetRes): res is PromiseGetRes500 { return res.head.status === 500; }
+
+// Promise Create
+export function isPromiseCreateRes200(res: PromiseCreateRes): res is PromiseCreateRes200 { return res.head.status === 200; }
+export function isPromiseCreateRes400(res: PromiseCreateRes): res is PromiseCreateRes400 { return res.head.status === 400; }
+export function isPromiseCreateRes429(res: PromiseCreateRes): res is PromiseCreateRes429 { return res.head.status === 429; }
+export function isPromiseCreateRes500(res: PromiseCreateRes): res is PromiseCreateRes500 { return res.head.status === 500; }
+
+// Promise Settle
+export function isPromiseSettleRes200(res: PromiseSettleRes): res is PromiseSettleRes200 { return res.head.status === 200; }
+export function isPromiseSettleRes400(res: PromiseSettleRes): res is PromiseSettleRes400 { return res.head.status === 400; }
+export function isPromiseSettleRes404(res: PromiseSettleRes): res is PromiseSettleRes404 { return res.head.status === 404; }
+export function isPromiseSettleRes429(res: PromiseSettleRes): res is PromiseSettleRes429 { return res.head.status === 429; }
+export function isPromiseSettleRes500(res: PromiseSettleRes): res is PromiseSettleRes500 { return res.head.status === 500; }
+
+// Promise Register
+export function isPromiseRegisterRes200(res: PromiseRegisterRes): res is PromiseRegisterRes200 { return res.head.status === 200; }
+export function isPromiseRegisterRes400(res: PromiseRegisterRes): res is PromiseRegisterRes400 { return res.head.status === 400; }
+export function isPromiseRegisterRes404(res: PromiseRegisterRes): res is PromiseRegisterRes404 { return res.head.status === 404; }
+export function isPromiseRegisterRes429(res: PromiseRegisterRes): res is PromiseRegisterRes429 { return res.head.status === 429; }
+export function isPromiseRegisterRes500(res: PromiseRegisterRes): res is PromiseRegisterRes500 { return res.head.status === 500; }
+
+// Promise Subscribe
+export function isPromiseSubscribeRes200(res: PromiseSubscribeRes): res is PromiseSubscribeRes200 { return res.head.status === 200; }
+export function isPromiseSubscribeRes400(res: PromiseSubscribeRes): res is PromiseSubscribeRes400 { return res.head.status === 400; }
+export function isPromiseSubscribeRes404(res: PromiseSubscribeRes): res is PromiseSubscribeRes404 { return res.head.status === 404; }
+export function isPromiseSubscribeRes429(res: PromiseSubscribeRes): res is PromiseSubscribeRes429 { return res.head.status === 429; }
+export function isPromiseSubscribeRes500(res: PromiseSubscribeRes): res is PromiseSubscribeRes500 { return res.head.status === 500; }
+export function isPromiseSubscribeRes501(res: PromiseSubscribeRes): res is PromiseSubscribeRes501 { return res.head.status === 501; }
+
+// Task Get
+export function isTaskGetRes200(res: TaskGetRes): res is TaskGetRes200 { return res.head.status === 200; }
+export function isTaskGetRes400(res: TaskGetRes): res is TaskGetRes400 { return res.head.status === 400; }
+export function isTaskGetRes404(res: TaskGetRes): res is TaskGetRes404 { return res.head.status === 404; }
+export function isTaskGetRes429(res: TaskGetRes): res is TaskGetRes429 { return res.head.status === 429; }
+export function isTaskGetRes500(res: TaskGetRes): res is TaskGetRes500 { return res.head.status === 500; }
+
+// Task Create
+export function isTaskCreateRes200(res: TaskCreateRes): res is TaskCreateRes200 { return res.head.status === 200; }
+export function isTaskCreateRes400(res: TaskCreateRes): res is TaskCreateRes400 { return res.head.status === 400; }
+export function isTaskCreateRes409(res: TaskCreateRes): res is TaskCreateRes409 { return res.head.status === 409; }
+export function isTaskCreateRes429(res: TaskCreateRes): res is TaskCreateRes429 { return res.head.status === 429; }
+export function isTaskCreateRes500(res: TaskCreateRes): res is TaskCreateRes500 { return res.head.status === 500; }
+export function isTaskCreateRes501(res: TaskCreateRes): res is TaskCreateRes501 { return res.head.status === 501; }
+
+// Task Acquire
+export function isTaskAcquireRes200(res: TaskAcquireRes): res is TaskAcquireRes200 { return res.head.status === 200; }
+export function isTaskAcquireRes400(res: TaskAcquireRes): res is TaskAcquireRes400 { return res.head.status === 400; }
+export function isTaskAcquireRes404(res: TaskAcquireRes): res is TaskAcquireRes404 { return res.head.status === 404; }
+export function isTaskAcquireRes409(res: TaskAcquireRes): res is TaskAcquireRes409 { return res.head.status === 409; }
+export function isTaskAcquireRes429(res: TaskAcquireRes): res is TaskAcquireRes429 { return res.head.status === 429; }
+export function isTaskAcquireRes500(res: TaskAcquireRes): res is TaskAcquireRes500 { return res.head.status === 500; }
+
+// Task Suspend
+export function isTaskSuspendRes200(res: TaskSuspendRes): res is TaskSuspendRes200 { return res.head.status === 200; }
+export function isTaskSuspendRes300(res: TaskSuspendRes): res is TaskSuspendRes300 { return res.head.status === 300; }
+export function isTaskSuspendRes400(res: TaskSuspendRes): res is TaskSuspendRes400 { return res.head.status === 400; }
+export function isTaskSuspendRes404(res: TaskSuspendRes): res is TaskSuspendRes404 { return res.head.status === 404; }
+export function isTaskSuspendRes409(res: TaskSuspendRes): res is TaskSuspendRes409 { return res.head.status === 409; }
+export function isTaskSuspendRes429(res: TaskSuspendRes): res is TaskSuspendRes429 { return res.head.status === 429; }
+export function isTaskSuspendRes500(res: TaskSuspendRes): res is TaskSuspendRes500 { return res.head.status === 500; }
+
+// Task Fulfill
+export function isTaskFulfillRes200(res: TaskFulfillRes): res is TaskFulfillRes200 { return res.head.status === 200; }
+export function isTaskFulfillRes400(res: TaskFulfillRes): res is TaskFulfillRes400 { return res.head.status === 400; }
+export function isTaskFulfillRes404(res: TaskFulfillRes): res is TaskFulfillRes404 { return res.head.status === 404; }
+export function isTaskFulfillRes409(res: TaskFulfillRes): res is TaskFulfillRes409 { return res.head.status === 409; }
+export function isTaskFulfillRes429(res: TaskFulfillRes): res is TaskFulfillRes429 { return res.head.status === 429; }
+export function isTaskFulfillRes500(res: TaskFulfillRes): res is TaskFulfillRes500 { return res.head.status === 500; }
+
+// Task Release
+export function isTaskReleaseRes200(res: TaskReleaseRes): res is TaskReleaseRes200 { return res.head.status === 200; }
+export function isTaskReleaseRes400(res: TaskReleaseRes): res is TaskReleaseRes400 { return res.head.status === 400; }
+export function isTaskReleaseRes404(res: TaskReleaseRes): res is TaskReleaseRes404 { return res.head.status === 404; }
+export function isTaskReleaseRes409(res: TaskReleaseRes): res is TaskReleaseRes409 { return res.head.status === 409; }
+export function isTaskReleaseRes429(res: TaskReleaseRes): res is TaskReleaseRes429 { return res.head.status === 429; }
+export function isTaskReleaseRes500(res: TaskReleaseRes): res is TaskReleaseRes500 { return res.head.status === 500; }
+
+// Task Fence
+export function isTaskFenceRes200(res: TaskFenceRes): res is TaskFenceRes200 { return res.head.status === 200; }
+export function isTaskFenceRes400(res: TaskFenceRes): res is TaskFenceRes400 { return res.head.status === 400; }
+export function isTaskFenceRes404(res: TaskFenceRes): res is TaskFenceRes404 { return res.head.status === 404; }
+export function isTaskFenceRes412(res: TaskFenceRes): res is TaskFenceRes412 { return res.head.status === 412; }
+export function isTaskFenceRes429(res: TaskFenceRes): res is TaskFenceRes429 { return res.head.status === 429; }
+export function isTaskFenceRes500(res: TaskFenceRes): res is TaskFenceRes500 { return res.head.status === 500; }
+
+// Task Heartbeat
+export function isTaskHeartbeatRes200(res: TaskHeartbeatRes): res is TaskHeartbeatRes200 { return res.head.status === 200; }
+export function isTaskHeartbeatRes400(res: TaskHeartbeatRes): res is TaskHeartbeatRes400 { return res.head.status === 400; }
+export function isTaskHeartbeatRes429(res: TaskHeartbeatRes): res is TaskHeartbeatRes429 { return res.head.status === 429; }
+export function isTaskHeartbeatRes500(res: TaskHeartbeatRes): res is TaskHeartbeatRes500 { return res.head.status === 500; }
+
+// Schedule Get
+export function isScheduleGetRes200(res: ScheduleGetRes): res is ScheduleGetRes200 { return res.head.status === 200; }
+export function isScheduleGetRes400(res: ScheduleGetRes): res is ScheduleGetRes400 { return res.head.status === 400; }
+export function isScheduleGetRes404(res: ScheduleGetRes): res is ScheduleGetRes404 { return res.head.status === 404; }
+export function isScheduleGetRes429(res: ScheduleGetRes): res is ScheduleGetRes429 { return res.head.status === 429; }
+export function isScheduleGetRes500(res: ScheduleGetRes): res is ScheduleGetRes500 { return res.head.status === 500; }
+export function isScheduleGetRes501(res: ScheduleGetRes): res is ScheduleGetRes501 { return res.head.status === 501; }
+
+// Schedule Create
+export function isScheduleCreateRes200(res: ScheduleCreateRes): res is ScheduleCreateRes200 { return res.head.status === 200; }
+export function isScheduleCreateRes400(res: ScheduleCreateRes): res is ScheduleCreateRes400 { return res.head.status === 400; }
+export function isScheduleCreateRes429(res: ScheduleCreateRes): res is ScheduleCreateRes429 { return res.head.status === 429; }
+export function isScheduleCreateRes500(res: ScheduleCreateRes): res is ScheduleCreateRes500 { return res.head.status === 500; }
+export function isScheduleCreateRes501(res: ScheduleCreateRes): res is ScheduleCreateRes501 { return res.head.status === 501; }
+
+// Schedule Delete
+export function isScheduleDeleteRes200(res: ScheduleDeleteRes): res is ScheduleDeleteRes200 { return res.head.status === 200; }
+export function isScheduleDeleteRes400(res: ScheduleDeleteRes): res is ScheduleDeleteRes400 { return res.head.status === 400; }
+export function isScheduleDeleteRes404(res: ScheduleDeleteRes): res is ScheduleDeleteRes404 { return res.head.status === 404; }
+export function isScheduleDeleteRes429(res: ScheduleDeleteRes): res is ScheduleDeleteRes429 { return res.head.status === 429; }
+export function isScheduleDeleteRes500(res: ScheduleDeleteRes): res is ScheduleDeleteRes500 { return res.head.status === 500; }
+export function isScheduleDeleteRes501(res: ScheduleDeleteRes): res is ScheduleDeleteRes501 { return res.head.status === 501; }
+
+// Debug Start
+export function isDebugStartRes200(res: DebugStartRes): res is DebugStartRes200 { return res.head.status === 200; }
+export function isDebugStartRes400(res: DebugStartRes): res is DebugStartRes400 { return res.head.status === 400; }
+export function isDebugStartRes429(res: DebugStartRes): res is DebugStartRes429 { return res.head.status === 429; }
+export function isDebugStartRes500(res: DebugStartRes): res is DebugStartRes500 { return res.head.status === 500; }
+export function isDebugStartRes501(res: DebugStartRes): res is DebugStartRes501 { return res.head.status === 501; }
+
+// Debug Reset
+export function isDebugResetRes200(res: DebugResetRes): res is DebugResetRes200 { return res.head.status === 200; }
+export function isDebugResetRes400(res: DebugResetRes): res is DebugResetRes400 { return res.head.status === 400; }
+export function isDebugResetRes429(res: DebugResetRes): res is DebugResetRes429 { return res.head.status === 429; }
+export function isDebugResetRes500(res: DebugResetRes): res is DebugResetRes500 { return res.head.status === 500; }
+export function isDebugResetRes501(res: DebugResetRes): res is DebugResetRes501 { return res.head.status === 501; }
+
+// Debug Tick
+export function isDebugTickRes200(res: DebugTickRes): res is DebugTickRes200 { return res.head.status === 200; }
+export function isDebugTickRes400(res: DebugTickRes): res is DebugTickRes400 { return res.head.status === 400; }
+export function isDebugTickRes429(res: DebugTickRes): res is DebugTickRes429 { return res.head.status === 429; }
+export function isDebugTickRes500(res: DebugTickRes): res is DebugTickRes500 { return res.head.status === 500; }
+export function isDebugTickRes501(res: DebugTickRes): res is DebugTickRes501 { return res.head.status === 501; }
+
+// Debug Snap
+export function isDebugSnapRes200(res: DebugSnapRes): res is DebugSnapRes200 { return res.head.status === 200; }
+export function isDebugSnapRes400(res: DebugSnapRes): res is DebugSnapRes400 { return res.head.status === 400; }
+export function isDebugSnapRes429(res: DebugSnapRes): res is DebugSnapRes429 { return res.head.status === 429; }
+export function isDebugSnapRes500(res: DebugSnapRes): res is DebugSnapRes500 { return res.head.status === 500; }
+export function isDebugSnapRes501(res: DebugSnapRes): res is DebugSnapRes501 { return res.head.status === 501; }
+
+// Debug Stop
+export function isDebugStopRes200(res: DebugStopRes): res is DebugStopRes200 { return res.head.status === 200; }
+export function isDebugStopRes400(res: DebugStopRes): res is DebugStopRes400 { return res.head.status === 400; }
+export function isDebugStopRes429(res: DebugStopRes): res is DebugStopRes429 { return res.head.status === 429; }
+export function isDebugStopRes500(res: DebugStopRes): res is DebugStopRes500 { return res.head.status === 500; }
+export function isDebugStopRes501(res: DebugStopRes): res is DebugStopRes501 { return res.head.status === 501; }
