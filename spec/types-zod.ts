@@ -96,10 +96,14 @@ export type PromiseSettleReq = z.infer<typeof PromiseSettleReqSchema>;
 export const PromiseRegisterReqSchema = z.object({
   kind: z.literal("promise.register"),
   head: RequestHeadSchema,
-  data: z.object({
-    awaited: z.string().min(1, "Awaited promise ID is required"),
-    awaiter: z.string().min(1, "Awaiter promise ID is required"),
-  }),
+  data: z
+    .object({
+      awaited: z.string().min(1, "Awaited promise ID is required"),
+      awaiter: z.string().min(1, "Awaiter promise ID is required"),
+    })
+    .refine((d) => d.awaited !== d.awaiter, {
+      message: "Awaited and awaiter must be different promises",
+    }),
 });
 
 export type PromiseRegisterReq = z.infer<typeof PromiseRegisterReqSchema>;
@@ -161,7 +165,9 @@ export const TaskSuspendReqSchema = z.object({
     id: z.string().min(1, "Task ID is required"),
     version: z.number().int().nonnegative("Version must be a non-negative integer"),
     actions: z.array(PromiseRegisterReqSchema).nonempty("Actions array cannot be empty"),
-  }).refine((r) => r.actions.every((a) => a.data.awaiter === r.id)),
+  }).refine((r) => r.actions.every((a) => a.data.awaiter === r.id), {
+      message: "All action awaiter IDs must match the task ID",
+    }),
 });
 
 export type TaskSuspendReq = z.infer<typeof TaskSuspendReqSchema>;
@@ -258,6 +264,7 @@ export type ScheduleDeleteReq = z.infer<typeof ScheduleDeleteReqSchema>;
 export const DebugStartReqSchema = z.object({
   kind: z.literal("debug.start"),
   head: RequestHeadSchema,
+  data: z.object({}),
 });
 
 export type DebugStartReq = z.infer<typeof DebugStartReqSchema>;
@@ -265,6 +272,7 @@ export type DebugStartReq = z.infer<typeof DebugStartReqSchema>;
 export const DebugResetReqSchema = z.object({
   kind: z.literal("debug.reset"),
   head: RequestHeadSchema,
+  data: z.object({}),
 });
 
 export type DebugResetReq = z.infer<typeof DebugResetReqSchema>;
@@ -282,6 +290,7 @@ export type DebugTickReq = z.infer<typeof DebugTickReqSchema>;
 export const DebugSnapReqSchema = z.object({
   kind: z.literal("debug.snap"),
   head: RequestHeadSchema,
+  data: z.object({}),
 });
 
 export type DebugSnapReq = z.infer<typeof DebugSnapReqSchema>;
@@ -289,6 +298,7 @@ export type DebugSnapReq = z.infer<typeof DebugSnapReqSchema>;
 export const DebugStopReqSchema = z.object({
   kind: z.literal("debug.stop"),
   head: RequestHeadSchema,
+  data: z.object({}),
 });
 
 export type DebugStopReq = z.infer<typeof DebugStopReqSchema>;

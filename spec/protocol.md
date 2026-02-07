@@ -259,7 +259,7 @@ type PromiseCreateReq = {
 **tags**
 
    Key-value metadata for the promise.
-   - If a `resonate:target` tag is present, an `InvokeOrResumeMessage` is sent to the specified address on invocation and resumption.
+   - If a `resonate:target` tag is present, an `ExecuteMessage` is sent to the specified address on invocation and resumption.
    - If a `resonate:timer` tag is set to `true`, the promise transitions to `resolved` instead of `rejected_timedout` when the timeout is reached.
 
 **timeoutAt**
@@ -370,6 +370,10 @@ type PromiseRegisterReq = {
 **awaited**
 
    The identifier of the promise being waited on.
+
+**Validation**
+
+- The `awaiter` and `awaited` must be different promises. A promise cannot register a dependency on itself.
 
 **Response**
 
@@ -554,7 +558,7 @@ type TaskCreateReq = {
 
 **ttl**
 
-   Time-to-live in milliseconds. The task must be heartbeated within this interval to maintain its lease.
+   Time-to-live in milliseconds. Must be a positive integer. The task must be heartbeated within this interval to maintain its lease.
 
 **action**
 
@@ -626,7 +630,7 @@ type TaskAcquireReq = {
 
 **ttl**
 
-   Time-to-live in milliseconds for the lease.
+   Time-to-live in milliseconds for the lease. Must be a positive integer.
 
 **Response**
 
@@ -691,6 +695,11 @@ type TaskSuspendReq = {
 
    An array of `PromiseRegisterReq` specifying the promises to await.
 
+**Validation**
+
+- The `actions` array must not be empty.
+- All actions must have their `awaiter` equal to the task `id`.
+
 **Response**
 
 ```ts
@@ -701,6 +710,7 @@ type TaskSuspendRes = {
     status: 200 | 300;
     version: string;
   };
+  data: {};
 }
 ```
 
@@ -817,6 +827,7 @@ type TaskReleaseRes = {
     status: 200;
     version: string;
   };
+  data: {};
 }
 ```
 
@@ -931,6 +942,7 @@ type TaskHeartbeatRes = {
     status: 200;
     version: string;
   };
+  data: {};
 }
 ```
 
@@ -1149,6 +1161,7 @@ type ScheduleDeleteRes = {
     status: 200;
     version: string;
   };
+  data: {};
 }
 ```
 
@@ -1180,6 +1193,7 @@ type DebugStartReq = {
     corrId: string;
     version: string;
   };
+  data: {};
 }
 ```
 
@@ -1193,6 +1207,7 @@ type DebugStartRes = {
     status: 200;
     version: string;
   };
+  data: {};
 }
 ```
 
@@ -1216,6 +1231,7 @@ type DebugResetReq = {
     corrId: string;
     version: string;
   };
+  data: {};
 }
 ```
 
@@ -1229,6 +1245,7 @@ type DebugResetRes = {
     status: 200;
     version: string;
   };
+  data: {};
 }
 ```
 
@@ -1302,6 +1319,7 @@ type DebugSnapReq = {
     corrId: string;
     version: string;
   };
+  data: {};
 }
 ```
 
@@ -1326,7 +1344,7 @@ type DebugSnapRes = {
 }
 ```
 
-Returns the current state of all promises, tasks, their timeouts, and pending messages.
+Returns the current state of all promises, tasks, their timeouts, callbacks, and pending messages.
 
 **Errors**
 
@@ -1380,7 +1398,7 @@ type Message = ExecuteMessage | NotifyMessage;
 
 ### ExecuteMessage
 
-Sent to the address specified in the `resonate:target` tag when a promise is created.
+Sent to the address specified in the `resonate:target` tag on invocation and resumption.
 
 ```ts
 type ExecuteMessage = {

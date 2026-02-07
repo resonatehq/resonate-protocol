@@ -214,11 +214,13 @@ export type ScheduleDeleteReq = {
 export type DebugStartReq = {
   kind: "debug.start";
   head: RequestHead;
+  data: Record<string, never>;
 };
 
 export type DebugResetReq = {
   kind: "debug.reset";
   head: RequestHead;
+  data: Record<string, never>;
 };
 
 export type DebugTickReq = {
@@ -230,11 +232,13 @@ export type DebugTickReq = {
 export type DebugSnapReq = {
   kind: "debug.snap";
   head: RequestHead;
+  data: Record<string, never>;
 };
 
 export type DebugStopReq = {
   kind: "debug.stop";
   head: RequestHead;
+  data: Record<string, never>;
 };
 
 // =============================================================================
