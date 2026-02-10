@@ -473,6 +473,11 @@ export const PromiseRegisterResSchema = z.discriminatedUnion("kind", [
   }),
   z.object({
     kind: z.literal("promise.register"),
+    head: ResponseHeadSchema(422),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("promise.register"),
     head: ResponseHeadSchema(500),
     data: z.string(),
   }),
@@ -482,6 +487,7 @@ export type PromiseRegisterRes = z.infer<typeof PromiseRegisterResSchema>;
 export type PromiseRegisterRes200 = Extract<PromiseRegisterRes, { head: { status: 200 } }>;
 export type PromiseRegisterRes400 = Extract<PromiseRegisterRes, { head: { status: 400 } }>;
 export type PromiseRegisterRes404 = Extract<PromiseRegisterRes, { head: { status: 404 } }>;
+export type PromiseRegisterRes422 = Extract<PromiseRegisterRes, { head: { status: 422 } }>;
 export type PromiseRegisterRes429 = Extract<PromiseRegisterRes, { head: { status: 429 } }>;
 export type PromiseRegisterRes500 = Extract<PromiseRegisterRes, { head: { status: 500 } }>;
 
@@ -678,6 +684,11 @@ export const TaskSuspendResSchema = z.discriminatedUnion("kind", [
   }),
   z.object({
     kind: z.literal("task.suspend"),
+    head: ResponseHeadSchema(422),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("task.suspend"),
     head: ResponseHeadSchema(429),
     data: z.string(),
   }),
@@ -694,6 +705,7 @@ export type TaskSuspendRes300 = Extract<TaskSuspendRes, { head: { status: 300 } 
 export type TaskSuspendRes400 = Extract<TaskSuspendRes, { head: { status: 400 } }>;
 export type TaskSuspendRes404 = Extract<TaskSuspendRes, { head: { status: 404 } }>;
 export type TaskSuspendRes409 = Extract<TaskSuspendRes, { head: { status: 409 } }>;
+export type TaskSuspendRes422 = Extract<TaskSuspendRes, { head: { status: 422 } }>;
 export type TaskSuspendRes429 = Extract<TaskSuspendRes, { head: { status: 429 } }>;
 export type TaskSuspendRes500 = Extract<TaskSuspendRes, { head: { status: 500 } }>;
 
@@ -799,7 +811,7 @@ export const TaskFenceResSchema = z.discriminatedUnion("kind", [
   }),
   z.object({
     kind: z.literal("task.fence"),
-    head: ResponseHeadSchema(412),
+    head: ResponseHeadSchema(409),
     data: z.string(),
   }),
   z.object({
@@ -818,7 +830,7 @@ export type TaskFenceRes = z.infer<typeof TaskFenceResSchema>;
 export type TaskFenceRes200 = Extract<TaskFenceRes, { head: { status: 200 } }>;
 export type TaskFenceRes400 = Extract<TaskFenceRes, { head: { status: 400 } }>;
 export type TaskFenceRes404 = Extract<TaskFenceRes, { head: { status: 404 } }>;
-export type TaskFenceRes412 = Extract<TaskFenceRes, { head: { status: 412 } }>;
+export type TaskFenceRes409 = Extract<TaskFenceRes, { head: { status: 409 } }>;
 export type TaskFenceRes429 = Extract<TaskFenceRes, { head: { status: 429 } }>;
 export type TaskFenceRes500 = Extract<TaskFenceRes, { head: { status: 500 } }>;
 
@@ -1279,6 +1291,7 @@ export function isPromiseSettleRes500(res: PromiseSettleRes): res is PromiseSett
 export function isPromiseRegisterRes200(res: PromiseRegisterRes): res is PromiseRegisterRes200 { return res.head.status === 200; }
 export function isPromiseRegisterRes400(res: PromiseRegisterRes): res is PromiseRegisterRes400 { return res.head.status === 400; }
 export function isPromiseRegisterRes404(res: PromiseRegisterRes): res is PromiseRegisterRes404 { return res.head.status === 404; }
+export function isPromiseRegisterRes422(res: PromiseRegisterRes): res is PromiseRegisterRes422 { return res.head.status === 422; }
 export function isPromiseRegisterRes429(res: PromiseRegisterRes): res is PromiseRegisterRes429 { return res.head.status === 429; }
 export function isPromiseRegisterRes500(res: PromiseRegisterRes): res is PromiseRegisterRes500 { return res.head.status === 500; }
 
@@ -1319,6 +1332,7 @@ export function isTaskSuspendRes300(res: TaskSuspendRes): res is TaskSuspendRes3
 export function isTaskSuspendRes400(res: TaskSuspendRes): res is TaskSuspendRes400 { return res.head.status === 400; }
 export function isTaskSuspendRes404(res: TaskSuspendRes): res is TaskSuspendRes404 { return res.head.status === 404; }
 export function isTaskSuspendRes409(res: TaskSuspendRes): res is TaskSuspendRes409 { return res.head.status === 409; }
+export function isTaskSuspendRes422(res: TaskSuspendRes): res is TaskSuspendRes422 { return res.head.status === 422; }
 export function isTaskSuspendRes429(res: TaskSuspendRes): res is TaskSuspendRes429 { return res.head.status === 429; }
 export function isTaskSuspendRes500(res: TaskSuspendRes): res is TaskSuspendRes500 { return res.head.status === 500; }
 
@@ -1342,7 +1356,7 @@ export function isTaskReleaseRes500(res: TaskReleaseRes): res is TaskReleaseRes5
 export function isTaskFenceRes200(res: TaskFenceRes): res is TaskFenceRes200 { return res.head.status === 200; }
 export function isTaskFenceRes400(res: TaskFenceRes): res is TaskFenceRes400 { return res.head.status === 400; }
 export function isTaskFenceRes404(res: TaskFenceRes): res is TaskFenceRes404 { return res.head.status === 404; }
-export function isTaskFenceRes412(res: TaskFenceRes): res is TaskFenceRes412 { return res.head.status === 412; }
+export function isTaskFenceRes409(res: TaskFenceRes): res is TaskFenceRes409 { return res.head.status === 409; }
 export function isTaskFenceRes429(res: TaskFenceRes): res is TaskFenceRes429 { return res.head.status === 429; }
 export function isTaskFenceRes500(res: TaskFenceRes): res is TaskFenceRes500 { return res.head.status === 500; }
 

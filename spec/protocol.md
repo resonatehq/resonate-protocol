@@ -1401,15 +1401,15 @@ type DebugStopRes = {
 ## Messages
 
 ```ts
-type Message = ExecuteMessage | NotifyMessage;
+type Message = ExecuteMsg | NotifyMsg;
 ```
 
-### ExecuteMessage
+### ExecuteMsg
 
 Sent to the address specified in the `resonate:target` tag on invocation and resumption.
 
 ```ts
-type ExecuteMessage = {
+type ExecuteMsg = {
   kind: "execute";
   head: { serverUrl?: string };
   data: {
@@ -1418,12 +1418,12 @@ type ExecuteMessage = {
 }
 ```
 
-### NotifyMessage
+### NotifyMsg
 
 Sent to the address specified in a `promise.subscribe` request when the promise settles.
 
 ```ts
-type NotifyMessage = {
+type NotifyMsg = {
   kind: "notify";
   head: { serverUrl?: string };
   data: {
