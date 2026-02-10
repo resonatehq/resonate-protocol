@@ -397,7 +397,11 @@ Returns the awaited promise. If the awaited promise is already settled, no depen
 
 **404**
 
-   Promise not found.
+   Awaited promise not found.
+
+**422**
+
+   Awaiter promise not found or does not have a target address.
 
 ### Subscribe
 
@@ -587,7 +591,7 @@ Returns the task and its associated promise.
 
 **409**
 
-   Already exists.
+   The task already exists.
 
 **501**
 
@@ -659,7 +663,7 @@ Returns the task's associated promise and any preloaded promises that have settl
 
 **409**
 
-   Version mismatch.
+   The task is not pending or the version does not match.
 
 ### Suspend
 
@@ -724,7 +728,11 @@ Returns status `200` if the task was suspended. Returns status `300` if an actio
 
 **409**
 
-   Version mismatch.
+   The task is not acquired or the version does not match.
+
+**422**
+
+   Awaited promise not found.
 
 ### Fulfill
 
@@ -786,7 +794,7 @@ Returns the promise in its current state. If the promise is already settled, ret
 
 **409**
 
-   Version mismatch.
+   The task is not acquired or the version does not match.
 
 ### Release
 
@@ -839,7 +847,7 @@ type TaskReleaseRes = {
 
 **409**
 
-   Version mismatch.
+   The task is not acquired or the version does not match.
 
 ### Fence
 
@@ -899,9 +907,9 @@ Returns the result of the fenced operation.
 
    Task not found.
 
-**412**
+**409**
 
-   Fence precondition check failed.
+   The task is not acquired or the version does not match.
 
 ### Heartbeat
 

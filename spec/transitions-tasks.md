@@ -79,7 +79,7 @@ Tick(t)
 | 27  | TaskSuspend(v, P)          | ⊥                                    | ⊥                      | 404    |                |
 | 28  | TaskSuspend(v, P)          | ⟨p, e, l, v, c, M⟩                   | ⟨p, e, l, v, c, M⟩     | 409    |                |
 | 29  | TaskSuspend(v', P)         | ⟨p, e, l, v, c, M⟩                   | ⟨p, e, l, v, c, M⟩     | 409    |                |
-| 30  | TaskSuspend(v, P)          | ⟨a, e, l, v, c, ∅⟩ : ¬Exists(p) ∃p∈P | ⟨a, e, l, v, c, ∅⟩     | 404    |                |
+| 30  | TaskSuspend(v, P)          | ⟨a, e, l, v, c, ∅⟩ : ¬Exists(p) ∃p∈P | ⟨a, e, l, v, c, ∅⟩     | 422    |                |
 | 31  | TaskSuspend(v, P)          | ⟨a, e, l, v, c, ∅⟩ : Settled(p) ∃p∈P | ⟨a, e, l, v, m, ∅⟩     | 300    |                |
 | 32  | TaskSuspend(v, P)          | ⟨a, e, l, v, c, ∅⟩ : Pending(p) ∀p∈P | ⟨s, ⊥, ⊥, v, ⊥, ∅⟩     | 200    |                |
 | 33  | TaskSuspend(v, P)          | ⟨a, e, l, v, c, c'::M'⟩              | ⟨a, e, l, v, c', M'⟩   | 300    |                |
@@ -88,13 +88,13 @@ Tick(t)
 | 36  | TaskSuspend(v', P)         | ⟨s, ⊥, ⊥, v, ⊥, ∅⟩                   | ⟨s, ⊥, ⊥, v, ⊥, ∅⟩     | 409    |                |
 | 37  | TaskSuspend(v, P)          | ⟨f, ⊥, ⊥, ⊥, ⊥, ∅⟩                   | ⟨f, ⊥, ⊥, ⊥, ⊥, ∅⟩     | 409    |                |
 | 38  | TaskFence(v)               | ⊥                                    | ⊥                      | 404    |                |
-| 39  | TaskFence(v)               | ⟨p, e, l, v, c, M⟩                   | ⟨p, e, l, v, c, M⟩     | 412    |                |
-| 40  | TaskFence(v')              | ⟨p, e, l, v, c, M⟩                   | ⟨p, e, l, v, c, M⟩     | 412    |                |
+| 39  | TaskFence(v)               | ⟨p, e, l, v, c, M⟩                   | ⟨p, e, l, v, c, M⟩     | 409    |                |
+| 40  | TaskFence(v')              | ⟨p, e, l, v, c, M⟩                   | ⟨p, e, l, v, c, M⟩     | 409    |                |
 | 41  | TaskFence(v)               | ⟨a, e, l, v, c, M⟩                   | ⟨a, e, l, v, c, M⟩     | 200    |                |
-| 42  | TaskFence(v')              | ⟨a, e, l, v, c, M⟩                   | ⟨a, e, l, v, c, M⟩     | 412    |                |
-| 43  | TaskFence(v)               | ⟨s, ⊥, ⊥, v, ⊥, ∅⟩                   | ⟨s, ⊥, ⊥, v, ⊥, ∅⟩     | 412    |                |
-| 44  | TaskFence(v')              | ⟨s, ⊥, ⊥, v, ⊥, ∅⟩                   | ⟨s, ⊥, ⊥, v, ⊥, ∅⟩     | 412    |                |
-| 45  | TaskFence(v)               | ⟨f, ⊥, ⊥, ⊥, ⊥, ∅⟩                   | ⟨f, ⊥, ⊥, ⊥, ⊥, ∅⟩     | 412    |                |
+| 42  | TaskFence(v')              | ⟨a, e, l, v, c, M⟩                   | ⟨a, e, l, v, c, M⟩     | 409    |                |
+| 43  | TaskFence(v)               | ⟨s, ⊥, ⊥, v, ⊥, ∅⟩                   | ⟨s, ⊥, ⊥, v, ⊥, ∅⟩     | 409    |                |
+| 44  | TaskFence(v')              | ⟨s, ⊥, ⊥, v, ⊥, ∅⟩                   | ⟨s, ⊥, ⊥, v, ⊥, ∅⟩     | 409    |                |
+| 45  | TaskFence(v)               | ⟨f, ⊥, ⊥, ⊥, ⊥, ∅⟩                   | ⟨f, ⊥, ⊥, ⊥, ⊥, ∅⟩     | 409    |                |
 | 46  | TaskHeartbeat(t, v)        | ⊥                                    | ⊥                      | 404    |                |
 | 47  | TaskHeartbeat(t, v)        | ⟨p, e, l, v, c, M⟩                   | ⟨p, e, l, v, c, M⟩     | 200    |                |
 | 48  | TaskHeartbeat(t, v')       | ⟨p, e, l, v, c, M⟩                   | ⟨p, e, l, v, c, M⟩     | 200    |                |

@@ -129,46 +129,50 @@ Tick(t)
 | 71  | PromiseSettle(c)         | ⟨c, ⊥, ⊥, ⊥, ∅, ∅⟩                       | ⟨c, ⊥, ⊥, ⊥, ∅, ∅⟩   | 200    |                                                      |
 | 72  | PromiseSettle(c)         | ⟨t, ⊥, ⊥, ⊥, ∅, ∅⟩                       | ⟨t, ⊥, ⊥, ⊥, ∅, ∅⟩   | 200    |                                                      |
 | 73  | PromiseRegister(⊥)       | ⊥                                         | ⊥                     | 404    |                                                      |
-| 74  | PromiseRegister(⊥)       | ⟨p, o, ⊥, ⊥, P, A⟩                       | ⟨p, o, ⊥, ⊥, P, A⟩   | 404    |                                                      |
-| 75  | PromiseRegister(⊥)       | ⟨p, o, ⊥, a, P, A⟩                       | ⟨p, o, ⊥, a, P, A⟩   | 404    |                                                      |
-| 76  | PromiseRegister(⊥)       | ⟨p, o, ⊤, ⊥, P, A⟩                       | ⟨p, o, ⊤, ⊥, P, A⟩   | 404    |                                                      |
-| 77  | PromiseRegister(⊥)       | ⟨p, o, ⊤, a, P, A⟩                       | ⟨p, o, ⊤, a, P, A⟩   | 404    |                                                      |
-| 78  | PromiseRegister(⊥)       | ⟨r, ⊥, ⊥, ⊥, ∅, ∅⟩                       | ⟨r, ⊥, ⊥, ⊥, ∅, ∅⟩   | 404    |                                                      |
-| 79  | PromiseRegister(⊥)       | ⟨x, ⊥, ⊥, ⊥, ∅, ∅⟩                       | ⟨x, ⊥, ⊥, ⊥, ∅, ∅⟩   | 404    |                                                      |
-| 80  | PromiseRegister(⊥)       | ⟨c, ⊥, ⊥, ⊥, ∅, ∅⟩                       | ⟨c, ⊥, ⊥, ⊥, ∅, ∅⟩   | 404    |                                                      |
-| 81  | PromiseRegister(⊥)       | ⟨t, ⊥, ⊥, ⊥, ∅, ∅⟩                       | ⟨t, ⊥, ⊥, ⊥, ∅, ∅⟩   | 404    |                                                      |
-| 82  | PromiseRegister(p)       | ⊥                                         | ⊥                     | 404    |                                                      |
-| 83  | PromiseRegister(p)       | ⟨p, o, ⊥, ⊥, P, A⟩ : HasAddress(p)       | ⟨p, o, ⊥, ⊥, P::p, A⟩ | 200    |                                                      |
-| 84  | PromiseRegister(p)       | ⟨p, o, ⊥, ⊥, P, A⟩ : ¬HasAddress(p)      | ⟨p, o, ⊥, ⊥, P, A⟩   | 400    |                                                      |
-| 85  | PromiseRegister(p)       | ⟨p, o, ⊥, a, P, A⟩ : HasAddress(p)       | ⟨p, o, ⊥, a, P::p, A⟩ | 200    |                                                      |
-| 86  | PromiseRegister(p)       | ⟨p, o, ⊥, a, P, A⟩ : ¬HasAddress(p)      | ⟨p, o, ⊥, a, P, A⟩   | 400    |                                                      |
-| 87  | PromiseRegister(p)       | ⟨p, o, ⊤, ⊥, P, A⟩ : HasAddress(p)       | ⟨p, o, ⊤, ⊥, P::p, A⟩ | 200    |                                                      |
-| 88  | PromiseRegister(p)       | ⟨p, o, ⊤, ⊥, P, A⟩ : ¬HasAddress(p)      | ⟨p, o, ⊤, ⊥, P, A⟩   | 400    |                                                      |
-| 89  | PromiseRegister(p)       | ⟨p, o, ⊤, a, P, A⟩ : HasAddress(p)       | ⟨p, o, ⊤, a, P::p, A⟩ | 200    |                                                      |
-| 90  | PromiseRegister(p)       | ⟨p, o, ⊤, a, P, A⟩ : ¬HasAddress(p)      | ⟨p, o, ⊤, a, P, A⟩   | 400    |                                                      |
-| 91  | PromiseRegister(p)       | ⟨r, ⊥, ⊥, ⊥, ∅, ∅⟩                       | ⟨r, ⊥, ⊥, ⊥, ∅, ∅⟩   | 200    |                                                      |
-| 92  | PromiseRegister(p)       | ⟨x, ⊥, ⊥, ⊥, ∅, ∅⟩                       | ⟨x, ⊥, ⊥, ⊥, ∅, ∅⟩   | 200    |                                                      |
-| 93  | PromiseRegister(p)       | ⟨c, ⊥, ⊥, ⊥, ∅, ∅⟩                       | ⟨c, ⊥, ⊥, ⊥, ∅, ∅⟩   | 200    |                                                      |
-| 94  | PromiseRegister(p)       | ⟨t, ⊥, ⊥, ⊥, ∅, ∅⟩                       | ⟨t, ⊥, ⊥, ⊥, ∅, ∅⟩   | 200    |                                                      |
-| 95  | PromiseSubscribe(a)      | ⊥                                         | ⊥                     | 404    |                                                      |
-| 96  | PromiseSubscribe(a)      | ⟨p, o, ⊥, ⊥, P, A⟩                       | ⟨p, o, ⊥, ⊥, P, A::a⟩ | 200    |                                                      |
-| 97  | PromiseSubscribe(a)      | ⟨p, o, ⊥, a, P, A⟩                       | ⟨p, o, ⊥, a, P, A::a⟩ | 200    |                                                      |
-| 98  | PromiseSubscribe(a)      | ⟨p, o, ⊤, ⊥, P, A⟩                       | ⟨p, o, ⊤, ⊥, P, A::a⟩ | 200    |                                                      |
-| 99  | PromiseSubscribe(a)      | ⟨p, o, ⊤, a, P, A⟩                       | ⟨p, o, ⊤, a, P, A::a⟩ | 200    |                                                      |
-| 100 | PromiseSubscribe(a)      | ⟨r, ⊥, ⊥, ⊥, ∅, ∅⟩                       | ⟨r, ⊥, ⊥, ⊥, ∅, ∅⟩   | 200    |                                                      |
-| 101 | PromiseSubscribe(a)      | ⟨x, ⊥, ⊥, ⊥, ∅, ∅⟩                       | ⟨x, ⊥, ⊥, ⊥, ∅, ∅⟩   | 200    |                                                      |
-| 102 | PromiseSubscribe(a)      | ⟨c, ⊥, ⊥, ⊥, ∅, ∅⟩                       | ⟨c, ⊥, ⊥, ⊥, ∅, ∅⟩   | 200    |                                                      |
-| 103 | PromiseSubscribe(a)      | ⟨t, ⊥, ⊥, ⊥, ∅, ∅⟩                       | ⟨t, ⊥, ⊥, ⊥, ∅, ∅⟩   | 200    |                                                      |
-| ~~104~~ | ~~Tick(t)~~           | ~~⊥~~                                     | ~~⊥~~                 |        |                                                      |
-| 105 | Tick(t)                   | ⟨p, o, ⊥, ⊥, P, A⟩ : t < o               | ⟨p, o, ⊥, ⊥, P, A⟩   |        |                                                      |
-| 106 | Tick(t)                   | ⟨p, o, ⊥, ⊥, P, A⟩ : t ≥ o               | ⟨t, ⊥, ⊥, ⊥, ∅, ∅⟩   |        | EnqueueResume ∀p∈P, Send(Notify) ∀a∈A                |
-| 107 | Tick(t)                   | ⟨p, o, ⊥, a, P, A⟩ : t < o               | ⟨p, o, ⊥, a, P, A⟩   |        |                                                      |
-| 108 | Tick(t)                   | ⟨p, o, ⊥, a, P, A⟩ : t ≥ o               | ⟨t, ⊥, ⊥, ⊥, ∅, ∅⟩   |        | EnqueueSettle, EnqueueResume ∀p∈P, Send(Notify) ∀a∈A |
-| 109 | Tick(t)                   | ⟨p, o, ⊤, ⊥, P, A⟩ : t < o               | ⟨p, o, ⊤, ⊥, P, A⟩   |        |                                                      |
-| 110 | Tick(t)                   | ⟨p, o, ⊤, ⊥, P, A⟩ : t ≥ o               | ⟨r, ⊥, ⊥, ⊥, ∅, ∅⟩   |        | EnqueueResume ∀p∈P, Send(Notify) ∀a∈A                |
-| 111 | Tick(t)                   | ⟨p, o, ⊤, a, P, A⟩ : t < o               | ⟨p, o, ⊤, a, P, A⟩   |        |                                                      |
-| 112 | Tick(t)                   | ⟨p, o, ⊤, a, P, A⟩ : t ≥ o               | ⟨r, ⊥, ⊥, ⊥, ∅, ∅⟩   |        | EnqueueSettle, EnqueueResume ∀p∈P, Send(Notify) ∀a∈A |
-| 113 | Tick(t)                   | ⟨r, ⊥, ⊥, ⊥, ∅, ∅⟩                       | ⟨r, ⊥, ⊥, ⊥, ∅, ∅⟩   |        |                                                      |
-| 114 | Tick(t)                   | ⟨x, ⊥, ⊥, ⊥, ∅, ∅⟩                       | ⟨x, ⊥, ⊥, ⊥, ∅, ∅⟩   |        |                                                      |
-| 115 | Tick(t)                   | ⟨c, ⊥, ⊥, ⊥, ∅, ∅⟩                       | ⟨c, ⊥, ⊥, ⊥, ∅, ∅⟩   |        |                                                      |
-| 116 | Tick(t)                   | ⟨t, ⊥, ⊥, ⊥, ∅, ∅⟩                       | ⟨t, ⊥, ⊥, ⊥, ∅, ∅⟩   |        |                                                      |
+| 74  | PromiseRegister(p)       | ⊥                                         | ⊥                     | 404    |                                                      |
+| 75  | PromiseRegister(⊥)       | ⟨p, o, ⊥, ⊥, P, A⟩                       | ⟨p, o, ⊥, ⊥, P, A⟩   | 422    |                                                      |
+| 76  | PromiseRegister(p)       | ⟨p, o, ⊥, ⊥, P, A⟩ : HasAddress(p)       | ⟨p, o, ⊥, ⊥, P::p, A⟩ | 200    |                                                      |
+| 77  | PromiseRegister(p)       | ⟨p, o, ⊥, ⊥, P, A⟩ : ¬HasAddress(p)      | ⟨p, o, ⊥, ⊥, P, A⟩   | 422    |                                                      |
+| 78  | PromiseRegister(⊥)       | ⟨p, o, ⊥, a, P, A⟩                       | ⟨p, o, ⊥, a, P, A⟩   | 422    |                                                      |
+| 79  | PromiseRegister(p)       | ⟨p, o, ⊥, a, P, A⟩ : HasAddress(p)       | ⟨p, o, ⊥, a, P::p, A⟩ | 200    |                                                      |
+| 80  | PromiseRegister(p)       | ⟨p, o, ⊥, a, P, A⟩ : ¬HasAddress(p)      | ⟨p, o, ⊥, a, P, A⟩   | 422    |                                                      |
+| 81  | PromiseRegister(⊥)       | ⟨p, o, ⊤, ⊥, P, A⟩                       | ⟨p, o, ⊤, ⊥, P, A⟩   | 422    |                                                      |
+| 82  | PromiseRegister(p)       | ⟨p, o, ⊤, ⊥, P, A⟩ : HasAddress(p)       | ⟨p, o, ⊤, ⊥, P::p, A⟩ | 200    |                                                      |
+| 83  | PromiseRegister(p)       | ⟨p, o, ⊤, ⊥, P, A⟩ : ¬HasAddress(p)      | ⟨p, o, ⊤, ⊥, P, A⟩   | 422    |                                                      |
+| 84  | PromiseRegister(⊥)       | ⟨p, o, ⊤, a, P, A⟩                       | ⟨p, o, ⊤, a, P, A⟩   | 422    |                                                      |
+| 85  | PromiseRegister(p)       | ⟨p, o, ⊤, a, P, A⟩ : HasAddress(p)       | ⟨p, o, ⊤, a, P::p, A⟩ | 200    |                                                      |
+| 86  | PromiseRegister(p)       | ⟨p, o, ⊤, a, P, A⟩ : ¬HasAddress(p)      | ⟨p, o, ⊤, a, P, A⟩   | 422    |                                                      |
+| 87  | PromiseRegister(⊥)       | ⟨r, ⊥, ⊥, ⊥, ∅, ∅⟩                       | ⟨r, ⊥, ⊥, ⊥, ∅, ∅⟩   | 422    |                                                      |
+| 88  | PromiseRegister(p)       | ⟨r, ⊥, ⊥, ⊥, ∅, ∅⟩ : HasAddress(p)       | ⟨r, ⊥, ⊥, ⊥, ∅, ∅⟩   | 200    |                                                      |
+| 89  | PromiseRegister(p)       | ⟨r, ⊥, ⊥, ⊥, ∅, ∅⟩ : ¬HasAddress(p)      | ⟨r, ⊥, ⊥, ⊥, ∅, ∅⟩   | 422    |                                                      |
+| 90  | PromiseRegister(⊥)       | ⟨x, ⊥, ⊥, ⊥, ∅, ∅⟩                       | ⟨x, ⊥, ⊥, ⊥, ∅, ∅⟩   | 422    |                                                      |
+| 91  | PromiseRegister(p)       | ⟨x, ⊥, ⊥, ⊥, ∅, ∅⟩ : HasAddress(p)       | ⟨x, ⊥, ⊥, ⊥, ∅, ∅⟩   | 200    |                                                      |
+| 92  | PromiseRegister(p)       | ⟨x, ⊥, ⊥, ⊥, ∅, ∅⟩ : ¬HasAddress(p)      | ⟨x, ⊥, ⊥, ⊥, ∅, ∅⟩   | 422    |                                                      |
+| 93  | PromiseRegister(⊥)       | ⟨c, ⊥, ⊥, ⊥, ∅, ∅⟩                       | ⟨c, ⊥, ⊥, ⊥, ∅, ∅⟩   | 422    |                                                      |
+| 94  | PromiseRegister(p)       | ⟨c, ⊥, ⊥, ⊥, ∅, ∅⟩ : HasAddress(p)       | ⟨c, ⊥, ⊥, ⊥, ∅, ∅⟩   | 200    |                                                      |
+| 95  | PromiseRegister(p)       | ⟨c, ⊥, ⊥, ⊥, ∅, ∅⟩ : ¬HasAddress(p)      | ⟨c, ⊥, ⊥, ⊥, ∅, ∅⟩   | 422    |                                                      |
+| 96  | PromiseRegister(⊥)       | ⟨t, ⊥, ⊥, ⊥, ∅, ∅⟩                       | ⟨t, ⊥, ⊥, ⊥, ∅, ∅⟩   | 422    |                                                      |
+| 97  | PromiseRegister(p)       | ⟨t, ⊥, ⊥, ⊥, ∅, ∅⟩ : HasAddress(p)       | ⟨t, ⊥, ⊥, ⊥, ∅, ∅⟩   | 200    |                                                      |
+| 98  | PromiseRegister(p)       | ⟨t, ⊥, ⊥, ⊥, ∅, ∅⟩ : ¬HasAddress(p)      | ⟨t, ⊥, ⊥, ⊥, ∅, ∅⟩   | 422    |                                                      |
+| 99  | PromiseSubscribe(a)      | ⊥                                         | ⊥                     | 404    |                                                      |
+| 100 | PromiseSubscribe(a)      | ⟨p, o, ⊥, ⊥, P, A⟩                       | ⟨p, o, ⊥, ⊥, P, A::a⟩ | 200    |                                                      |
+| 101 | PromiseSubscribe(a)      | ⟨p, o, ⊥, a, P, A⟩                       | ⟨p, o, ⊥, a, P, A::a⟩ | 200    |                                                      |
+| 102 | PromiseSubscribe(a)      | ⟨p, o, ⊤, ⊥, P, A⟩                       | ⟨p, o, ⊤, ⊥, P, A::a⟩ | 200    |                                                      |
+| 103 | PromiseSubscribe(a)      | ⟨p, o, ⊤, a, P, A⟩                       | ⟨p, o, ⊤, a, P, A::a⟩ | 200    |                                                      |
+| 104 | PromiseSubscribe(a)      | ⟨r, ⊥, ⊥, ⊥, ∅, ∅⟩                       | ⟨r, ⊥, ⊥, ⊥, ∅, ∅⟩   | 200    |                                                      |
+| 105 | PromiseSubscribe(a)      | ⟨x, ⊥, ⊥, ⊥, ∅, ∅⟩                       | ⟨x, ⊥, ⊥, ⊥, ∅, ∅⟩   | 200    |                                                      |
+| 106 | PromiseSubscribe(a)      | ⟨c, ⊥, ⊥, ⊥, ∅, ∅⟩                       | ⟨c, ⊥, ⊥, ⊥, ∅, ∅⟩   | 200    |                                                      |
+| 107 | PromiseSubscribe(a)      | ⟨t, ⊥, ⊥, ⊥, ∅, ∅⟩                       | ⟨t, ⊥, ⊥, ⊥, ∅, ∅⟩   | 200    |                                                      |
+| ~~108~~ | ~~Tick(t)~~           | ~~⊥~~                                     | ~~⊥~~                 |        |                                                      |
+| 109 | Tick(t)                   | ⟨p, o, ⊥, ⊥, P, A⟩ : t < o               | ⟨p, o, ⊥, ⊥, P, A⟩   |        |                                                      |
+| 110 | Tick(t)                   | ⟨p, o, ⊥, ⊥, P, A⟩ : t ≥ o               | ⟨t, ⊥, ⊥, ⊥, ∅, ∅⟩   |        | EnqueueResume ∀p∈P, Send(Notify) ∀a∈A                |
+| 111 | Tick(t)                   | ⟨p, o, ⊥, a, P, A⟩ : t < o               | ⟨p, o, ⊥, a, P, A⟩   |        |                                                      |
+| 112 | Tick(t)                   | ⟨p, o, ⊥, a, P, A⟩ : t ≥ o               | ⟨t, ⊥, ⊥, ⊥, ∅, ∅⟩   |        | EnqueueSettle, EnqueueResume ∀p∈P, Send(Notify) ∀a∈A |
+| 113 | Tick(t)                   | ⟨p, o, ⊤, ⊥, P, A⟩ : t < o               | ⟨p, o, ⊤, ⊥, P, A⟩   |        |                                                      |
+| 114 | Tick(t)                   | ⟨p, o, ⊤, ⊥, P, A⟩ : t ≥ o               | ⟨r, ⊥, ⊥, ⊥, ∅, ∅⟩   |        | EnqueueResume ∀p∈P, Send(Notify) ∀a∈A                |
+| 115 | Tick(t)                   | ⟨p, o, ⊤, a, P, A⟩ : t < o               | ⟨p, o, ⊤, a, P, A⟩   |        |                                                      |
+| 116 | Tick(t)                   | ⟨p, o, ⊤, a, P, A⟩ : t ≥ o               | ⟨r, ⊥, ⊥, ⊥, ∅, ∅⟩   |        | EnqueueSettle, EnqueueResume ∀p∈P, Send(Notify) ∀a∈A |
+| 117 | Tick(t)                   | ⟨r, ⊥, ⊥, ⊥, ∅, ∅⟩                       | ⟨r, ⊥, ⊥, ⊥, ∅, ∅⟩   |        |                                                      |
+| 118 | Tick(t)                   | ⟨x, ⊥, ⊥, ⊥, ∅, ∅⟩                       | ⟨x, ⊥, ⊥, ⊥, ∅, ∅⟩   |        |                                                      |
+| 119 | Tick(t)                   | ⟨c, ⊥, ⊥, ⊥, ∅, ∅⟩                       | ⟨c, ⊥, ⊥, ⊥, ∅, ∅⟩   |        |                                                      |
+| 120 | Tick(t)                   | ⟨t, ⊥, ⊥, ⊥, ∅, ∅⟩                       | ⟨t, ⊥, ⊥, ⊥, ∅, ∅⟩   |        |                                                      |
