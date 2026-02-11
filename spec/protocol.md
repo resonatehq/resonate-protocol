@@ -265,6 +265,10 @@ type PromiseCreateReq = {
 **timeoutAt**
 
    Unix timestamp in milliseconds when the promise will timeout.
+   
+**Validation**
+
+- `d.timeoutAt < now` Timeout is in the past
 
 **Response**
 
@@ -571,6 +575,8 @@ type TaskCreateReq = {
 **Validation**
 
 - The action must have a `resonate:target` tag.
+- TTL must be positive.
+- `d.promiseAction.timeoutAt <= now` Promise would be timed out immediately
 
 **Response**
 
@@ -640,6 +646,9 @@ type TaskAcquireReq = {
 
    Time-to-live in milliseconds for the lease. Must be a positive integer.
 
+**Validation**
+- TTL must be positive
+
 **Response**
 
 ```ts
@@ -706,8 +715,8 @@ type TaskSuspendReq = {
 **Validation**
 
 - The `actions` array must not be empty.
-- All actions must have their `awaiter` equal to the task `id`.
-- No action's `awaited` promise may equal the task `id`.
+- All actions must have their `awaiter` equal to the task `id`. same as `d.actions.listExists(a => a.awaited == d.id)` Task cannot await its own promise
+- No action's `awaited` promise may equal the task `id`. same as `d.actions.listExists(a => a.awaiter != d.id)` Awaiter must be the suspending task
 
 **Response**
 
