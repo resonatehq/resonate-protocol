@@ -568,6 +568,10 @@ type TaskCreateReq = {
 
    A `PromiseCreateReq` specifying the promise to create for this task.
 
+**Validation**
+
+- The action must have a `resonate:target` tag.
+
 **Response**
 
 ```ts

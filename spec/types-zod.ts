@@ -140,7 +140,9 @@ export const TaskCreateReqSchema = z.object({
     pid: z.string().min(1, "Process ID is required"),
     ttl: z.number().int().positive("TTL must be a positive integer"),
     action: PromiseCreateReqSchema,
-  }),
+  }).refine((r) => "resonate:target" in r.action.data.tags, {
+      message: "Action must have a resonate:target tag",
+    }),
 });
 
 export type TaskCreateReq = z.infer<typeof TaskCreateReqSchema>;
