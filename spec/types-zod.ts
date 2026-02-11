@@ -167,6 +167,8 @@ export const TaskSuspendReqSchema = z.object({
     actions: z.array(PromiseRegisterReqSchema).nonempty("Actions array cannot be empty"),
   }).refine((r) => r.actions.every((a) => a.data.awaiter === r.id), {
       message: "All action awaiter IDs must match the task ID",
+    }).refine((r) => r.actions.every((a) => a.data.awaited !== r.id), {
+      message: "Action awaited promise must not equal the task ID",
     }),
 });
 
@@ -179,7 +181,9 @@ export const TaskFulfillReqSchema = z.object({
     id: z.string().min(1, "Task ID is required"),
     version: z.number().int().nonnegative("Version must be a non-negative integer"),
     action: PromiseSettleReqSchema,
-  }),
+  }).refine((r) => r.action.data.id === r.id, {
+      message: "Action ID must match the task ID",
+    }),
 });
 
 export type TaskFulfillReq = z.infer<typeof TaskFulfillReqSchema>;

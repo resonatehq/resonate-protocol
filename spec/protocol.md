@@ -703,6 +703,7 @@ type TaskSuspendReq = {
 
 - The `actions` array must not be empty.
 - All actions must have their `awaiter` equal to the task `id`.
+- No action's `awaited` promise may equal the task `id`.
 
 **Response**
 
@@ -767,6 +768,10 @@ type TaskFulfillReq = {
 **action**
 
    A `PromiseSettleReq` specifying how to settle the task's promise.
+
+**Validation**
+
+- The action `id` must equal the task `id`.
 
 **Response**
 
