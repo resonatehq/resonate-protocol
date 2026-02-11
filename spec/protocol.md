@@ -748,6 +748,10 @@ Returns status `200` if the task was suspended. Returns status `300` if an actio
 
    Awaited promise not found.
 
+**422**
+
+   Awaiter task is not suspended.
+
 ### Fulfill
 
 Completes a task and settles its associated promise.
