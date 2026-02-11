@@ -715,8 +715,8 @@ type TaskSuspendReq = {
 **Validation**
 
 - The `actions` array must not be empty.
-- All actions must have their `awaiter` equal to the task `id`. same as `d.actions.listExists(a => a.awaited == d.id)` Task cannot await its own promise
-- No action's `awaited` promise may equal the task `id`. same as `d.actions.listExists(a => a.awaiter != d.id)` Awaiter must be the suspending task
+- All actions must have their `awaiter` equal to the task `id`.
+- No action's `awaited` promise may equal the task `id`.
 
 **Response**
 
