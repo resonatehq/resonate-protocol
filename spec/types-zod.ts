@@ -45,6 +45,36 @@ export const ScheduleRecordSchema = z.object({
 });
 
 // =============================================================================
+// MESSAGES
+// =============================================================================
+
+export const MessageHeadSchema = z.object({ serverUrl: z.string().optional() });
+
+export const ExecuteMsgSchema = z.object({
+  kind: z.literal("execute"),
+  head: MessageHeadSchema,
+  data: z.object({
+    task: z.object({ id: z.string(), version: z.number().int() }),
+  }),
+});
+
+export type ExecuteMsg = z.infer<typeof ExecuteMsgSchema>;
+
+export const NotifyMsgSchema = z.object({
+  kind: z.literal("notify"),
+  head: MessageHeadSchema,
+  data: z.object({
+    promise: PromiseRecordSchema,
+  }),
+});
+
+export type NotifyMsg = z.infer<typeof NotifyMsgSchema>;
+
+export const MessageSchema = z.discriminatedUnion("kind", [ExecuteMsgSchema, NotifyMsgSchema]);
+
+export type Message = z.infer<typeof MessageSchema>;
+
+// =============================================================================
 // REQUEST HEAD
 // =============================================================================
 
@@ -1036,15 +1066,10 @@ export const DebugSnapResSchema = z.discriminatedUnion("kind", [
       promises: z.array(PromiseRecordSchema),
       promiseTimeouts: z.array(z.object({ id: z.string(), timeout: z.number() })),
       callbacks: z.array(z.object({ awaiter: z.string(), awaited: z.string() })),
+      subscriptions: z.array(z.object({ id: z.string(), address: z.string() })).optional(),
       tasks: z.array(TaskRecordSchema),
       taskTimeouts: z.array(z.object({ id: z.string(), type: z.number(), timeout: z.number() })),
-      messages: z.array(
-        z.object({
-          id: z.string(),
-          version: z.number().int(),
-          address: z.string(),
-        }),
-      ),
+      messages: z.array(z.object({ address: z.string(), message: MessageSchema })),
     }),
   }),
   z.object({
@@ -1134,36 +1159,6 @@ export const ResponseSchema = z.discriminatedUnion("kind", [
 ]);
 
 export type Response = z.infer<typeof ResponseSchema>;
-
-// =============================================================================
-// MESSAGES
-// =============================================================================
-
-export const MessageHeadSchema = z.object({ serverUrl: z.string().optional() });
-
-export const ExecuteMsgSchema = z.object({
-  kind: z.literal("execute"),
-  head: MessageHeadSchema,
-  data: z.object({
-    task: z.object({ id: z.string(), version: z.number().int() }),
-  }),
-});
-
-export type ExecuteMsg = z.infer<typeof ExecuteMsgSchema>;
-
-export const NotifyMsgSchema = z.object({
-  kind: z.literal("notify"),
-  head: MessageHeadSchema,
-  data: z.object({
-    promise: PromiseRecordSchema,
-  }),
-});
-
-export type NotifyMsg = z.infer<typeof NotifyMsgSchema>;
-
-export const MessageSchema = z.discriminatedUnion("kind", [ExecuteMsgSchema, NotifyMsgSchema]);
-
-export type Message = z.infer<typeof MessageSchema>;
 
 // =============================================================================
 // TYPE GUARDS

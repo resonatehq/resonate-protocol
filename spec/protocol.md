@@ -1354,14 +1354,15 @@ type DebugSnapRes = {
     promises: Promise[];
     promiseTimeouts: { id: string; timeout: number }[];
     callbacks: { awaiter: string; awaited: string }[];
+    subscriptions?: { id: string; address: string }[];
     tasks: Task[];
     taskTimeouts: { id: string; type: number; timeout: number }[];
-    messages: { id: string; version: number; address: string }[];
+    messages: { address: string; message: Message }[];
   };
 }
 ```
 
-Returns the current state of all promises, tasks, their timeouts, callbacks, and pending messages.
+Returns the current state of all promises, tasks, their timeouts, callbacks, subscriptions, and pending messages.
 
 **Errors**
 
