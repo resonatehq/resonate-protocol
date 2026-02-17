@@ -3,13 +3,14 @@
   "scripts": {
     "check": "biome check",
     "check:fix": "biome check --write",
+    "fmt": "biome format --write",
     "typecheck": "tsc"
   },
   "dependencies": {
     "zod": "^4.3.6"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.3.14",
+    "@biomejs/biome": "2.4.2",
     "typescript": "^5.9.3"
   }
 }
