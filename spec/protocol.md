@@ -81,6 +81,7 @@ type Request =
   | PromiseSettleReq
   | PromiseRegisterReq
   | PromiseSubscribeReq
+  | PromiseSearchReq
   | TaskGetReq
   | TaskCreateReq
   | TaskAcquireReq
@@ -89,8 +90,10 @@ type Request =
   | TaskReleaseReq
   | TaskFenceReq
   | TaskHeartbeatReq
+  | TaskSearchReq
   | ScheduleGetReq
   | ScheduleCreateReq
+  | ScheduleSearchReq
   | ScheduleDeleteReq
   | DebugStartReq
   | DebugResetReq
@@ -108,6 +111,7 @@ type Response =
   | PromiseSettleRes
   | PromiseRegisterRes
   | PromiseSubscribeRes
+  | PromiseSearchRes
   | TaskGetRes
   | TaskCreateRes
   | TaskAcquireRes
@@ -116,8 +120,10 @@ type Response =
   | TaskReleaseRes
   | TaskFenceRes
   | TaskHeartbeatRes
+  | TaskSearchRes
   | ScheduleGetRes
   | ScheduleCreateRes
+  | ScheduleSearchRes
   | ScheduleDeleteRes
   | DebugStartRes
   | DebugResetRes
@@ -455,6 +461,70 @@ Returns the awaited promise. If the awaited promise is already settled, no subsc
 **404**
 
    Promise not found.
+
+**501**
+
+   Not implemented.
+
+### Search
+
+Searches for promises matching the specified criteria.
+
+**Request**
+
+```ts
+type PromiseSearchReq = {
+  kind: "promise.search";
+  head: {
+    auth?: string;
+    corrId: string;
+    version: string;
+  };
+  data: {
+    state?: "pending" | "resolved" | "rejected" | "rejected_canceled" | "rejected_timedout";
+    tags?: { [key: string]: string };
+    limit?: number;
+    cursor?: string;
+  };
+}
+```
+
+**state**
+
+   Optional filter by promise state.
+
+**tags**
+
+   Optional filter by tag key-value pairs.
+
+**limit**
+
+   Number of results per page.
+
+**cursor**
+
+   Cursor for pagination, obtained from a previous search response.
+
+**Response**
+
+```ts
+type PromiseSearchRes = {
+  kind: "promise.search";
+  head: {
+    corrId: string;
+    status: 200;
+    version: string;
+  };
+  data: {
+    promises: Promise[];
+    cursor?: string;
+  };
+}
+```
+
+Returns a list of matching promises and an optional cursor for the next page of results.
+
+**Errors**
 
 **501**
 
@@ -963,6 +1033,65 @@ type TaskHeartbeatRes = {
 }
 ```
 
+### Search
+
+Searches for tasks matching the specified criteria.
+
+**Request**
+
+```ts
+type TaskSearchReq = {
+  kind: "task.search";
+  head: {
+    auth?: string;
+    corrId: string;
+    version: string;
+  };
+  data: {
+    state?: "pending" | "acquired" | "suspended" | "fulfilled";
+    limit?: number;
+    cursor?: string;
+  };
+}
+```
+
+**state**
+
+   Optional filter by task state.
+
+**limit**
+
+   Number of results per page.
+
+**cursor**
+
+   Cursor for pagination, obtained from a previous search response.
+
+**Response**
+
+```ts
+type TaskSearchRes = {
+  kind: "task.search";
+  head: {
+    corrId: string;
+    status: 200;
+    version: string;
+  };
+  data: {
+    tasks: Task[];
+    cursor?: string;
+  };
+}
+```
+
+Returns a list of matching tasks and an optional cursor for the next page of results.
+
+**Errors**
+
+**501**
+
+   Not implemented.
+
 ## Schedules
 
 ### Types
@@ -1137,6 +1266,65 @@ type ScheduleCreateRes = {
 ```
 
 Returns the schedule. If a schedule with the same identifier already exists, returns the existing schedule (idempotent).
+
+**Errors**
+
+**501**
+
+   Not implemented.
+
+### Search
+
+Searches for schedules matching the specified criteria.
+
+**Request**
+
+```ts
+type ScheduleSearchReq = {
+  kind: "schedule.search";
+  head: {
+    auth?: string;
+    corrId: string;
+    version: string;
+  };
+  data: {
+    tags?: { [key: string]: string };
+    limit?: number;
+    cursor?: string;
+  };
+}
+```
+
+**tags**
+
+   Optional filter by tag key-value pairs.
+
+**limit**
+
+   Number of results per page.
+
+**cursor**
+
+   Cursor for pagination, obtained from a previous search response.
+
+**Response**
+
+```ts
+type ScheduleSearchRes = {
+  kind: "schedule.search";
+  head: {
+    corrId: string;
+    status: 200;
+    version: string;
+  };
+  data: {
+    schedules: Schedule[];
+    cursor?: string;
+  };
+}
+```
+
+Returns a list of matching schedules and an optional cursor for the next page of results.
 
 **Errors**
 

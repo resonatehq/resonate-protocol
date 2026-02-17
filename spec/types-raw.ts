@@ -119,6 +119,17 @@ export type PromiseSubscribeReq = {
   };
 };
 
+export type PromiseSearchReq = {
+  kind: "promise.search";
+  head: RequestHead;
+  data: {
+    state?: "pending" | "resolved" | "rejected" | "rejected_canceled" | "rejected_timedout";
+    tags?: Record<string, string>;
+    limit?: number;
+    cursor?: string;
+  };
+};
+
 // =============================================================================
 // REQUESTS - TASK
 // =============================================================================
@@ -198,6 +209,16 @@ export type TaskHeartbeatReq = {
   };
 };
 
+export type TaskSearchReq = {
+  kind: "task.search";
+  head: RequestHead;
+  data: {
+    state?: "pending" | "acquired" | "suspended" | "fulfilled";
+    limit?: number;
+    cursor?: string;
+  };
+};
+
 // =============================================================================
 // REQUESTS - SCHEDULE
 // =============================================================================
@@ -218,6 +239,16 @@ export type ScheduleCreateReq = {
     promiseTimeout: number;
     promiseParam: Value;
     promiseTags: Record<string, string>;
+  };
+};
+
+export type ScheduleSearchReq = {
+  kind: "schedule.search";
+  head: RequestHead;
+  data: {
+    tags?: Record<string, string>;
+    limit?: number;
+    cursor?: string;
   };
 };
 
@@ -271,6 +302,7 @@ export type Request =
   | PromiseSettleReq
   | PromiseRegisterReq
   | PromiseSubscribeReq
+  | PromiseSearchReq
   | TaskGetReq
   | TaskCreateReq
   | TaskAcquireReq
@@ -279,8 +311,10 @@ export type Request =
   | TaskReleaseReq
   | TaskFenceReq
   | TaskHeartbeatReq
+  | TaskSearchReq
   | ScheduleGetReq
   | ScheduleCreateReq
+  | ScheduleSearchReq
   | ScheduleDeleteReq
   | DebugStartReq
   | DebugResetReq
@@ -357,6 +391,17 @@ export type PromiseSubscribeRes =
   | { kind: "promise.subscribe"; head: ResponseHead<429>; data: string }
   | { kind: "promise.subscribe"; head: ResponseHead<500>; data: string }
   | { kind: "promise.subscribe"; head: ResponseHead<501>; data: string };
+
+export type PromiseSearchRes =
+  | {
+      kind: "promise.search";
+      head: ResponseHead<200>;
+      data: { promises: PromiseRecord[]; cursor?: string };
+    }
+  | { kind: "promise.search"; head: ResponseHead<400>; data: string }
+  | { kind: "promise.search"; head: ResponseHead<429>; data: string }
+  | { kind: "promise.search"; head: ResponseHead<500>; data: string }
+  | { kind: "promise.search"; head: ResponseHead<501>; data: string };
 
 // =============================================================================
 // RESPONSES - TASK
@@ -457,6 +502,17 @@ export type TaskHeartbeatRes =
   | { kind: "task.heartbeat"; head: ResponseHead<429>; data: string }
   | { kind: "task.heartbeat"; head: ResponseHead<500>; data: string };
 
+export type TaskSearchRes =
+  | {
+      kind: "task.search";
+      head: ResponseHead<200>;
+      data: { tasks: TaskRecord[]; cursor?: string };
+    }
+  | { kind: "task.search"; head: ResponseHead<400>; data: string }
+  | { kind: "task.search"; head: ResponseHead<429>; data: string }
+  | { kind: "task.search"; head: ResponseHead<500>; data: string }
+  | { kind: "task.search"; head: ResponseHead<501>; data: string };
+
 // =============================================================================
 // RESPONSES - SCHEDULE
 // =============================================================================
@@ -483,6 +539,17 @@ export type ScheduleCreateRes =
   | { kind: "schedule.create"; head: ResponseHead<429>; data: string }
   | { kind: "schedule.create"; head: ResponseHead<500>; data: string }
   | { kind: "schedule.create"; head: ResponseHead<501>; data: string };
+
+export type ScheduleSearchRes =
+  | {
+      kind: "schedule.search";
+      head: ResponseHead<200>;
+      data: { schedules: ScheduleRecord[]; cursor?: string };
+    }
+  | { kind: "schedule.search"; head: ResponseHead<400>; data: string }
+  | { kind: "schedule.search"; head: ResponseHead<429>; data: string }
+  | { kind: "schedule.search"; head: ResponseHead<500>; data: string }
+  | { kind: "schedule.search"; head: ResponseHead<501>; data: string };
 
 export type ScheduleDeleteRes =
   | {
@@ -573,6 +640,7 @@ export type Response =
   | PromiseSettleRes
   | PromiseRegisterRes
   | PromiseSubscribeRes
+  | PromiseSearchRes
   | TaskGetRes
   | TaskCreateRes
   | TaskAcquireRes
@@ -581,8 +649,10 @@ export type Response =
   | TaskReleaseRes
   | TaskFenceRes
   | TaskHeartbeatRes
+  | TaskSearchRes
   | ScheduleGetRes
   | ScheduleCreateRes
+  | ScheduleSearchRes
   | ScheduleDeleteRes
   | DebugStartRes
   | DebugResetRes
