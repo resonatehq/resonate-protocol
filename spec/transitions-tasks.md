@@ -56,10 +56,10 @@ Tick(t)
 | 4   | TaskGet()                  | ⟨s, ⊥, ⊥, v, ⊥, ∅⟩                   | ⟨s, ⊥, ⊥, v, ⊥, ∅⟩     | 200    |                |
 | 5   | TaskGet()                  | ⟨f, ⊥, ⊥, ⊥, ⊥, ∅⟩                   | ⟨f, ⊥, ⊥, ⊥, ⊥, ∅⟩     | 200    |                |
 | 6   | TaskCreate(t, l)           | ⊥                                    | ⟨a, t+l, l, 0, m, ∅⟩   | 200    |                |
-| 7   | TaskCreate(t, l)           | ⟨p, e, l, v, c, M⟩                   | ⟨p, e, l, v, c, M⟩     | 409    |                |
+| 7   | TaskCreate(t, l)           | ⟨p, e, l, v, c, M⟩                   | ⟨a, t+l, l, v, c, M⟩   | 200    |                |
 | 8   | TaskCreate(t, l)           | ⟨a, e, l, v, c, M⟩                   | ⟨a, e, l, v, c, M⟩     | 409    |                |
 | 9   | TaskCreate(t, l)           | ⟨s, ⊥, ⊥, v, ⊥, ∅⟩                   | ⟨s, ⊥, ⊥, v, ⊥, ∅⟩     | 409    |                |
-| 10  | TaskCreate(t, l)           | ⟨f, ⊥, ⊥, ⊥, ⊥, ∅⟩                   | ⟨f, ⊥, ⊥, ⊥, ⊥, ∅⟩     | 409    |                |
+| 10  | TaskCreate(t, l)           | ⟨f, ⊥, ⊥, ⊥, ⊥, ∅⟩                   | ⟨f, ⊥, ⊥, ⊥, ⊥, ∅⟩     | 200    |                |
 | 11  | TaskAcquire(t, l, v)       | ⊥                                    | ⊥                      | 404    |                |
 | 12  | TaskAcquire(t, l, v)       | ⟨p, e, l, v, c, M⟩                   | ⟨a, t+l, l, v, c, M⟩   | 200    |                |
 | 13  | TaskAcquire(t, l, v')      | ⟨p, e, l, v, c, M⟩                   | ⟨p, e, l, v, c, M⟩     | 409    |                |
