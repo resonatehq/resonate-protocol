@@ -101,8 +101,8 @@ export type PromiseSettleReq = {
   };
 };
 
-export type PromiseRegisterReq = {
-  kind: "promise.register";
+export type PromiseRegisterCallbackReq = {
+  kind: "promise.register_callback";
   head: RequestHead;
   data: {
     awaited: string;
@@ -110,8 +110,8 @@ export type PromiseRegisterReq = {
   };
 };
 
-export type PromiseSubscribeReq = {
-  kind: "promise.subscribe";
+export type PromiseRegisterListenerReq = {
+  kind: "promise.register_listener";
   head: RequestHead;
   data: {
     awaited: string;
@@ -167,7 +167,7 @@ export type TaskSuspendReq = {
   data: {
     id: string;
     version: number;
-    actions: PromiseRegisterReq[];
+    actions: PromiseRegisterCallbackReq[];
   };
 };
 
@@ -300,8 +300,8 @@ export type Request =
   | PromiseGetReq
   | PromiseCreateReq
   | PromiseSettleReq
-  | PromiseRegisterReq
-  | PromiseSubscribeReq
+  | PromiseRegisterCallbackReq
+  | PromiseRegisterListenerReq
   | PromiseSearchReq
   | TaskGetReq
   | TaskCreateReq
@@ -368,29 +368,29 @@ export type PromiseSettleRes =
   | { kind: "promise.settle"; head: ResponseHead<429>; data: string }
   | { kind: "promise.settle"; head: ResponseHead<500>; data: string };
 
-export type PromiseRegisterRes =
+export type PromiseRegisterCallbackRes =
   | {
-      kind: "promise.register";
+      kind: "promise.register_callback";
       head: ResponseHead<200>;
       data: { promise: PromiseRecord };
     }
-  | { kind: "promise.register"; head: ResponseHead<400>; data: string }
-  | { kind: "promise.register"; head: ResponseHead<404>; data: string }
-  | { kind: "promise.register"; head: ResponseHead<422>; data: string }
-  | { kind: "promise.register"; head: ResponseHead<429>; data: string }
-  | { kind: "promise.register"; head: ResponseHead<500>; data: string };
+  | { kind: "promise.register_callback"; head: ResponseHead<400>; data: string }
+  | { kind: "promise.register_callback"; head: ResponseHead<404>; data: string }
+  | { kind: "promise.register_callback"; head: ResponseHead<422>; data: string }
+  | { kind: "promise.register_callback"; head: ResponseHead<429>; data: string }
+  | { kind: "promise.register_callback"; head: ResponseHead<500>; data: string };
 
-export type PromiseSubscribeRes =
+export type PromiseRegisterListenerRes =
   | {
-      kind: "promise.subscribe";
+      kind: "promise.register_listener";
       head: ResponseHead<200>;
       data: { promise: PromiseRecord };
     }
-  | { kind: "promise.subscribe"; head: ResponseHead<400>; data: string }
-  | { kind: "promise.subscribe"; head: ResponseHead<404>; data: string }
-  | { kind: "promise.subscribe"; head: ResponseHead<429>; data: string }
-  | { kind: "promise.subscribe"; head: ResponseHead<500>; data: string }
-  | { kind: "promise.subscribe"; head: ResponseHead<501>; data: string };
+  | { kind: "promise.register_listener"; head: ResponseHead<400>; data: string }
+  | { kind: "promise.register_listener"; head: ResponseHead<404>; data: string }
+  | { kind: "promise.register_listener"; head: ResponseHead<429>; data: string }
+  | { kind: "promise.register_listener"; head: ResponseHead<500>; data: string }
+  | { kind: "promise.register_listener"; head: ResponseHead<501>; data: string };
 
 export type PromiseSearchRes =
   | {
@@ -612,7 +612,7 @@ export type DebugSnapRes =
         promises: PromiseRecord[];
         promiseTimeouts: { id: string; timeout: number }[];
         callbacks: { awaiter: string; awaited: string }[];
-        subscriptions?: { id: string; address: string }[];
+        listeners?: { id: string; address: string }[];
         tasks: TaskRecord[];
         taskTimeouts: { id: string; type: number; timeout: number }[];
         messages: { address: string; message: Message }[];
@@ -638,8 +638,8 @@ export type Response =
   | PromiseGetRes
   | PromiseCreateRes
   | PromiseSettleRes
-  | PromiseRegisterRes
-  | PromiseSubscribeRes
+  | PromiseRegisterCallbackRes
+  | PromiseRegisterListenerRes
   | PromiseSearchRes
   | TaskGetRes
   | TaskCreateRes
