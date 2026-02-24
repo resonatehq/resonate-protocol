@@ -79,8 +79,8 @@ type Request =
   | PromiseGetReq
   | PromiseCreateReq
   | PromiseSettleReq
-  | PromiseRegisterReq
-  | PromiseSubscribeReq
+  | PromiseRegisterCallbackReq
+  | PromiseRegisterListenerReq
   | PromiseSearchReq
   | TaskGetReq
   | TaskCreateReq
@@ -109,8 +109,8 @@ type Response =
   | PromiseGetRes
   | PromiseCreateRes
   | PromiseSettleRes
-  | PromiseRegisterRes
-  | PromiseSubscribeRes
+  | PromiseRegisterCallbackRes
+  | PromiseRegisterListenerRes
   | PromiseSearchRes
   | TaskGetRes
   | TaskCreateRes
@@ -348,15 +348,15 @@ type PromiseSettleRes = {
 
 Returns the promise in its current state. If the promise is already settled, returns the existing state (idempotent).
 
-### Register
+### Register Callback
 
 Registers a dependency between two promises, indicating that the awaiter is waiting for the awaited promise to settle.
 
 **Request**
 
 ```ts
-type PromiseRegisterReq = {
-  kind: "promise.register";
+type PromiseRegisterCallbackReq = {
+  kind: "promise.register_callback";
   head: {
     auth?: string;
     corrId: string;
@@ -384,8 +384,8 @@ type PromiseRegisterReq = {
 **Response**
 
 ```ts
-type PromiseRegisterRes = {
-  kind: "promise.register";
+type PromiseRegisterCallbackRes = {
+  kind: "promise.register_callback";
   head: {
     corrId: string;
     status: 200;
@@ -409,15 +409,15 @@ Returns the awaited promise. If the awaited promise is already settled, no depen
 
    Awaiter promise not found or does not have a target address.
 
-### Subscribe
+### Register Listener
 
-Subscribes to a promise, receiving a notification when it settles.
+Registers a listener for a promise, receiving a notification when it settles.
 
 **Request**
 
 ```ts
-type PromiseSubscribeReq = {
-  kind: "promise.subscribe";
+type PromiseRegisterListenerReq = {
+  kind: "promise.register_listener";
   head: {
     auth?: string;
     corrId: string;
@@ -441,8 +441,8 @@ type PromiseSubscribeReq = {
 **Response**
 
 ```ts
-type PromiseSubscribeRes = {
-  kind: "promise.subscribe";
+type PromiseRegisterListenerRes = {
+  kind: "promise.register_listener";
   head: {
     corrId: string;
     status: 200;
@@ -756,7 +756,7 @@ type TaskSuspendReq = {
   data: {
     id: string;
     version: number;
-    actions: PromiseRegisterReq[];
+    actions: PromiseRegisterCallbackReq[];
   };
 }
 ```
@@ -771,7 +771,7 @@ type TaskSuspendReq = {
 
 **actions**
 
-   An array of `PromiseRegisterReq` specifying the promises to await.
+   An array of `PromiseRegisterCallbackReq` specifying the promises to await.
 
 **Validation**
 
@@ -1542,7 +1542,7 @@ type DebugSnapRes = {
     promises: Promise[];
     promiseTimeouts: { id: string; timeout: number }[];
     callbacks: { awaiter: string; awaited: string }[];
-    subscriptions?: { id: string; address: string }[];
+    listeners?: { id: string; address: string }[];
     tasks: Task[];
     taskTimeouts: { id: string; type: number; timeout: number }[];
     messages: { address: string; message: Message }[];
@@ -1550,7 +1550,7 @@ type DebugSnapRes = {
 }
 ```
 
-Returns the current state of all promises, tasks, their timeouts, callbacks, subscriptions, and pending messages.
+Returns the current state of all promises, tasks, their timeouts, callbacks, listeners, and pending messages.
 
 **Errors**
 
@@ -1618,7 +1618,7 @@ type ExecuteMsg = {
 
 ### NotifyMsg
 
-Sent to the address specified in a `promise.subscribe` request when the promise settles.
+Sent to the address specified in a `promise.register_listener` request when the promise settles.
 
 ```ts
 type NotifyMsg = {

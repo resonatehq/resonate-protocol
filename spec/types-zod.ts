@@ -123,8 +123,8 @@ export const PromiseSettleReqSchema = z.object({
 
 export type PromiseSettleReq = z.infer<typeof PromiseSettleReqSchema>;
 
-export const PromiseRegisterReqSchema = z.object({
-  kind: z.literal("promise.register"),
+export const PromiseRegisterCallbackReqSchema = z.object({
+  kind: z.literal("promise.register_callback"),
   head: RequestHeadSchema,
   data: z
     .object({
@@ -136,10 +136,10 @@ export const PromiseRegisterReqSchema = z.object({
     }),
 });
 
-export type PromiseRegisterReq = z.infer<typeof PromiseRegisterReqSchema>;
+export type PromiseRegisterCallbackReq = z.infer<typeof PromiseRegisterCallbackReqSchema>;
 
-export const PromiseSubscribeReqSchema = z.object({
-  kind: z.literal("promise.subscribe"),
+export const PromiseRegisterListenerReqSchema = z.object({
+  kind: z.literal("promise.register_listener"),
   head: RequestHeadSchema,
   data: z.object({
     awaited: z.string().min(1, "Awaited promise ID is required"),
@@ -147,7 +147,7 @@ export const PromiseSubscribeReqSchema = z.object({
   }),
 });
 
-export type PromiseSubscribeReq = z.infer<typeof PromiseSubscribeReqSchema>;
+export type PromiseRegisterListenerReq = z.infer<typeof PromiseRegisterListenerReqSchema>;
 
 export const PromiseSearchReqSchema = z.object({
   kind: z.literal("promise.search"),
@@ -212,7 +212,7 @@ export const TaskSuspendReqSchema = z.object({
     .object({
       id: z.string().min(1, "Task ID is required"),
       version: z.number().int().nonnegative("Version must be a non-negative integer"),
-      actions: z.array(PromiseRegisterReqSchema).nonempty("Actions array cannot be empty"),
+      actions: z.array(PromiseRegisterCallbackReqSchema).nonempty("Actions array cannot be empty"),
     })
     .refine((r) => r.actions.every((a) => a.data.awaiter === r.id), {
       message: "All action awaiter IDs must match the task ID",
@@ -392,8 +392,8 @@ export const RequestSchema = z.discriminatedUnion("kind", [
   PromiseGetReqSchema,
   PromiseCreateReqSchema,
   PromiseSettleReqSchema,
-  PromiseRegisterReqSchema,
-  PromiseSubscribeReqSchema,
+  PromiseRegisterCallbackReqSchema,
+  PromiseRegisterListenerReqSchema,
   PromiseSearchReqSchema,
   // Task
   TaskGetReqSchema,
@@ -520,75 +520,75 @@ export const PromiseSettleResSchema = z.discriminatedUnion("kind", [
 
 export type PromiseSettleRes = z.infer<typeof PromiseSettleResSchema>;
 
-export const PromiseRegisterResSchema = z.discriminatedUnion("kind", [
+export const PromiseRegisterCallbackResSchema = z.discriminatedUnion("kind", [
   z.object({
-    kind: z.literal("promise.register"),
+    kind: z.literal("promise.register_callback"),
     head: ResponseHeadSchema(200),
     data: z.object({ promise: PromiseRecordSchema }),
   }),
   z.object({
-    kind: z.literal("promise.register"),
+    kind: z.literal("promise.register_callback"),
     head: ResponseHeadSchema(400),
     data: z.string(),
   }),
   z.object({
-    kind: z.literal("promise.register"),
+    kind: z.literal("promise.register_callback"),
     head: ResponseHeadSchema(404),
     data: z.string(),
   }),
   z.object({
-    kind: z.literal("promise.register"),
+    kind: z.literal("promise.register_callback"),
     head: ResponseHeadSchema(429),
     data: z.string(),
   }),
   z.object({
-    kind: z.literal("promise.register"),
+    kind: z.literal("promise.register_callback"),
     head: ResponseHeadSchema(422),
     data: z.string(),
   }),
   z.object({
-    kind: z.literal("promise.register"),
+    kind: z.literal("promise.register_callback"),
     head: ResponseHeadSchema(500),
     data: z.string(),
   }),
 ]);
 
-export type PromiseRegisterRes = z.infer<typeof PromiseRegisterResSchema>;
+export type PromiseRegisterCallbackRes = z.infer<typeof PromiseRegisterCallbackResSchema>;
 
-export const PromiseSubscribeResSchema = z.discriminatedUnion("kind", [
+export const PromiseRegisterListenerResSchema = z.discriminatedUnion("kind", [
   z.object({
-    kind: z.literal("promise.subscribe"),
+    kind: z.literal("promise.register_listener"),
     head: ResponseHeadSchema(200),
     data: z.object({ promise: PromiseRecordSchema }),
   }),
   z.object({
-    kind: z.literal("promise.subscribe"),
+    kind: z.literal("promise.register_listener"),
     head: ResponseHeadSchema(400),
     data: z.string(),
   }),
   z.object({
-    kind: z.literal("promise.subscribe"),
+    kind: z.literal("promise.register_listener"),
     head: ResponseHeadSchema(404),
     data: z.string(),
   }),
   z.object({
-    kind: z.literal("promise.subscribe"),
+    kind: z.literal("promise.register_listener"),
     head: ResponseHeadSchema(429),
     data: z.string(),
   }),
   z.object({
-    kind: z.literal("promise.subscribe"),
+    kind: z.literal("promise.register_listener"),
     head: ResponseHeadSchema(500),
     data: z.string(),
   }),
   z.object({
-    kind: z.literal("promise.subscribe"),
+    kind: z.literal("promise.register_listener"),
     head: ResponseHeadSchema(501),
     data: z.string(),
   }),
 ]);
 
-export type PromiseSubscribeRes = z.infer<typeof PromiseSubscribeResSchema>;
+export type PromiseRegisterListenerRes = z.infer<typeof PromiseRegisterListenerResSchema>;
 
 export const PromiseSearchResSchema = z.discriminatedUnion("kind", [
   z.object({
@@ -1205,7 +1205,7 @@ export const DebugSnapResSchema = z.discriminatedUnion("kind", [
       promises: z.array(PromiseRecordSchema),
       promiseTimeouts: z.array(z.object({ id: z.string(), timeout: z.number() })),
       callbacks: z.array(z.object({ awaiter: z.string(), awaited: z.string() })),
-      subscriptions: z.array(z.object({ id: z.string(), address: z.string() })).optional(),
+      listeners: z.array(z.object({ id: z.string(), address: z.string() })).optional(),
       tasks: z.array(TaskRecordSchema),
       taskTimeouts: z.array(z.object({ id: z.string(), type: z.number(), timeout: z.number() })),
       messages: z.array(z.object({ address: z.string(), message: MessageSchema })),
@@ -1274,8 +1274,8 @@ export const ResponseSchema = z.discriminatedUnion("kind", [
   PromiseGetResSchema,
   PromiseCreateResSchema,
   PromiseSettleResSchema,
-  PromiseRegisterResSchema,
-  PromiseSubscribeResSchema,
+  PromiseRegisterCallbackResSchema,
+  PromiseRegisterListenerResSchema,
   PromiseSearchResSchema,
   // Task
   TaskGetResSchema,
