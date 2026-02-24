@@ -661,7 +661,7 @@ export const TaskCreateResSchema = z.discriminatedUnion("kind", [
   z.object({
     kind: z.literal("task.create"),
     head: ResponseHeadSchema(200),
-    data: z.object({ task: TaskRecordSchema, promise: PromiseRecordSchema }),
+    data: z.object({ task: TaskRecordSchema.optional(), promise: PromiseRecordSchema }),
   }),
   z.object({
     kind: z.literal("task.create"),

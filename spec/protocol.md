@@ -653,19 +653,19 @@ type TaskCreateRes = {
     version: string;
   };
   data: {
-    task: Task;
+    task?: Task;
     promise: Promise;
   };
 }
 ```
 
-Returns the task and its associated promise.
+Returns the task and its associated promise. If the task is pending, acquires the task and returns it in the acquired state. If the task is already fulfilled, returns only the associated promise.
 
 **Errors**
 
 **409**
 
-   The task already exists.
+   The task already exists and is acquired or suspended.
 
 **501**
 

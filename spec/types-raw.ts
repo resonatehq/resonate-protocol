@@ -418,7 +418,7 @@ export type TaskCreateRes =
   | {
       kind: "task.create";
       head: ResponseHead<200>;
-      data: { task: TaskRecord; promise: PromiseRecord };
+      data: { task?: TaskRecord; promise: PromiseRecord };
     }
   | { kind: "task.create"; head: ResponseHead<400>; data: string }
   | { kind: "task.create"; head: ResponseHead<409>; data: string }
