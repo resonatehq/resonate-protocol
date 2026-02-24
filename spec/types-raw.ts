@@ -68,6 +68,7 @@ export type RequestHead = {
   auth?: string;
   corrId: string;
   version: string;
+  "resonate:debug_time"?: number;
 };
 
 // =============================================================================

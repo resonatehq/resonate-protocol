@@ -11,6 +11,7 @@ type Request<T> = {
     auth?: string;
     corrId: string;
     version: string;
+    "resonate:debug_time"?: number;
   };
   data: T;
 }
@@ -27,6 +28,10 @@ type Request<T> = {
 **version**
 
    The protocol version supported by the client. Uses date-based versioning (e.g., `"2025-01-15"`).
+
+**resonate:debug_time**
+
+   Optional override for the current time, used in debug mode. When set, the server will use this value as the current time instead of the system clock.
 
 ## Response Structure
 
@@ -196,6 +201,7 @@ type PromiseGetReq = {
     auth?: string;
     corrId: string;
     version: string;
+    "resonate:debug_time"?: number;
   };
   data: {
     id: string;
@@ -244,6 +250,7 @@ type PromiseCreateReq = {
     auth?: string;
     corrId: string;
     version: string;
+    "resonate:debug_time"?: number;
   };
   data: {
     id: string;
@@ -304,6 +311,7 @@ type PromiseSettleReq = {
     auth?: string;
     corrId: string;
     version: string;
+    "resonate:debug_time"?: number;
   };
   data: {
     id: string;
@@ -363,6 +371,7 @@ type PromiseRegisterCallbackReq = {
     auth?: string;
     corrId: string;
     version: string;
+    "resonate:debug_time"?: number;
   };
   data: {
     awaiter: string;
@@ -424,6 +433,7 @@ type PromiseRegisterListenerReq = {
     auth?: string;
     corrId: string;
     version: string;
+    "resonate:debug_time"?: number;
   };
   data: {
     awaited: string;
@@ -481,6 +491,7 @@ type PromiseSearchReq = {
     auth?: string;
     corrId: string;
     version: string;
+    "resonate:debug_time"?: number;
   };
   data: {
     state?: "pending" | "resolved" | "rejected" | "rejected_canceled" | "rejected_timedout";
@@ -571,6 +582,7 @@ type TaskGetReq = {
     auth?: string;
     corrId: string;
     version: string;
+    "resonate:debug_time"?: number;
   };
   data: {
     id: string;
@@ -619,6 +631,7 @@ type TaskCreateReq = {
     auth?: string;
     corrId: string;
     version: string;
+    "resonate:debug_time"?: number;
   };
   data: {
     pid: string;
@@ -687,6 +700,7 @@ type TaskAcquireReq = {
     auth?: string;
     corrId: string;
     version: string;
+    "resonate:debug_time"?: number;
   };
   data: {
     id: string;
@@ -755,6 +769,7 @@ type TaskSuspendReq = {
     auth?: string;
     corrId: string;
     version: string;
+    "resonate:debug_time"?: number;
   };
   data: {
     id: string;
@@ -841,6 +856,7 @@ type TaskFulfillReq = {
     auth?: string;
     corrId: string;
     version: string;
+    "resonate:debug_time"?: number;
   };
   data: {
     id: string;
@@ -907,6 +923,7 @@ type TaskReleaseReq = {
     auth?: string;
     corrId: string;
     version: string;
+    "resonate:debug_time"?: number;
   };
   data: {
     id: string;
@@ -960,6 +977,7 @@ type TaskFenceReq = {
     auth?: string;
     corrId: string;
     version: string;
+    "resonate:debug_time"?: number;
   };
   data: {
     id: string;
@@ -1022,6 +1040,7 @@ type TaskHeartbeatReq = {
     auth?: string;
     corrId: string;
     version: string;
+    "resonate:debug_time"?: number;
   };
   data: {
     pid: string;
@@ -1065,6 +1084,7 @@ type TaskSearchReq = {
     auth?: string;
     corrId: string;
     version: string;
+    "resonate:debug_time"?: number;
   };
   data: {
     state?: "pending" | "acquired" | "suspended" | "fulfilled";
@@ -1180,6 +1200,7 @@ type ScheduleGetReq = {
     auth?: string;
     corrId: string;
     version: string;
+    "resonate:debug_time"?: number;
   };
   data: {
     id: string;
@@ -1232,6 +1253,7 @@ type ScheduleCreateReq = {
     auth?: string;
     corrId: string;
     version: string;
+    "resonate:debug_time"?: number;
   };
   data: {
     id: string;
@@ -1305,6 +1327,7 @@ type ScheduleSearchReq = {
     auth?: string;
     corrId: string;
     version: string;
+    "resonate:debug_time"?: number;
   };
   data: {
     tags?: { [key: string]: string };
@@ -1364,6 +1387,7 @@ type ScheduleDeleteReq = {
     auth?: string;
     corrId: string;
     version: string;
+    "resonate:debug_time"?: number;
   };
   data: {
     id: string;
@@ -1416,6 +1440,7 @@ type DebugStartReq = {
     auth?: string;
     corrId: string;
     version: string;
+    "resonate:debug_time"?: number;
   };
   data: {};
 }
@@ -1454,6 +1479,7 @@ type DebugResetReq = {
     auth?: string;
     corrId: string;
     version: string;
+    "resonate:debug_time"?: number;
   };
   data: {};
 }
@@ -1492,6 +1518,7 @@ type DebugTickReq = {
     auth?: string;
     corrId: string;
     version: string;
+    "resonate:debug_time"?: number;
   };
   data: {
     time: number;
@@ -1542,6 +1569,7 @@ type DebugSnapReq = {
     auth?: string;
     corrId: string;
     version: string;
+    "resonate:debug_time"?: number;
   };
   data: {};
 }
@@ -1590,6 +1618,7 @@ type DebugStopReq = {
     auth?: string;
     corrId: string;
     version: string;
+    "resonate:debug_time"?: number;
   };
   data: {};
 }
