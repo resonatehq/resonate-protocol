@@ -469,7 +469,7 @@ export const PromiseCreateResSchema = z.discriminatedUnion("kind", [
   z.object({
     kind: z.literal("promise.create"),
     head: ResponseHeadSchema(200),
-    data: z.object({ promise: PromiseRecordSchema }),
+    data: z.object({ promise: PromiseRecordSchema, preload: z.array(PromiseRecordSchema) }),
   }),
   z.object({
     kind: z.literal("promise.create"),
@@ -494,7 +494,7 @@ export const PromiseSettleResSchema = z.discriminatedUnion("kind", [
   z.object({
     kind: z.literal("promise.settle"),
     head: ResponseHeadSchema(200),
-    data: z.object({ promise: PromiseRecordSchema }),
+    data: z.object({ promise: PromiseRecordSchema, preload: z.array(PromiseRecordSchema) }),
   }),
   z.object({
     kind: z.literal("promise.settle"),

@@ -284,6 +284,7 @@ type PromiseCreateRes = {
   };
   data: {
     promise: Promise;
+    preload: Promise[];
   };
 }
 ```
@@ -342,6 +343,7 @@ type PromiseSettleRes = {
   };
   data: {
     promise: Promise;
+    preload: Promise[];
   };
 }
 ```
