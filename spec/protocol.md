@@ -655,11 +655,12 @@ type TaskCreateRes = {
   data: {
     task?: Task;
     promise: Promise;
+    preload: Promise[];
   };
 }
 ```
 
-Returns the task and its associated promise. If the task is pending, acquires the task and returns it in the acquired state. If the task is already fulfilled, returns only the associated promise.
+Returns the task and its associated promise. If the task is pending, acquires the task and returns it in the acquired state along with any preloaded promises that have settled. If the task is already fulfilled, returns only the associated promise.
 
 **Errors**
 
@@ -786,14 +787,30 @@ type TaskSuspendRes = {
   kind: "task.suspend";
   head: {
     corrId: string;
-    status: 200 | 300;
+    status: 200;
     version: string;
   };
   data: {};
 }
 ```
 
-Returns status `200` if the task was suspended. Returns status `300` if an action promise has already settled or if a previously awaited promise has already settled, indicating the worker can continue execution immediately with the current lease.
+Returns status `200` if the task was suspended.
+
+```ts
+type TaskSuspendRes = {
+  kind: "task.suspend";
+  head: {
+    corrId: string;
+    status: 300;
+    version: string;
+  };
+  data: {
+    preload: Promise[];
+  };
+}
+```
+
+Returns status `300` if an action promise has already settled or if a previously awaited promise has already settled, indicating the worker can continue execution immediately with the current lease. The `preload` field contains the settled promises.
 
 **Errors**
 

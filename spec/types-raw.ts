@@ -418,7 +418,7 @@ export type TaskCreateRes =
   | {
       kind: "task.create";
       head: ResponseHead<200>;
-      data: { task?: TaskRecord; promise: PromiseRecord };
+      data: { task?: TaskRecord; promise: PromiseRecord; preload: PromiseRecord[] };
     }
   | { kind: "task.create"; head: ResponseHead<400>; data: string }
   | { kind: "task.create"; head: ResponseHead<409>; data: string }
@@ -447,7 +447,7 @@ export type TaskSuspendRes =
   | {
       kind: "task.suspend";
       head: ResponseHead<300>;
-      data: Record<string, never>;
+      data: { preload: PromiseRecord[] };
     }
   | { kind: "task.suspend"; head: ResponseHead<400>; data: string }
   | { kind: "task.suspend"; head: ResponseHead<404>; data: string }

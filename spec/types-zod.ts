@@ -661,7 +661,11 @@ export const TaskCreateResSchema = z.discriminatedUnion("kind", [
   z.object({
     kind: z.literal("task.create"),
     head: ResponseHeadSchema(200),
-    data: z.object({ task: TaskRecordSchema.optional(), promise: PromiseRecordSchema }),
+    data: z.object({
+      task: TaskRecordSchema.optional(),
+      promise: PromiseRecordSchema,
+      preload: z.array(PromiseRecordSchema),
+    }),
   }),
   z.object({
     kind: z.literal("task.create"),
@@ -739,7 +743,7 @@ export const TaskSuspendResSchema = z.discriminatedUnion("kind", [
   z.object({
     kind: z.literal("task.suspend"),
     head: ResponseHeadSchema(300),
-    data: z.object({}),
+    data: z.object({ preload: z.array(PromiseRecordSchema) }),
   }),
   z.object({
     kind: z.literal("task.suspend"),
