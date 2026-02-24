@@ -351,7 +351,7 @@ export type PromiseCreateRes =
   | {
       kind: "promise.create";
       head: ResponseHead<200>;
-      data: { promise: PromiseRecord };
+      data: { promise: PromiseRecord; preload: PromiseRecord[] };
     }
   | { kind: "promise.create"; head: ResponseHead<400>; data: string }
   | { kind: "promise.create"; head: ResponseHead<429>; data: string }
@@ -361,7 +361,7 @@ export type PromiseSettleRes =
   | {
       kind: "promise.settle";
       head: ResponseHead<200>;
-      data: { promise: PromiseRecord };
+      data: { promise: PromiseRecord; preload: PromiseRecord[] };
     }
   | { kind: "promise.settle"; head: ResponseHead<400>; data: string }
   | { kind: "promise.settle"; head: ResponseHead<404>; data: string }
