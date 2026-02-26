@@ -274,6 +274,9 @@ type PromiseCreateReq = {
    Key-value metadata for the promise.
    - If a `resonate:target` tag is present, an `ExecuteMessage` is sent to the specified address on invocation and resumption.
    - If a `resonate:timer` tag is set to `true`, the promise transitions to `resolved` instead of `rejected_timedout` when the timeout is reached.
+   - If a `resonate:delay` tag is present, it specifies a unix timestamp in milliseconds at which the `ExecuteMessage` is sent on invocation.
+   - If a `resonate:origin` tag is present, it identifies the root promise that initiated the execution. All promises in an execution tree share the same `resonate:origin` value.
+   - If a `resonate:branch` tag is present, it identifies the current execution branch. Set when a promise in an execution tree has a `resonate:target` tag.
 
 **timeoutAt**
 
@@ -675,7 +678,7 @@ type TaskCreateRes = {
 }
 ```
 
-Returns the task and its associated promise. If the task is pending, acquires the task and returns it in the acquired state along with any preloaded promises. If the task is already fulfilled, returns only the associated promise.
+Returns the task and its associated promise. If the task is pending, acquires the task and returns it in the acquired state. If the task is already fulfilled, returns only the associated promise. The `preload` field contains all promises that share the same `resonate:branch` value as the task's promise.
 
 **Errors**
 
@@ -744,7 +747,7 @@ type TaskAcquireRes = {
 }
 ```
 
-Returns the task's associated promise and any preloaded promises.
+Returns the task's associated promise. The `preload` field contains all promises that share the same `resonate:branch` value as the task's promise.
 
 **Errors**
 
@@ -827,7 +830,7 @@ type TaskSuspendRes = {
 }
 ```
 
-Returns status `300` if an action promise has already settled or if a previously awaited promise has already settled, indicating the worker can continue execution immediately with the current lease. The `preload` field contains the preloaded promises.
+Returns status `300` if an action promise has already settled or if a previously awaited promise has already settled, indicating the worker can continue execution immediately with the current lease. The `preload` field contains all promises that share the same `resonate:branch` value as the task's promise.
 
 **Errors**
 
