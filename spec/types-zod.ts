@@ -470,7 +470,7 @@ export const PromiseCreateResSchema = z.discriminatedUnion("kind", [
   z.object({
     kind: z.literal("promise.create"),
     head: ResponseHeadSchema(200),
-    data: z.object({ promise: PromiseRecordSchema, preload: z.array(PromiseRecordSchema) }),
+    data: z.object({ promise: PromiseRecordSchema }),
   }),
   z.object({
     kind: z.literal("promise.create"),
@@ -495,7 +495,7 @@ export const PromiseSettleResSchema = z.discriminatedUnion("kind", [
   z.object({
     kind: z.literal("promise.settle"),
     head: ResponseHeadSchema(200),
-    data: z.object({ promise: PromiseRecordSchema, preload: z.array(PromiseRecordSchema) }),
+    data: z.object({ promise: PromiseRecordSchema }),
   }),
   z.object({
     kind: z.literal("promise.settle"),
@@ -856,6 +856,7 @@ export const TaskFenceResSchema = z.discriminatedUnion("kind", [
     head: ResponseHeadSchema(200),
     data: z.object({
       action: z.union([PromiseCreateResSchema, PromiseSettleResSchema]),
+      preload: z.array(PromiseRecordSchema),
     }),
   }),
   z.object({
