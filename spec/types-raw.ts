@@ -701,22 +701,9 @@ export function isNotImplemented<T extends Response>(res: T): res is Extract<T, 
   return res.head.status === 501;
 }
 
-function isPromiseRecord(value: unknown): value is PromiseRecord {
-  if (typeof value !== "object" || value === null) return false;
-  const rec = value as Record<string, unknown>;
-  return (
-    typeof rec.id === "string" &&
-    typeof rec.state === "string" &&
-    typeof rec.tags === "object" &&
-    rec.tags !== null &&
-    typeof rec.timeoutAt === "number" &&
-    typeof rec.createdAt === "number"
-  );
-}
+const MESSAGE_KINDS = new Set<Message["kind"]>(["execute", "notify"]);
 
-const MESSAGE_KINDS = new Set<string>(["execute", "notify"]);
-
-const REQUEST_KINDS = new Set<string>([
+const REQUEST_KINDS = new Set<Request["kind"]>([
   "promise.get",
   "promise.create",
   "promise.settle",
@@ -743,53 +730,28 @@ const REQUEST_KINDS = new Set<string>([
   "debug.stop",
 ]);
 
-const RESPONSE_KINDS = REQUEST_KINDS;
+const RESPONSE_KINDS = REQUEST_KINDS as Set<Response["kind"]>;
 
 export function isMessage(value: unknown): value is Message {
   if (typeof value !== "object" || value === null) return false;
-  if (!("kind" in value) || !("head" in value) || !("data" in value)) return false;
-  const { kind, data } = value as { kind: unknown; data: unknown };
-  if (!MESSAGE_KINDS.has(kind as string)) return false;
-  if (kind === "execute") {
-    if (typeof data !== "object" || data === null) return false;
-    const { task } = data as { task: unknown };
-    if (typeof task !== "object" || task === null) return false;
-    const { id, version } = task as { id: unknown; version: unknown };
-    return typeof id === "string" && typeof version === "number";
-  }
-  return true;
+  const v = value as Record<string, unknown>;
+  return typeof v.kind === "string" && MESSAGE_KINDS.has(v.kind as Message["kind"]) && "head" in v && "data" in v;
 }
 
 export function isRequest(value: unknown): value is Request {
   if (typeof value !== "object" || value === null) return false;
-  if (!("kind" in value) || !("head" in value) || !("data" in value)) return false;
-  const { kind, head } = value as { kind: unknown; head: unknown };
-  if (typeof kind !== "string" || !REQUEST_KINDS.has(kind)) return false;
-  if (typeof head !== "object" || head === null) return false;
-  const { corrId, version } = head as { corrId: unknown; version: unknown };
-  return typeof corrId === "string" && typeof version === "string";
+  const v = value as Record<string, unknown>;
+  if (typeof v.kind !== "string" || !REQUEST_KINDS.has(v.kind as Request["kind"])) return false;
+  if (typeof v.head !== "object" || v.head === null) return false;
+  const head = v.head as Record<string, unknown>;
+  return typeof head.corrId === "string" && typeof head.version === "string" && !("status" in head);
 }
 
 export function isResponse(value: unknown): value is Response {
   if (typeof value !== "object" || value === null) return false;
-  if (!("kind" in value) || !("head" in value) || !("data" in value)) return false;
-  const { kind, head, data } = value as { kind: unknown; head: unknown; data: unknown };
-  if (typeof kind !== "string" || !RESPONSE_KINDS.has(kind)) return false;
-  if (typeof head !== "object" || head === null) return false;
-  const { corrId, status, version } = head as { corrId: unknown; status: unknown; version: unknown };
-  if (
-    (corrId !== undefined && typeof corrId !== "string") ||
-    typeof status !== "number" ||
-    (version !== undefined && typeof version !== "string")
-  )
-    return false;
-  // For error responses, data must be a string
-  if (status >= 400) return typeof data === "string";
-  // For success/redirect responses that carry a promise, validate the promise record
-  if (typeof data === "object" && data !== null && !Array.isArray(data)) {
-    const d = data as Record<string, unknown>;
-    if ("promise" in d && !isPromiseRecord(d.promise)) return false;
-    if ("preload" in d && Array.isArray(d.preload) && !d.preload.every(isPromiseRecord)) return false;
-  }
-  return true;
+  const v = value as Record<string, unknown>;
+  if (typeof v.kind !== "string" || !RESPONSE_KINDS.has(v.kind as Response["kind"])) return false;
+  if (typeof v.head !== "object" || v.head === null) return false;
+  const head = v.head as Record<string, unknown>;
+  return typeof head.corrId === "string" && typeof head.status === "number" && typeof head.version === "string";
 }
