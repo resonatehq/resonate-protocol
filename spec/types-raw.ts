@@ -24,7 +24,7 @@ export type PromiseRecord = {
 
 export type TaskRecord = {
   id: string;
-  state: "pending" | "acquired" | "suspended" | "fulfilled";
+  state: "pending" | "acquired" | "suspended" | "halted" | "fulfilled";
   version: number;
 };
 
@@ -181,6 +181,18 @@ export type TaskSuspendReq = {
   };
 };
 
+export type TaskHaltReq = {
+  kind: "task.halt";
+  head: RequestHead;
+  data: { id: string };
+};
+
+export type TaskContinueReq = {
+  kind: "task.continue";
+  head: RequestHead;
+  data: { id: string };
+};
+
 export type TaskFulfillReq = {
   kind: "task.fulfill";
   head: RequestHead;
@@ -214,7 +226,7 @@ export type TaskSearchReq = {
   kind: "task.search";
   head: RequestHead;
   data: {
-    state?: "pending" | "acquired" | "suspended" | "fulfilled";
+    state?: "pending" | "acquired" | "suspended" | "halted" | "fulfilled";
     limit?: number;
     cursor?: string;
   };
@@ -309,6 +321,8 @@ export type Request =
   | TaskAcquireReq
   | TaskReleaseReq
   | TaskSuspendReq
+  | TaskHaltReq
+  | TaskContinueReq
   | TaskFulfillReq
   | TaskFenceReq
   | TaskHeartbeatReq
@@ -468,6 +482,30 @@ export type TaskSuspendRes =
   | { kind: "task.suspend"; head: ResponseHead<422>; data: string }
   | { kind: "task.suspend"; head: ResponseHead<429>; data: string }
   | { kind: "task.suspend"; head: ResponseHead<500>; data: string };
+
+export type TaskHaltRes =
+  | {
+      kind: "task.halt";
+      head: ResponseHead<200>;
+      data: Record<string, never>;
+    }
+  | { kind: "task.halt"; head: ResponseHead<400>; data: string }
+  | { kind: "task.halt"; head: ResponseHead<404>; data: string }
+  | { kind: "task.halt"; head: ResponseHead<409>; data: string }
+  | { kind: "task.halt"; head: ResponseHead<429>; data: string }
+  | { kind: "task.halt"; head: ResponseHead<500>; data: string };
+
+export type TaskContinueRes =
+  | {
+      kind: "task.continue";
+      head: ResponseHead<200>;
+      data: Record<string, never>;
+    }
+  | { kind: "task.continue"; head: ResponseHead<400>; data: string }
+  | { kind: "task.continue"; head: ResponseHead<404>; data: string }
+  | { kind: "task.continue"; head: ResponseHead<409>; data: string }
+  | { kind: "task.continue"; head: ResponseHead<429>; data: string }
+  | { kind: "task.continue"; head: ResponseHead<500>; data: string };
 
 export type TaskFulfillRes =
   | {
@@ -647,6 +685,8 @@ export type Response =
   | TaskAcquireRes
   | TaskReleaseRes
   | TaskSuspendRes
+  | TaskHaltRes
+  | TaskContinueRes
   | TaskFulfillRes
   | TaskFenceRes
   | TaskHeartbeatRes
@@ -853,6 +893,22 @@ export function isTaskSuspendReq(val: unknown): val is TaskSuspendReq {
   );
 }
 
+export function isTaskHaltReq(val: unknown): val is TaskHaltReq {
+  if (typeof val !== "object" || val === null) return false;
+  const v = val as Record<string, unknown>;
+  if (v.kind !== "task.halt" || !isRequestHead(v.head)) return false;
+  if (typeof v.data !== "object" || v.data === null) return false;
+  return typeof (v.data as Record<string, unknown>).id === "string";
+}
+
+export function isTaskContinueReq(val: unknown): val is TaskContinueReq {
+  if (typeof val !== "object" || val === null) return false;
+  const v = val as Record<string, unknown>;
+  if (v.kind !== "task.continue" || !isRequestHead(v.head)) return false;
+  if (typeof v.data !== "object" || v.data === null) return false;
+  return typeof (v.data as Record<string, unknown>).id === "string";
+}
+
 export function isTaskFulfillReq(val: unknown): val is TaskFulfillReq {
   if (typeof val !== "object" || val === null) return false;
   const v = val as Record<string, unknown>;
@@ -905,6 +961,7 @@ export function isTaskSearchReq(val: unknown): val is TaskSearchReq {
       d.state === "pending" ||
       d.state === "acquired" ||
       d.state === "suspended" ||
+      d.state === "halted" ||
       d.state === "fulfilled") &&
     (d.limit === undefined || typeof d.limit === "number") &&
     (d.cursor === undefined || typeof d.cursor === "string")
@@ -1002,6 +1059,8 @@ export function isRequest(val: unknown): val is Request {
     isTaskAcquireReq(val) ||
     isTaskReleaseReq(val) ||
     isTaskSuspendReq(val) ||
+    isTaskHaltReq(val) ||
+    isTaskContinueReq(val) ||
     isTaskFulfillReq(val) ||
     isTaskFenceReq(val) ||
     isTaskHeartbeatReq(val) ||
@@ -1168,6 +1227,24 @@ export function isTaskSuspendRes(val: unknown): val is TaskSuspendRes {
     const d = v.data as Record<string, unknown>;
     return Array.isArray(d.preload) && (d.preload as unknown[]).every(isPromiseRecord);
   }
+  return typeof v.data === "string";
+}
+
+export function isTaskHaltRes(val: unknown): val is TaskHaltRes {
+  if (typeof val !== "object" || val === null) return false;
+  const v = val as Record<string, unknown>;
+  if (v.kind !== "task.halt" || !isResponseHead(v.head)) return false;
+  const { status } = v.head as ResponseHead<number>;
+  if (status === 200) return typeof v.data === "object" && v.data !== null;
+  return typeof v.data === "string";
+}
+
+export function isTaskContinueRes(val: unknown): val is TaskContinueRes {
+  if (typeof val !== "object" || val === null) return false;
+  const v = val as Record<string, unknown>;
+  if (v.kind !== "task.continue" || !isResponseHead(v.head)) return false;
+  const { status } = v.head as ResponseHead<number>;
+  if (status === 200) return typeof v.data === "object" && v.data !== null;
   return typeof v.data === "string";
 }
 
@@ -1387,6 +1464,8 @@ export function isResponse(val: unknown): val is Response {
     isTaskAcquireRes(val) ||
     isTaskReleaseRes(val) ||
     isTaskSuspendRes(val) ||
+    isTaskHaltRes(val) ||
+    isTaskContinueRes(val) ||
     isTaskFulfillRes(val) ||
     isTaskFenceRes(val) ||
     isTaskHeartbeatRes(val) ||
@@ -1440,7 +1519,11 @@ export function isTaskRecord(val: unknown): val is TaskRecord {
   const v = val as Record<string, unknown>;
   return (
     typeof v.id === "string" &&
-    (v.state === "pending" || v.state === "acquired" || v.state === "suspended" || v.state === "fulfilled") &&
+    (v.state === "pending" ||
+      v.state === "acquired" ||
+      v.state === "suspended" ||
+      v.state === "halted" ||
+      v.state === "fulfilled") &&
     typeof v.version === "number"
   );
 }

@@ -28,7 +28,7 @@ export const PromiseRecordSchema = z.object({
 
 export const TaskRecordSchema = z.object({
   id: z.string(),
-  state: z.enum(["pending", "acquired", "suspended", "fulfilled"]),
+  state: z.enum(["pending", "acquired", "suspended", "halted", "fulfilled"]),
   version: z.number().int(),
 });
 
@@ -236,6 +236,26 @@ export const TaskSuspendReqSchema = z.object({
 
 export type TaskSuspendReq = z.infer<typeof TaskSuspendReqSchema>;
 
+export const TaskHaltReqSchema = z.object({
+  kind: z.literal("task.halt"),
+  head: RequestHeadSchema,
+  data: z.object({
+    id: z.string().min(1, "Task ID is required"),
+  }),
+});
+
+export type TaskHaltReq = z.infer<typeof TaskHaltReqSchema>;
+
+export const TaskContinueReqSchema = z.object({
+  kind: z.literal("task.continue"),
+  head: RequestHeadSchema,
+  data: z.object({
+    id: z.string().min(1, "Task ID is required"),
+  }),
+});
+
+export type TaskContinueReq = z.infer<typeof TaskContinueReqSchema>;
+
 export const TaskFulfillReqSchema = z.object({
   kind: z.literal("task.fulfill"),
   head: RequestHeadSchema,
@@ -279,7 +299,7 @@ export const TaskSearchReqSchema = z.object({
   kind: z.literal("task.search"),
   head: RequestHeadSchema,
   data: z.object({
-    state: z.enum(["pending", "acquired", "suspended", "fulfilled"]).optional(),
+    state: z.enum(["pending", "acquired", "suspended", "halted", "fulfilled"]).optional(),
     limit: z.number().int().positive("Limit must be a positive integer").optional(),
     cursor: z.string().optional(),
   }),
@@ -402,6 +422,8 @@ export const RequestSchema = z.discriminatedUnion("kind", [
   TaskAcquireReqSchema,
   TaskReleaseReqSchema,
   TaskSuspendReqSchema,
+  TaskHaltReqSchema,
+  TaskContinueReqSchema,
   TaskFulfillReqSchema,
   TaskFenceReqSchema,
   TaskHeartbeatReqSchema,
@@ -814,6 +836,76 @@ export const TaskSuspendResSchema = z.discriminatedUnion("kind", [
 ]);
 
 export type TaskSuspendRes = z.infer<typeof TaskSuspendResSchema>;
+
+export const TaskHaltResSchema = z.discriminatedUnion("kind", [
+  z.object({
+    kind: z.literal("task.halt"),
+    head: ResponseHeadSchema(200),
+    data: z.object({}),
+  }),
+  z.object({
+    kind: z.literal("task.halt"),
+    head: ResponseHeadSchema(400),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("task.halt"),
+    head: ResponseHeadSchema(404),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("task.halt"),
+    head: ResponseHeadSchema(409),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("task.halt"),
+    head: ResponseHeadSchema(429),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("task.halt"),
+    head: ResponseHeadSchema(500),
+    data: z.string(),
+  }),
+]);
+
+export type TaskHaltRes = z.infer<typeof TaskHaltResSchema>;
+
+export const TaskContinueResSchema = z.discriminatedUnion("kind", [
+  z.object({
+    kind: z.literal("task.continue"),
+    head: ResponseHeadSchema(200),
+    data: z.object({}),
+  }),
+  z.object({
+    kind: z.literal("task.continue"),
+    head: ResponseHeadSchema(400),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("task.continue"),
+    head: ResponseHeadSchema(404),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("task.continue"),
+    head: ResponseHeadSchema(409),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("task.continue"),
+    head: ResponseHeadSchema(429),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("task.continue"),
+    head: ResponseHeadSchema(500),
+    data: z.string(),
+  }),
+]);
+
+export type TaskContinueRes = z.infer<typeof TaskContinueResSchema>;
 
 export const TaskFulfillResSchema = z.discriminatedUnion("kind", [
   z.object({
@@ -1289,6 +1381,8 @@ export const ResponseSchema = z.discriminatedUnion("kind", [
   TaskAcquireResSchema,
   TaskReleaseResSchema,
   TaskSuspendResSchema,
+  TaskHaltResSchema,
+  TaskContinueResSchema,
   TaskFulfillResSchema,
   TaskFenceResSchema,
   TaskHeartbeatResSchema,

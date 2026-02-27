@@ -92,6 +92,8 @@ type Request =
   | TaskAcquireReq
   | TaskReleaseReq
   | TaskSuspendReq
+  | TaskHaltReq
+  | TaskContinueReq
   | TaskFulfillReq
   | TaskFenceReq
   | TaskHeartbeatReq
@@ -122,6 +124,8 @@ type Response =
   | TaskAcquireRes
   | TaskReleaseRes
   | TaskSuspendRes
+  | TaskHaltRes
+  | TaskContinueRes
   | TaskFulfillRes
   | TaskFenceRes
   | TaskHeartbeatRes
@@ -553,7 +557,7 @@ Returns a list of matching promises and an optional cursor for the next page of 
 ```ts
 type Task = {
   id: string;
-  state: "pending" | "acquired" | "suspended" | "fulfilled";
+  state: "pending" | "acquired" | "suspended" | "halted" | "fulfilled";
   version: number;
 }
 ```
@@ -564,7 +568,7 @@ type Task = {
 
 **state**
 
-   The current state of the task. Can be one of: `pending`, `acquired`, `suspended`, or `fulfilled`.
+   The current state of the task. Can be one of: `pending`, `acquired`, `suspended`, `halted`, or `fulfilled`.
 
 **version**
 
@@ -898,6 +902,104 @@ Returns status `300` if an action promise has already settled or if a previously
 
    Awaited promise not found.
 
+### Halt
+
+Halts a pending, acquired, or suspended task, preventing it from being acquired or making further progress.
+
+**Request**
+
+```ts
+type TaskHaltReq = {
+  kind: "task.halt";
+  head: {
+    auth?: string;
+    corrId: string;
+    version: string;
+    "resonate:debug_time"?: number;
+  };
+  data: {
+    id: string;
+  };
+}
+```
+
+**id**
+
+   The unique identifier of the task to halt.
+
+**Response**
+
+```ts
+type TaskHaltRes = {
+  kind: "task.halt";
+  head: {
+    corrId: string;
+    status: 200;
+    version: string;
+  };
+  data: {};
+}
+```
+
+**Errors**
+
+**404**
+
+   Task not found.
+
+**409**
+
+   Task is not in a haltable state (already fulfilled).
+
+### Continue
+
+Resumes a halted task, transitioning it back to pending.
+
+**Request**
+
+```ts
+type TaskContinueReq = {
+  kind: "task.continue";
+  head: {
+    auth?: string;
+    corrId: string;
+    version: string;
+    "resonate:debug_time"?: number;
+  };
+  data: {
+    id: string;
+  };
+}
+```
+
+**id**
+
+   The unique identifier of the task to continue.
+
+**Response**
+
+```ts
+type TaskContinueRes = {
+  kind: "task.continue";
+  head: {
+    corrId: string;
+    status: 200;
+    version: string;
+  };
+  data: {};
+}
+```
+
+**Errors**
+
+**404**
+
+   Task not found.
+
+**409**
+
+   Task is not halted.
+
 ### Fulfill
 
 Completes a task and settles its associated promise.
@@ -1089,7 +1191,7 @@ type TaskSearchReq = {
     "resonate:debug_time"?: number;
   };
   data: {
-    state?: "pending" | "acquired" | "suspended" | "fulfilled";
+    state?: "pending" | "acquired" | "suspended" | "halted" | "fulfilled";
     limit?: number;
     cursor?: string;
   };
