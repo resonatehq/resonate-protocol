@@ -21,6 +21,7 @@
 | c      | Current message    |
 | m      | Message            |
 | M      | Set of Messages    |
+| a      | Action             |
 | P      | Set of Promises    |
 
 ## Operations
@@ -32,7 +33,7 @@ TaskAcquire(t, l, v)
 TaskRelease(t, l, v)
 TaskSuspend(v, P)
 TaskFulfill(v)
-TaskFence(v)
+TaskFence(v, a)
 TaskHeartbeat(t, v)
 EnqueueInvoke(t, l, m)
 EnqueueResume(t, l, m)
@@ -95,14 +96,14 @@ Tick(t)
 | 43  | TaskFulfill(v)             | ⟨s, ⊥, ⊥, v, ⊥, ∅⟩                   | ⟨s, ⊥, ⊥, v, ⊥, ∅⟩     | 409    |                |
 | 44  | TaskFulfill(v')            | ⟨s, ⊥, ⊥, v, ⊥, ∅⟩                   | ⟨s, ⊥, ⊥, v, ⊥, ∅⟩     | 409    |                |
 | 45  | TaskFulfill(v)             | ⟨f, ⊥, ⊥, ⊥, ⊥, ∅⟩                   | ⟨f, ⊥, ⊥, ⊥, ⊥, ∅⟩     | 409    |                |
-| 46  | TaskFence(v)               | ⊥                                    | ⊥                      | 404    |                |
-| 47  | TaskFence(v)               | ⟨p, e, l, v, c, M⟩                   | ⟨p, e, l, v, c, M⟩     | 409    |                |
-| 48  | TaskFence(v')              | ⟨p, e, l, v, c, M⟩                   | ⟨p, e, l, v, c, M⟩     | 409    |                |
-| 49  | TaskFence(v)               | ⟨a, e, l, v, c, M⟩                   | ⟨a, e, l, v, c, M⟩     | 200    |                |
-| 50  | TaskFence(v')              | ⟨a, e, l, v, c, M⟩                   | ⟨a, e, l, v, c, M⟩     | 409    |                |
-| 51  | TaskFence(v)               | ⟨s, ⊥, ⊥, v, ⊥, ∅⟩                   | ⟨s, ⊥, ⊥, v, ⊥, ∅⟩     | 409    |                |
-| 52  | TaskFence(v')              | ⟨s, ⊥, ⊥, v, ⊥, ∅⟩                   | ⟨s, ⊥, ⊥, v, ⊥, ∅⟩     | 409    |                |
-| 53  | TaskFence(v)               | ⟨f, ⊥, ⊥, ⊥, ⊥, ∅⟩                   | ⟨f, ⊥, ⊥, ⊥, ⊥, ∅⟩     | 409    |                |
+| 46  | TaskFence(v, a)            | ⊥                                    | ⊥                      | 404    |                |
+| 47  | TaskFence(v, a)            | ⟨p, e, l, v, c, M⟩                   | ⟨p, e, l, v, c, M⟩     | 409    |                |
+| 48  | TaskFence(v', a)           | ⟨p, e, l, v, c, M⟩                   | ⟨p, e, l, v, c, M⟩     | 409    |                |
+| 49  | TaskFence(v, a)            | ⟨a, e, l, v, c, M⟩                   | ⟨a, e, l, v, c, M⟩     | 200    |                |
+| 50  | TaskFence(v', a)           | ⟨a, e, l, v, c, M⟩                   | ⟨a, e, l, v, c, M⟩     | 409    |                |
+| 51  | TaskFence(v, a)            | ⟨s, ⊥, ⊥, v, ⊥, ∅⟩                   | ⟨s, ⊥, ⊥, v, ⊥, ∅⟩     | 409    |                |
+| 52  | TaskFence(v', a)           | ⟨s, ⊥, ⊥, v, ⊥, ∅⟩                   | ⟨s, ⊥, ⊥, v, ⊥, ∅⟩     | 409    |                |
+| 53  | TaskFence(v, a)            | ⟨f, ⊥, ⊥, ⊥, ⊥, ∅⟩                   | ⟨f, ⊥, ⊥, ⊥, ⊥, ∅⟩     | 409    |                |
 | 54  | TaskHeartbeat(t, v)        | ⊥                                    | ⊥                      | 404    |                |
 | 55  | TaskHeartbeat(t, v)        | ⟨p, e, l, v, c, M⟩                   | ⟨p, e, l, v, c, M⟩     | 200    |                |
 | 56  | TaskHeartbeat(t, v')       | ⟨p, e, l, v, c, M⟩                   | ⟨p, e, l, v, c, M⟩     | 200    |                |
@@ -133,3 +134,73 @@ Tick(t)
 | 81  | Tick(t)                    | ⟨a, e, l, v, c, M⟩ : t ≥ e           | ⟨p, t+l, l, v+1, c, M⟩ |        | Send(c)        |
 | 82  | Tick(t)                    | ⟨s, ⊥, ⊥, v, ⊥, ∅⟩                   | ⟨s, ⊥, ⊥, v, ⊥, ∅⟩     |        |                |
 | 83  | Tick(t)                    | ⟨f, ⊥, ⊥, ⊥, ⊥, ∅⟩                   | ⟨f, ⊥, ⊥, ⊥, ⊥, ∅⟩     |        |                |
+
+## Fence Transitions
+
+When a task is acquired and the version matches (transition #49 above), the task.fence operation executes an inner promise action. The task state remains `⟨a, e, l, v, c, M⟩` throughout — the transitions below describe the promise state changes and side effects that occur within a successful fence.
+
+| #   | Operation                              | Promise Current State | Promise Next State    | Result | Side Effect(s)                                       |
+| --- | -------------------------------------- | --------------------- | --------------------- | ------ | ---------------------------------------------------- |
+| 1   | TaskFence(v, PromiseCreate(o, ⊥, ⊥))  | ⊥                     | ⟨p, o, ⊥, ⊥, ∅, ∅⟩   | 200    |                                                      |
+| 2   | TaskFence(v, PromiseCreate(o, ⊥, ⊥))  | ⟨p, o, ⊥, ⊥, P, A⟩   | ⟨p, o, ⊥, ⊥, P, A⟩   | 200    |                                                      |
+| 3   | TaskFence(v, PromiseCreate(o, ⊥, ⊥))  | ⟨p, o, ⊥, a, P, A⟩   | ⟨p, o, ⊥, a, P, A⟩   | 200    |                                                      |
+| 4   | TaskFence(v, PromiseCreate(o, ⊥, ⊥))  | ⟨p, o, ⊤, ⊥, P, A⟩   | ⟨p, o, ⊤, ⊥, P, A⟩   | 200    |                                                      |
+| 5   | TaskFence(v, PromiseCreate(o, ⊥, ⊥))  | ⟨p, o, ⊤, a, P, A⟩   | ⟨p, o, ⊤, a, P, A⟩   | 200    |                                                      |
+| 6   | TaskFence(v, PromiseCreate(o, ⊥, ⊥))  | ⟨r, ⊥, ⊥, ⊥, ∅, ∅⟩   | ⟨r, ⊥, ⊥, ⊥, ∅, ∅⟩   | 200    |                                                      |
+| 7   | TaskFence(v, PromiseCreate(o, ⊥, ⊥))  | ⟨x, ⊥, ⊥, ⊥, ∅, ∅⟩   | ⟨x, ⊥, ⊥, ⊥, ∅, ∅⟩   | 200    |                                                      |
+| 8   | TaskFence(v, PromiseCreate(o, ⊥, ⊥))  | ⟨c, ⊥, ⊥, ⊥, ∅, ∅⟩   | ⟨c, ⊥, ⊥, ⊥, ∅, ∅⟩   | 200    |                                                      |
+| 9   | TaskFence(v, PromiseCreate(o, ⊥, ⊥))  | ⟨t, ⊥, ⊥, ⊥, ∅, ∅⟩   | ⟨t, ⊥, ⊥, ⊥, ∅, ∅⟩   | 200    |                                                      |
+| 10  | TaskFence(v, PromiseCreate(o, ⊤, ⊥))  | ⊥                     | ⟨p, o, ⊤, ⊥, ∅, ∅⟩   | 200    |                                                      |
+| 11  | TaskFence(v, PromiseCreate(o, ⊤, ⊥))  | ⟨p, o, ⊥, ⊥, P, A⟩   | ⟨p, o, ⊥, ⊥, P, A⟩   | 200    |                                                      |
+| 12  | TaskFence(v, PromiseCreate(o, ⊤, ⊥))  | ⟨p, o, ⊥, a, P, A⟩   | ⟨p, o, ⊥, a, P, A⟩   | 200    |                                                      |
+| 13  | TaskFence(v, PromiseCreate(o, ⊤, ⊥))  | ⟨p, o, ⊤, ⊥, P, A⟩   | ⟨p, o, ⊤, ⊥, P, A⟩   | 200    |                                                      |
+| 14  | TaskFence(v, PromiseCreate(o, ⊤, ⊥))  | ⟨p, o, ⊤, a, P, A⟩   | ⟨p, o, ⊤, a, P, A⟩   | 200    |                                                      |
+| 15  | TaskFence(v, PromiseCreate(o, ⊤, ⊥))  | ⟨r, ⊥, ⊥, ⊥, ∅, ∅⟩   | ⟨r, ⊥, ⊥, ⊥, ∅, ∅⟩   | 200    |                                                      |
+| 16  | TaskFence(v, PromiseCreate(o, ⊤, ⊥))  | ⟨x, ⊥, ⊥, ⊥, ∅, ∅⟩   | ⟨x, ⊥, ⊥, ⊥, ∅, ∅⟩   | 200    |                                                      |
+| 17  | TaskFence(v, PromiseCreate(o, ⊤, ⊥))  | ⟨c, ⊥, ⊥, ⊥, ∅, ∅⟩   | ⟨c, ⊥, ⊥, ⊥, ∅, ∅⟩   | 200    |                                                      |
+| 18  | TaskFence(v, PromiseCreate(o, ⊤, ⊥))  | ⟨t, ⊥, ⊥, ⊥, ∅, ∅⟩   | ⟨t, ⊥, ⊥, ⊥, ∅, ∅⟩   | 200    |                                                      |
+| 19  | TaskFence(v, PromiseCreate(o, ⊥, a))  | ⊥                     | ⟨p, o, ⊥, a, ∅, ∅⟩   | 200    | EnqueueInvoke                                        |
+| 20  | TaskFence(v, PromiseCreate(o, ⊥, a))  | ⟨p, o, ⊥, ⊥, P, A⟩   | ⟨p, o, ⊥, ⊥, P, A⟩   | 200    |                                                      |
+| 21  | TaskFence(v, PromiseCreate(o, ⊥, a))  | ⟨p, o, ⊥, a, P, A⟩   | ⟨p, o, ⊥, a, P, A⟩   | 200    |                                                      |
+| 22  | TaskFence(v, PromiseCreate(o, ⊥, a))  | ⟨p, o, ⊤, ⊥, P, A⟩   | ⟨p, o, ⊤, ⊥, P, A⟩   | 200    |                                                      |
+| 23  | TaskFence(v, PromiseCreate(o, ⊥, a))  | ⟨p, o, ⊤, a, P, A⟩   | ⟨p, o, ⊤, a, P, A⟩   | 200    |                                                      |
+| 24  | TaskFence(v, PromiseCreate(o, ⊥, a))  | ⟨r, ⊥, ⊥, ⊥, ∅, ∅⟩   | ⟨r, ⊥, ⊥, ⊥, ∅, ∅⟩   | 200    |                                                      |
+| 25  | TaskFence(v, PromiseCreate(o, ⊥, a))  | ⟨x, ⊥, ⊥, ⊥, ∅, ∅⟩   | ⟨x, ⊥, ⊥, ⊥, ∅, ∅⟩   | 200    |                                                      |
+| 26  | TaskFence(v, PromiseCreate(o, ⊥, a))  | ⟨c, ⊥, ⊥, ⊥, ∅, ∅⟩   | ⟨c, ⊥, ⊥, ⊥, ∅, ∅⟩   | 200    |                                                      |
+| 27  | TaskFence(v, PromiseCreate(o, ⊥, a))  | ⟨t, ⊥, ⊥, ⊥, ∅, ∅⟩   | ⟨t, ⊥, ⊥, ⊥, ∅, ∅⟩   | 200    |                                                      |
+| 28  | TaskFence(v, PromiseCreate(o, ⊤, a))  | ⊥                     | ⟨p, o, ⊤, a, ∅, ∅⟩   | 200    | EnqueueInvoke                                        |
+| 29  | TaskFence(v, PromiseCreate(o, ⊤, a))  | ⟨p, o, ⊥, ⊥, P, A⟩   | ⟨p, o, ⊥, ⊥, P, A⟩   | 200    |                                                      |
+| 30  | TaskFence(v, PromiseCreate(o, ⊤, a))  | ⟨p, o, ⊥, a, P, A⟩   | ⟨p, o, ⊥, a, P, A⟩   | 200    |                                                      |
+| 31  | TaskFence(v, PromiseCreate(o, ⊤, a))  | ⟨p, o, ⊤, ⊥, P, A⟩   | ⟨p, o, ⊤, ⊥, P, A⟩   | 200    |                                                      |
+| 32  | TaskFence(v, PromiseCreate(o, ⊤, a))  | ⟨p, o, ⊤, a, P, A⟩   | ⟨p, o, ⊤, a, P, A⟩   | 200    |                                                      |
+| 33  | TaskFence(v, PromiseCreate(o, ⊤, a))  | ⟨r, ⊥, ⊥, ⊥, ∅, ∅⟩   | ⟨r, ⊥, ⊥, ⊥, ∅, ∅⟩   | 200    |                                                      |
+| 34  | TaskFence(v, PromiseCreate(o, ⊤, a))  | ⟨x, ⊥, ⊥, ⊥, ∅, ∅⟩   | ⟨x, ⊥, ⊥, ⊥, ∅, ∅⟩   | 200    |                                                      |
+| 35  | TaskFence(v, PromiseCreate(o, ⊤, a))  | ⟨c, ⊥, ⊥, ⊥, ∅, ∅⟩   | ⟨c, ⊥, ⊥, ⊥, ∅, ∅⟩   | 200    |                                                      |
+| 36  | TaskFence(v, PromiseCreate(o, ⊤, a))  | ⟨t, ⊥, ⊥, ⊥, ∅, ∅⟩   | ⟨t, ⊥, ⊥, ⊥, ∅, ∅⟩   | 200    |                                                      |
+| 37  | TaskFence(v, PromiseSettle(r))         | ⊥                     | ⊥                     | 404    |                                                      |
+| 38  | TaskFence(v, PromiseSettle(r))         | ⟨p, o, ⊥, ⊥, P, A⟩   | ⟨r, ⊥, ⊥, ⊥, ∅, ∅⟩   | 200    | EnqueueResume ∀p∈P, Send(Notify) ∀a∈A                |
+| 39  | TaskFence(v, PromiseSettle(r))         | ⟨p, o, ⊥, a, P, A⟩   | ⟨r, ⊥, ⊥, ⊥, ∅, ∅⟩   | 200    | EnqueueSettle, EnqueueResume ∀p∈P, Send(Notify) ∀a∈A |
+| 40  | TaskFence(v, PromiseSettle(r))         | ⟨p, o, ⊤, ⊥, P, A⟩   | ⟨r, ⊥, ⊥, ⊥, ∅, ∅⟩   | 200    | EnqueueResume ∀p∈P, Send(Notify) ∀a∈A                |
+| 41  | TaskFence(v, PromiseSettle(r))         | ⟨p, o, ⊤, a, P, A⟩   | ⟨r, ⊥, ⊥, ⊥, ∅, ∅⟩   | 200    | EnqueueSettle, EnqueueResume ∀p∈P, Send(Notify) ∀a∈A |
+| 42  | TaskFence(v, PromiseSettle(r))         | ⟨r, ⊥, ⊥, ⊥, ∅, ∅⟩   | ⟨r, ⊥, ⊥, ⊥, ∅, ∅⟩   | 200    |                                                      |
+| 43  | TaskFence(v, PromiseSettle(r))         | ⟨x, ⊥, ⊥, ⊥, ∅, ∅⟩   | ⟨x, ⊥, ⊥, ⊥, ∅, ∅⟩   | 200    |                                                      |
+| 44  | TaskFence(v, PromiseSettle(r))         | ⟨c, ⊥, ⊥, ⊥, ∅, ∅⟩   | ⟨c, ⊥, ⊥, ⊥, ∅, ∅⟩   | 200    |                                                      |
+| 45  | TaskFence(v, PromiseSettle(r))         | ⟨t, ⊥, ⊥, ⊥, ∅, ∅⟩   | ⟨t, ⊥, ⊥, ⊥, ∅, ∅⟩   | 200    |                                                      |
+| 46  | TaskFence(v, PromiseSettle(x))         | ⊥                     | ⊥                     | 404    |                                                      |
+| 47  | TaskFence(v, PromiseSettle(x))         | ⟨p, o, ⊥, ⊥, P, A⟩   | ⟨x, ⊥, ⊥, ⊥, ∅, ∅⟩   | 200    | EnqueueResume ∀p∈P, Send(Notify) ∀a∈A                |
+| 48  | TaskFence(v, PromiseSettle(x))         | ⟨p, o, ⊥, a, P, A⟩   | ⟨x, ⊥, ⊥, ⊥, ∅, ∅⟩   | 200    | EnqueueSettle, EnqueueResume ∀p∈P, Send(Notify) ∀a∈A |
+| 49  | TaskFence(v, PromiseSettle(x))         | ⟨p, o, ⊤, ⊥, P, A⟩   | ⟨x, ⊥, ⊥, ⊥, ∅, ∅⟩   | 200    | EnqueueResume ∀p∈P, Send(Notify) ∀a∈A                |
+| 50  | TaskFence(v, PromiseSettle(x))         | ⟨p, o, ⊤, a, P, A⟩   | ⟨x, ⊥, ⊥, ⊥, ∅, ∅⟩   | 200    | EnqueueSettle, EnqueueResume ∀p∈P, Send(Notify) ∀a∈A |
+| 51  | TaskFence(v, PromiseSettle(x))         | ⟨r, ⊥, ⊥, ⊥, ∅, ∅⟩   | ⟨r, ⊥, ⊥, ⊥, ∅, ∅⟩   | 200    |                                                      |
+| 52  | TaskFence(v, PromiseSettle(x))         | ⟨x, ⊥, ⊥, ⊥, ∅, ∅⟩   | ⟨x, ⊥, ⊥, ⊥, ∅, ∅⟩   | 200    |                                                      |
+| 53  | TaskFence(v, PromiseSettle(x))         | ⟨c, ⊥, ⊥, ⊥, ∅, ∅⟩   | ⟨c, ⊥, ⊥, ⊥, ∅, ∅⟩   | 200    |                                                      |
+| 54  | TaskFence(v, PromiseSettle(x))         | ⟨t, ⊥, ⊥, ⊥, ∅, ∅⟩   | ⟨t, ⊥, ⊥, ⊥, ∅, ∅⟩   | 200    |                                                      |
+| 55  | TaskFence(v, PromiseSettle(c))         | ⊥                     | ⊥                     | 404    |                                                      |
+| 56  | TaskFence(v, PromiseSettle(c))         | ⟨p, o, ⊥, ⊥, P, A⟩   | ⟨c, ⊥, ⊥, ⊥, ∅, ∅⟩   | 200    | EnqueueResume ∀p∈P, Send(Notify) ∀a∈A                |
+| 57  | TaskFence(v, PromiseSettle(c))         | ⟨p, o, ⊥, a, P, A⟩   | ⟨c, ⊥, ⊥, ⊥, ∅, ∅⟩   | 200    | EnqueueSettle, EnqueueResume ∀p∈P, Send(Notify) ∀a∈A |
+| 58  | TaskFence(v, PromiseSettle(c))         | ⟨p, o, ⊤, ⊥, P, A⟩   | ⟨c, ⊥, ⊥, ⊥, ∅, ∅⟩   | 200    | EnqueueResume ∀p∈P, Send(Notify) ∀a∈A                |
+| 59  | TaskFence(v, PromiseSettle(c))         | ⟨p, o, ⊤, a, P, A⟩   | ⟨c, ⊥, ⊥, ⊥, ∅, ∅⟩   | 200    | EnqueueSettle, EnqueueResume ∀p∈P, Send(Notify) ∀a∈A |
+| 60  | TaskFence(v, PromiseSettle(c))         | ⟨r, ⊥, ⊥, ⊥, ∅, ∅⟩   | ⟨r, ⊥, ⊥, ⊥, ∅, ∅⟩   | 200    |                                                      |
+| 61  | TaskFence(v, PromiseSettle(c))         | ⟨x, ⊥, ⊥, ⊥, ∅, ∅⟩   | ⟨x, ⊥, ⊥, ⊥, ∅, ∅⟩   | 200    |                                                      |
+| 62  | TaskFence(v, PromiseSettle(c))         | ⟨c, ⊥, ⊥, ⊥, ∅, ∅⟩   | ⟨c, ⊥, ⊥, ⊥, ∅, ∅⟩   | 200    |                                                      |
+| 63  | TaskFence(v, PromiseSettle(c))         | ⟨t, ⊥, ⊥, ⊥, ∅, ∅⟩   | ⟨t, ⊥, ⊥, ⊥, ∅, ∅⟩   | 200    |                                                      |
