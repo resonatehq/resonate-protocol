@@ -206,6 +206,17 @@ export const TaskAcquireReqSchema = z.object({
 
 export type TaskAcquireReq = z.infer<typeof TaskAcquireReqSchema>;
 
+export const TaskReleaseReqSchema = z.object({
+  kind: z.literal("task.release"),
+  head: RequestHeadSchema,
+  data: z.object({
+    id: z.string().min(1, "Task ID is required"),
+    version: z.number().int().nonnegative("Version must be a non-negative integer"),
+  }),
+});
+
+export type TaskReleaseReq = z.infer<typeof TaskReleaseReqSchema>;
+
 export const TaskSuspendReqSchema = z.object({
   kind: z.literal("task.suspend"),
   head: RequestHeadSchema,
@@ -240,17 +251,6 @@ export const TaskFulfillReqSchema = z.object({
 });
 
 export type TaskFulfillReq = z.infer<typeof TaskFulfillReqSchema>;
-
-export const TaskReleaseReqSchema = z.object({
-  kind: z.literal("task.release"),
-  head: RequestHeadSchema,
-  data: z.object({
-    id: z.string().min(1, "Task ID is required"),
-    version: z.number().int().nonnegative("Version must be a non-negative integer"),
-  }),
-});
-
-export type TaskReleaseReq = z.infer<typeof TaskReleaseReqSchema>;
 
 export const TaskFenceReqSchema = z.object({
   kind: z.literal("task.fence"),
@@ -316,6 +316,16 @@ export const ScheduleCreateReqSchema = z.object({
 
 export type ScheduleCreateReq = z.infer<typeof ScheduleCreateReqSchema>;
 
+export const ScheduleDeleteReqSchema = z.object({
+  kind: z.literal("schedule.delete"),
+  head: RequestHeadSchema,
+  data: z.object({
+    id: z.string().min(1, "Schedule ID is required"),
+  }),
+});
+
+export type ScheduleDeleteReq = z.infer<typeof ScheduleDeleteReqSchema>;
+
 export const ScheduleSearchReqSchema = z.object({
   kind: z.literal("schedule.search"),
   head: RequestHeadSchema,
@@ -327,16 +337,6 @@ export const ScheduleSearchReqSchema = z.object({
 });
 
 export type ScheduleSearchReq = z.infer<typeof ScheduleSearchReqSchema>;
-
-export const ScheduleDeleteReqSchema = z.object({
-  kind: z.literal("schedule.delete"),
-  head: RequestHeadSchema,
-  data: z.object({
-    id: z.string().min(1, "Schedule ID is required"),
-  }),
-});
-
-export type ScheduleDeleteReq = z.infer<typeof ScheduleDeleteReqSchema>;
 
 // =============================================================================
 // REQUEST SCHEMAS - DEBUG
@@ -400,17 +400,17 @@ export const RequestSchema = z.discriminatedUnion("kind", [
   TaskGetReqSchema,
   TaskCreateReqSchema,
   TaskAcquireReqSchema,
+  TaskReleaseReqSchema,
   TaskSuspendReqSchema,
   TaskFulfillReqSchema,
-  TaskReleaseReqSchema,
   TaskFenceReqSchema,
   TaskHeartbeatReqSchema,
   TaskSearchReqSchema,
   // Schedule
   ScheduleGetReqSchema,
   ScheduleCreateReqSchema,
-  ScheduleSearchReqSchema,
   ScheduleDeleteReqSchema,
+  ScheduleSearchReqSchema,
   // Debug
   DebugStartReqSchema,
   DebugResetReqSchema,
@@ -735,6 +735,41 @@ export const TaskAcquireResSchema = z.discriminatedUnion("kind", [
 
 export type TaskAcquireRes = z.infer<typeof TaskAcquireResSchema>;
 
+export const TaskReleaseResSchema = z.discriminatedUnion("kind", [
+  z.object({
+    kind: z.literal("task.release"),
+    head: ResponseHeadSchema(200),
+    data: z.object({}),
+  }),
+  z.object({
+    kind: z.literal("task.release"),
+    head: ResponseHeadSchema(400),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("task.release"),
+    head: ResponseHeadSchema(404),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("task.release"),
+    head: ResponseHeadSchema(409),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("task.release"),
+    head: ResponseHeadSchema(429),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("task.release"),
+    head: ResponseHeadSchema(500),
+    data: z.string(),
+  }),
+]);
+
+export type TaskReleaseRes = z.infer<typeof TaskReleaseResSchema>;
+
 export const TaskSuspendResSchema = z.discriminatedUnion("kind", [
   z.object({
     kind: z.literal("task.suspend"),
@@ -814,41 +849,6 @@ export const TaskFulfillResSchema = z.discriminatedUnion("kind", [
 ]);
 
 export type TaskFulfillRes = z.infer<typeof TaskFulfillResSchema>;
-
-export const TaskReleaseResSchema = z.discriminatedUnion("kind", [
-  z.object({
-    kind: z.literal("task.release"),
-    head: ResponseHeadSchema(200),
-    data: z.object({}),
-  }),
-  z.object({
-    kind: z.literal("task.release"),
-    head: ResponseHeadSchema(400),
-    data: z.string(),
-  }),
-  z.object({
-    kind: z.literal("task.release"),
-    head: ResponseHeadSchema(404),
-    data: z.string(),
-  }),
-  z.object({
-    kind: z.literal("task.release"),
-    head: ResponseHeadSchema(409),
-    data: z.string(),
-  }),
-  z.object({
-    kind: z.literal("task.release"),
-    head: ResponseHeadSchema(429),
-    data: z.string(),
-  }),
-  z.object({
-    kind: z.literal("task.release"),
-    head: ResponseHeadSchema(500),
-    data: z.string(),
-  }),
-]);
-
-export type TaskReleaseRes = z.infer<typeof TaskReleaseResSchema>;
 
 export const TaskFenceResSchema = z.discriminatedUnion("kind", [
   z.object({
@@ -1015,39 +1015,6 @@ export const ScheduleCreateResSchema = z.discriminatedUnion("kind", [
 
 export type ScheduleCreateRes = z.infer<typeof ScheduleCreateResSchema>;
 
-export const ScheduleSearchResSchema = z.discriminatedUnion("kind", [
-  z.object({
-    kind: z.literal("schedule.search"),
-    head: ResponseHeadSchema(200),
-    data: z.object({
-      schedules: z.array(ScheduleRecordSchema),
-      cursor: z.string().optional(),
-    }),
-  }),
-  z.object({
-    kind: z.literal("schedule.search"),
-    head: ResponseHeadSchema(400),
-    data: z.string(),
-  }),
-  z.object({
-    kind: z.literal("schedule.search"),
-    head: ResponseHeadSchema(429),
-    data: z.string(),
-  }),
-  z.object({
-    kind: z.literal("schedule.search"),
-    head: ResponseHeadSchema(500),
-    data: z.string(),
-  }),
-  z.object({
-    kind: z.literal("schedule.search"),
-    head: ResponseHeadSchema(501),
-    data: z.string(),
-  }),
-]);
-
-export type ScheduleSearchRes = z.infer<typeof ScheduleSearchResSchema>;
-
 export const ScheduleDeleteResSchema = z.discriminatedUnion("kind", [
   z.object({
     kind: z.literal("schedule.delete"),
@@ -1082,6 +1049,39 @@ export const ScheduleDeleteResSchema = z.discriminatedUnion("kind", [
 ]);
 
 export type ScheduleDeleteRes = z.infer<typeof ScheduleDeleteResSchema>;
+
+export const ScheduleSearchResSchema = z.discriminatedUnion("kind", [
+  z.object({
+    kind: z.literal("schedule.search"),
+    head: ResponseHeadSchema(200),
+    data: z.object({
+      schedules: z.array(ScheduleRecordSchema),
+      cursor: z.string().optional(),
+    }),
+  }),
+  z.object({
+    kind: z.literal("schedule.search"),
+    head: ResponseHeadSchema(400),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("schedule.search"),
+    head: ResponseHeadSchema(429),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("schedule.search"),
+    head: ResponseHeadSchema(500),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("schedule.search"),
+    head: ResponseHeadSchema(501),
+    data: z.string(),
+  }),
+]);
+
+export type ScheduleSearchRes = z.infer<typeof ScheduleSearchResSchema>;
 
 // =============================================================================
 // RESPONSE SCHEMAS - DEBUG
@@ -1287,17 +1287,17 @@ export const ResponseSchema = z.discriminatedUnion("kind", [
   TaskGetResSchema,
   TaskCreateResSchema,
   TaskAcquireResSchema,
+  TaskReleaseResSchema,
   TaskSuspendResSchema,
   TaskFulfillResSchema,
-  TaskReleaseResSchema,
   TaskFenceResSchema,
   TaskHeartbeatResSchema,
   TaskSearchResSchema,
   // Schedule
   ScheduleGetResSchema,
   ScheduleCreateResSchema,
-  ScheduleSearchResSchema,
   ScheduleDeleteResSchema,
+  ScheduleSearchResSchema,
   // Debug
   DebugStartResSchema,
   DebugResetResSchema,

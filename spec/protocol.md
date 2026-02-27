@@ -90,16 +90,16 @@ type Request =
   | TaskGetReq
   | TaskCreateReq
   | TaskAcquireReq
+  | TaskReleaseReq
   | TaskSuspendReq
   | TaskFulfillReq
-  | TaskReleaseReq
   | TaskFenceReq
   | TaskHeartbeatReq
   | TaskSearchReq
   | ScheduleGetReq
   | ScheduleCreateReq
-  | ScheduleSearchReq
   | ScheduleDeleteReq
+  | ScheduleSearchReq
   | DebugStartReq
   | DebugResetReq
   | DebugTickReq
@@ -120,16 +120,16 @@ type Response =
   | TaskGetRes
   | TaskCreateRes
   | TaskAcquireRes
+  | TaskReleaseRes
   | TaskSuspendRes
   | TaskFulfillRes
-  | TaskReleaseRes
   | TaskFenceRes
   | TaskHeartbeatRes
   | TaskSearchRes
   | ScheduleGetRes
   | ScheduleCreateRes
-  | ScheduleSearchRes
   | ScheduleDeleteRes
+  | ScheduleSearchRes
   | DebugStartRes
   | DebugResetRes
   | DebugTickRes
@@ -757,6 +757,60 @@ Returns the task's associated promise. The `preload` field contains all promises
 
    The task is not pending or the version does not match.
 
+### Release
+
+Releases a task's lease without completing it, allowing the task to be re-acquired.
+
+**Request**
+
+```ts
+type TaskReleaseReq = {
+  kind: "task.release";
+  head: {
+    auth?: string;
+    corrId: string;
+    version: string;
+    "resonate:debug_time"?: number;
+  };
+  data: {
+    id: string;
+    version: number;
+  };
+}
+```
+
+**id**
+
+   The unique identifier of the task to release.
+
+**version**
+
+   The expected task version for optimistic concurrency control.
+
+**Response**
+
+```ts
+type TaskReleaseRes = {
+  kind: "task.release";
+  head: {
+    corrId: string;
+    status: 200;
+    version: string;
+  };
+  data: {};
+}
+```
+
+**Errors**
+
+**404**
+
+   Task not found.
+
+**409**
+
+   The task is not acquired or the version does not match.
+
 ### Suspend
 
 Suspends a task while waiting for one or more promises to settle.
@@ -900,60 +954,6 @@ type TaskFulfillRes = {
 ```
 
 Returns the promise in its current state. If the promise is already settled, returns the existing state (idempotent).
-
-**Errors**
-
-**404**
-
-   Task not found.
-
-**409**
-
-   The task is not acquired or the version does not match.
-
-### Release
-
-Releases a task's lease without completing it, allowing the task to be re-acquired.
-
-**Request**
-
-```ts
-type TaskReleaseReq = {
-  kind: "task.release";
-  head: {
-    auth?: string;
-    corrId: string;
-    version: string;
-    "resonate:debug_time"?: number;
-  };
-  data: {
-    id: string;
-    version: number;
-  };
-}
-```
-
-**id**
-
-   The unique identifier of the task to release.
-
-**version**
-
-   The expected task version for optimistic concurrency control.
-
-**Response**
-
-```ts
-type TaskReleaseRes = {
-  kind: "task.release";
-  head: {
-    corrId: string;
-    status: 200;
-    version: string;
-  };
-  data: {};
-}
-```
 
 **Errors**
 
@@ -1316,6 +1316,51 @@ Returns the schedule. If a schedule with the same identifier already exists, ret
 
    Not implemented.
 
+### Delete
+
+Deletes a schedule.
+
+**Request**
+
+```ts
+type ScheduleDeleteReq = {
+  kind: "schedule.delete";
+  head: {
+    auth?: string;
+    corrId: string;
+    version: string;
+    "resonate:debug_time"?: number;
+  };
+  data: {
+    id: string;
+  };
+}
+```
+
+**id**
+
+   The unique identifier of the schedule to delete.
+
+**Response**
+
+```ts
+type ScheduleDeleteRes = {
+  kind: "schedule.delete";
+  head: {
+    corrId: string;
+    status: 200;
+    version: string;
+  };
+  data: {};
+}
+```
+
+**Errors**
+
+**404**
+
+   Schedule not found.
+
 ### Search
 
 Searches for schedules matching the specified criteria.
@@ -1375,51 +1420,6 @@ Returns a list of matching schedules and an optional cursor for the next page of
 **501**
 
    Not implemented.
-
-### Delete
-
-Deletes a schedule.
-
-**Request**
-
-```ts
-type ScheduleDeleteReq = {
-  kind: "schedule.delete";
-  head: {
-    auth?: string;
-    corrId: string;
-    version: string;
-    "resonate:debug_time"?: number;
-  };
-  data: {
-    id: string;
-  };
-}
-```
-
-**id**
-
-   The unique identifier of the schedule to delete.
-
-**Response**
-
-```ts
-type ScheduleDeleteRes = {
-  kind: "schedule.delete";
-  head: {
-    corrId: string;
-    status: 200;
-    version: string;
-  };
-  data: {};
-}
-```
-
-**Errors**
-
-**404**
-
-   Schedule not found.
 
 **501**
 

@@ -162,6 +162,15 @@ export type TaskAcquireReq = {
   };
 };
 
+export type TaskReleaseReq = {
+  kind: "task.release";
+  head: RequestHead;
+  data: {
+    id: string;
+    version: number;
+  };
+};
+
 export type TaskSuspendReq = {
   kind: "task.suspend";
   head: RequestHead;
@@ -179,15 +188,6 @@ export type TaskFulfillReq = {
     id: string;
     version: number;
     action: PromiseSettleReq;
-  };
-};
-
-export type TaskReleaseReq = {
-  kind: "task.release";
-  head: RequestHead;
-  data: {
-    id: string;
-    version: number;
   };
 };
 
@@ -243,6 +243,12 @@ export type ScheduleCreateReq = {
   };
 };
 
+export type ScheduleDeleteReq = {
+  kind: "schedule.delete";
+  head: RequestHead;
+  data: { id: string };
+};
+
 export type ScheduleSearchReq = {
   kind: "schedule.search";
   head: RequestHead;
@@ -251,12 +257,6 @@ export type ScheduleSearchReq = {
     limit?: number;
     cursor?: string;
   };
-};
-
-export type ScheduleDeleteReq = {
-  kind: "schedule.delete";
-  head: RequestHead;
-  data: { id: string };
 };
 
 // =============================================================================
@@ -307,16 +307,16 @@ export type Request =
   | TaskGetReq
   | TaskCreateReq
   | TaskAcquireReq
+  | TaskReleaseReq
   | TaskSuspendReq
   | TaskFulfillReq
-  | TaskReleaseReq
   | TaskFenceReq
   | TaskHeartbeatReq
   | TaskSearchReq
   | ScheduleGetReq
   | ScheduleCreateReq
-  | ScheduleSearchReq
   | ScheduleDeleteReq
+  | ScheduleSearchReq
   | DebugStartReq
   | DebugResetReq
   | DebugTickReq
@@ -439,6 +439,18 @@ export type TaskAcquireRes =
   | { kind: "task.acquire"; head: ResponseHead<429>; data: string }
   | { kind: "task.acquire"; head: ResponseHead<500>; data: string };
 
+export type TaskReleaseRes =
+  | {
+      kind: "task.release";
+      head: ResponseHead<200>;
+      data: Record<string, never>;
+    }
+  | { kind: "task.release"; head: ResponseHead<400>; data: string }
+  | { kind: "task.release"; head: ResponseHead<404>; data: string }
+  | { kind: "task.release"; head: ResponseHead<409>; data: string }
+  | { kind: "task.release"; head: ResponseHead<429>; data: string }
+  | { kind: "task.release"; head: ResponseHead<500>; data: string };
+
 export type TaskSuspendRes =
   | {
       kind: "task.suspend";
@@ -468,18 +480,6 @@ export type TaskFulfillRes =
   | { kind: "task.fulfill"; head: ResponseHead<409>; data: string }
   | { kind: "task.fulfill"; head: ResponseHead<429>; data: string }
   | { kind: "task.fulfill"; head: ResponseHead<500>; data: string };
-
-export type TaskReleaseRes =
-  | {
-      kind: "task.release";
-      head: ResponseHead<200>;
-      data: Record<string, never>;
-    }
-  | { kind: "task.release"; head: ResponseHead<400>; data: string }
-  | { kind: "task.release"; head: ResponseHead<404>; data: string }
-  | { kind: "task.release"; head: ResponseHead<409>; data: string }
-  | { kind: "task.release"; head: ResponseHead<429>; data: string }
-  | { kind: "task.release"; head: ResponseHead<500>; data: string };
 
 export type TaskFenceRes =
   | {
@@ -541,17 +541,6 @@ export type ScheduleCreateRes =
   | { kind: "schedule.create"; head: ResponseHead<500>; data: string }
   | { kind: "schedule.create"; head: ResponseHead<501>; data: string };
 
-export type ScheduleSearchRes =
-  | {
-      kind: "schedule.search";
-      head: ResponseHead<200>;
-      data: { schedules: ScheduleRecord[]; cursor?: string };
-    }
-  | { kind: "schedule.search"; head: ResponseHead<400>; data: string }
-  | { kind: "schedule.search"; head: ResponseHead<429>; data: string }
-  | { kind: "schedule.search"; head: ResponseHead<500>; data: string }
-  | { kind: "schedule.search"; head: ResponseHead<501>; data: string };
-
 export type ScheduleDeleteRes =
   | {
       kind: "schedule.delete";
@@ -563,6 +552,17 @@ export type ScheduleDeleteRes =
   | { kind: "schedule.delete"; head: ResponseHead<429>; data: string }
   | { kind: "schedule.delete"; head: ResponseHead<500>; data: string }
   | { kind: "schedule.delete"; head: ResponseHead<501>; data: string };
+
+export type ScheduleSearchRes =
+  | {
+      kind: "schedule.search";
+      head: ResponseHead<200>;
+      data: { schedules: ScheduleRecord[]; cursor?: string };
+    }
+  | { kind: "schedule.search"; head: ResponseHead<400>; data: string }
+  | { kind: "schedule.search"; head: ResponseHead<429>; data: string }
+  | { kind: "schedule.search"; head: ResponseHead<500>; data: string }
+  | { kind: "schedule.search"; head: ResponseHead<501>; data: string };
 
 // =============================================================================
 // RESPONSES - DEBUG
@@ -645,16 +645,16 @@ export type Response =
   | TaskGetRes
   | TaskCreateRes
   | TaskAcquireRes
+  | TaskReleaseRes
   | TaskSuspendRes
   | TaskFulfillRes
-  | TaskReleaseRes
   | TaskFenceRes
   | TaskHeartbeatRes
   | TaskSearchRes
   | ScheduleGetRes
   | ScheduleCreateRes
-  | ScheduleSearchRes
   | ScheduleDeleteRes
+  | ScheduleSearchRes
   | DebugStartRes
   | DebugResetRes
   | DebugTickRes
