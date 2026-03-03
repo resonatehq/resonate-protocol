@@ -52,13 +52,13 @@ export type ExecuteMsg = {
   data: { task: { id: string; version: number } };
 };
 
-export type NotifyMsg = {
-  kind: "notify";
+export type UnblockMsg = {
+  kind: "unblock";
   head: MessageHead;
   data: { promise: PromiseRecord };
 };
 
-export type Message = ExecuteMsg | NotifyMsg;
+export type Message = ExecuteMsg | UnblockMsg;
 
 // =============================================================================
 // REQUEST HEAD
@@ -1560,14 +1560,14 @@ export function isExecuteMsg(val: unknown): val is ExecuteMsg {
   return typeof task.id === "string" && typeof task.version === "number";
 }
 
-export function isNotifyMsg(val: unknown): val is NotifyMsg {
+export function isUnblockMsg(val: unknown): val is UnblockMsg {
   if (typeof val !== "object" || val === null) return false;
   const v = val as Record<string, unknown>;
-  if (v.kind !== "notify") return false;
+  if (v.kind !== "unblock") return false;
   if (typeof v.data !== "object" || v.data === null) return false;
   return isPromiseRecord((v.data as Record<string, unknown>).promise);
 }
 
 export function isMessage(val: unknown): val is Message {
-  return isExecuteMsg(val) || isNotifyMsg(val);
+  return isExecuteMsg(val) || isUnblockMsg(val);
 }

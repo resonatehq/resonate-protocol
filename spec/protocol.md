@@ -276,9 +276,9 @@ type PromiseCreateReq = {
 **tags**
 
    Key-value metadata for the promise.
-   - If a `resonate:target` tag is present, an `ExecuteMessage` is sent to the specified address on invocation and resumption.
+   - If a `resonate:target` tag is present, an `ExecuteMsg` is sent to the specified address on invocation and resumption.
    - If a `resonate:timer` tag is set to `true`, the promise transitions to `resolved` instead of `rejected_timedout` when the timeout is reached.
-   - If a `resonate:delay` tag is present, it specifies a unix timestamp in milliseconds at which the `ExecuteMessage` is sent on invocation.
+   - If a `resonate:delay` tag is present, it specifies a unix timestamp in milliseconds at which the `ExecuteMsg` is sent on invocation.
    - If a `resonate:origin` tag is present, it identifies the root promise that initiated the execution. All promises in an execution tree share the same `resonate:origin` value.
    - If a `resonate:branch` tag is present, it identifies the current execution branch. Set when a promise in an execution tree has a `resonate:target` tag.
 
@@ -453,7 +453,7 @@ type PromiseRegisterListenerReq = {
 
 **address**
 
-   The destination address where a `NotifyMessage` will be sent when the promise settles.
+   The destination address where an `UnblockMsg` will be sent when the promise settles.
 
 **Response**
 
@@ -1751,7 +1751,7 @@ type DebugStopRes = {
 ## Messages
 
 ```ts
-type Message = ExecuteMsg | NotifyMsg;
+type Message = ExecuteMsg | UnblockMsg;
 ```
 
 ### ExecuteMsg
@@ -1768,13 +1768,13 @@ type ExecuteMsg = {
 }
 ```
 
-### NotifyMsg
+### UnblockMsg
 
 Sent to the address specified in a `promise.register_listener` request when the promise settles.
 
 ```ts
-type NotifyMsg = {
-  kind: "notify";
+type UnblockMsg = {
+  kind: "unblock";
   head: { serverUrl?: string };
   data: {
     promise: Promise;

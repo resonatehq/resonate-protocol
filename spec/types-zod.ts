@@ -60,17 +60,17 @@ export const ExecuteMsgSchema = z.object({
 
 export type ExecuteMsg = z.infer<typeof ExecuteMsgSchema>;
 
-export const NotifyMsgSchema = z.object({
-  kind: z.literal("notify"),
+export const UnblockMsgSchema = z.object({
+  kind: z.literal("unblock"),
   head: MessageHeadSchema,
   data: z.object({
     promise: PromiseRecordSchema,
   }),
 });
 
-export type NotifyMsg = z.infer<typeof NotifyMsgSchema>;
+export type UnblockMsg = z.infer<typeof UnblockMsgSchema>;
 
-export const MessageSchema = z.discriminatedUnion("kind", [ExecuteMsgSchema, NotifyMsgSchema]);
+export const MessageSchema = z.discriminatedUnion("kind", [ExecuteMsgSchema, UnblockMsgSchema]);
 
 export type Message = z.infer<typeof MessageSchema>;
 
