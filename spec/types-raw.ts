@@ -448,7 +448,7 @@ export type TaskAcquireRes =
   | {
       kind: "task.acquire";
       head: ResponseHead<200>;
-      data: { promise: PromiseRecord; preload: PromiseRecord[] };
+      data: { task: TaskRecord; promise: PromiseRecord; preload: PromiseRecord[] };
     }
   | { kind: "task.acquire"; head: ResponseHead<400>; data: string }
   | { kind: "task.acquire"; head: ResponseHead<404>; data: string }

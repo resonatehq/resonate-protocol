@@ -702,7 +702,7 @@ type TaskCreateRes = {
 }
 ```
 
-Returns the task and its associated promise. If the task is pending, acquires the task and returns it in the acquired state. If the task is already fulfilled, returns only the associated promise. The `preload` field contains all promises that share the same `resonate:branch` value as the task's promise. When a task transitions to the acquired state, its `resumes` field is always cleared.
+Returns the task and its associated promise. If the task is pending, acquires the task and returns it in the acquired state. The `preload` field contains all promises that share the same `resonate:branch` value as the task's promise. When a task transitions to the acquired state, its `resumes` field is always cleared.
 
 **Errors**
 
@@ -765,13 +765,14 @@ type TaskAcquireRes = {
     version: string;
   };
   data: {
+    task: Task;
     promise: Promise;
     preload: Promise[];
   };
 }
 ```
 
-Returns the task's associated promise. The `preload` field contains all promises that share the same `resonate:branch` value as the task's promise. When a task transitions to the acquired state, its `resumes` field is always cleared.
+Returns the task and its associated promise. The `preload` field contains all promises that share the same `resonate:branch` value as the task's promise. When a task transitions to the acquired state, its `resumes` field is always cleared.
 
 **Errors**
 
@@ -1484,6 +1485,10 @@ type ScheduleDeleteRes = {
 **404**
 
    Schedule not found.
+
+**501**
+
+   Not implemented.
 
 ### Search
 

@@ -727,6 +727,7 @@ export const TaskAcquireResSchema = z.discriminatedUnion("kind", [
     kind: z.literal("task.acquire"),
     head: ResponseHeadSchema(200),
     data: z.object({
+      task: TaskRecordSchema,
       promise: PromiseRecordSchema,
       preload: z.array(PromiseRecordSchema),
     }),
