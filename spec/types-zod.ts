@@ -30,8 +30,9 @@ export const TaskRecordSchema = z.object({
   id: z.string(),
   state: z.enum(["pending", "acquired", "suspended", "halted", "fulfilled"]),
   version: z.number().int(),
-  current: z.string().optional(),
-  pending: z.union([z.array(z.string()), z.number().int(), z.boolean()]).optional(),
+  resumes: z.union([z.array(z.string()), z.number().int(), z.boolean()]),
+  ttl: z.number().int().optional(),
+  pid: z.string().optional(),
 });
 
 export const ScheduleRecordSchema = z.object({

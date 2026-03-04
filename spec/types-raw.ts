@@ -26,8 +26,9 @@ export type TaskRecord = {
   id: string;
   state: "pending" | "acquired" | "suspended" | "halted" | "fulfilled";
   version: number;
-  current?: string;
-  pending?: string[] | number | boolean;
+  resumes: string[] | number | boolean;
+  ttl?: number;
+  pid?: string;
 };
 
 export type ScheduleRecord = {
@@ -1532,11 +1533,9 @@ export function isTaskRecord(val: unknown): val is TaskRecord {
       v.state === "halted" ||
       v.state === "fulfilled") &&
     typeof v.version === "number" &&
-    (v.current === undefined || typeof v.current === "string") &&
-    (v.pending === undefined ||
-      Array.isArray(v.pending) ||
-      typeof v.pending === "number" ||
-      typeof v.pending === "boolean")
+    (v.ttl === undefined || typeof v.ttl === "number") &&
+    (v.pid === undefined || typeof v.pid === "string") &&
+    (Array.isArray(v.resumes) || typeof v.resumes === "number" || typeof v.resumes === "boolean")
   );
 }
 
