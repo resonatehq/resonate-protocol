@@ -560,6 +560,8 @@ type Task = {
   id: string;
   state: "pending" | "acquired" | "suspended" | "halted" | "fulfilled";
   version: number;
+  current?: string;
+  pending?: string[];
 }
 ```
 
@@ -574,6 +576,14 @@ type Task = {
 **version**
 
    The task version for optimistic concurrency control.
+
+**current**
+
+   The message the task is currently processing. Absent when the task is in the `suspended` or `fulfilled` state.
+
+**pending**
+
+   The list of messages queued for the task to process after the current message. Absent when the task is in the `suspended` or `fulfilled` state.
 
 ### Get
 

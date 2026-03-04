@@ -26,6 +26,8 @@ export type TaskRecord = {
   id: string;
   state: "pending" | "acquired" | "suspended" | "halted" | "fulfilled";
   version: number;
+  current?: string;
+  pending?: string[];
 };
 
 export type ScheduleRecord = {
