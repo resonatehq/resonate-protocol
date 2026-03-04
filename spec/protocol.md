@@ -681,7 +681,7 @@ type TaskCreateRes = {
 }
 ```
 
-Returns the task and its associated promise. If the task is pending, acquires the task and returns it in the acquired state. If the task is already fulfilled, returns only the associated promise. The `preload` field contains all promises that share the same `resonate:branch` value as the task's promise.
+Returns the task and its associated promise. If the task is pending, acquires the task and returns it in the acquired state. If the task is already fulfilled, returns only the associated promise. The `preload` field contains all promises that share the same `resonate:branch` value as the task's promise. When a task transitions to the acquired state, its `pending` message set is always cleared to empty.
 
 **Errors**
 
@@ -750,7 +750,7 @@ type TaskAcquireRes = {
 }
 ```
 
-Returns the task's associated promise. The `preload` field contains all promises that share the same `resonate:branch` value as the task's promise.
+Returns the task's associated promise. The `preload` field contains all promises that share the same `resonate:branch` value as the task's promise. When a task transitions to the acquired state, its `pending` message set is always cleared to empty.
 
 **Errors**
 
@@ -887,7 +887,7 @@ type TaskSuspendRes = {
 }
 ```
 
-Returns status `300` if an action promise has already settled or if a previously awaited promise has already settled, indicating the worker can continue execution immediately with the current lease. The `preload` field contains all promises that share the same `resonate:branch` value as the task's promise.
+Returns status `300` if an action promise has already settled or if a previously awaited promise has already settled, indicating the worker can continue execution immediately with the current lease. The task remains in the acquired state with its `pending` message set cleared to empty. The `preload` field contains all promises that share the same `resonate:branch` value as the task's promise.
 
 **Errors**
 
