@@ -27,7 +27,7 @@ export type TaskRecord = {
   state: "pending" | "acquired" | "suspended" | "halted" | "fulfilled";
   version: number;
   current?: string;
-  pending?: string[];
+  pending?: string[] | number | boolean;
 };
 
 export type ScheduleRecord = {
@@ -768,7 +768,12 @@ export function isDebugTickAction(val: unknown): val is DebugTickAction {
 function isRequestHead(val: unknown): val is RequestHead {
   if (typeof val !== "object" || val === null) return false;
   const v = val as Record<string, unknown>;
-  return typeof v.corrId === "string" && typeof v.version === "string";
+  return (
+    typeof v.corrId === "string" &&
+    typeof v.version === "string" &&
+    (v.auth === undefined || typeof v.auth === "string") &&
+    (v["resonate:debug_time"] === undefined || typeof v["resonate:debug_time"] === "number")
+  );
 }
 
 export function isPromiseGetReq(val: unknown): val is PromiseGetReq {
@@ -1526,7 +1531,12 @@ export function isTaskRecord(val: unknown): val is TaskRecord {
       v.state === "suspended" ||
       v.state === "halted" ||
       v.state === "fulfilled") &&
-    typeof v.version === "number"
+    typeof v.version === "number" &&
+    (v.current === undefined || typeof v.current === "string") &&
+    (v.pending === undefined ||
+      Array.isArray(v.pending) ||
+      typeof v.pending === "number" ||
+      typeof v.pending === "boolean")
   );
 }
 
@@ -1551,10 +1561,16 @@ export function isScheduleRecord(val: unknown): val is ScheduleRecord {
 // TYPE GUARDS - MESSAGES
 // =============================================================================
 
+function isMessageHead(val: unknown): val is MessageHead {
+  if (typeof val !== "object" || val === null) return false;
+  const v = val as Record<string, unknown>;
+  return v.serverUrl === undefined || typeof v.serverUrl === "string";
+}
+
 export function isExecuteMsg(val: unknown): val is ExecuteMsg {
   if (typeof val !== "object" || val === null) return false;
   const v = val as Record<string, unknown>;
-  if (v.kind !== "execute") return false;
+  if (v.kind !== "execute" || !isMessageHead(v.head)) return false;
   if (typeof v.data !== "object" || v.data === null) return false;
   const d = v.data as Record<string, unknown>;
   if (typeof d.task !== "object" || d.task === null) return false;
@@ -1565,7 +1581,7 @@ export function isExecuteMsg(val: unknown): val is ExecuteMsg {
 export function isUnblockMsg(val: unknown): val is UnblockMsg {
   if (typeof val !== "object" || val === null) return false;
   const v = val as Record<string, unknown>;
-  if (v.kind !== "unblock") return false;
+  if (v.kind !== "unblock" || !isMessageHead(v.head)) return false;
   if (typeof v.data !== "object" || v.data === null) return false;
   return isPromiseRecord((v.data as Record<string, unknown>).promise);
 }

@@ -561,7 +561,7 @@ type Task = {
   state: "pending" | "acquired" | "suspended" | "halted" | "fulfilled";
   version: number;
   current?: string;
-  pending?: string[];
+  pending?: string[] | number | boolean;
 }
 ```
 
@@ -583,7 +583,11 @@ type Task = {
 
 **pending**
 
-   The list of messages queued for the task to process after the current message. Absent when the task is in the `suspended` or `fulfilled` state.
+   The messages queued for the task to process after the current message. Absent when the task is in the `suspended` or `fulfilled` state. Can be one of:
+
+   - `string[]` — the full list of queued message identifiers
+   - `number` — the count of queued messages
+   - `boolean` — whether any messages are queued
 
 ### Get
 
@@ -691,7 +695,7 @@ type TaskCreateRes = {
 }
 ```
 
-Returns the task and its associated promise. If the task is pending, acquires the task and returns it in the acquired state. If the task is already fulfilled, returns only the associated promise. The `preload` field contains all promises that share the same `resonate:branch` value as the task's promise. When a task transitions to the acquired state, its `pending` message set is always cleared to empty.
+Returns the task and its associated promise. If the task is pending, acquires the task and returns it in the acquired state. If the task is already fulfilled, returns only the associated promise. The `preload` field contains all promises that share the same `resonate:branch` value as the task's promise. When a task transitions to the acquired state, its `pending` field is always cleared.
 
 **Errors**
 
@@ -760,7 +764,7 @@ type TaskAcquireRes = {
 }
 ```
 
-Returns the task's associated promise. The `preload` field contains all promises that share the same `resonate:branch` value as the task's promise. When a task transitions to the acquired state, its `pending` message set is always cleared to empty.
+Returns the task's associated promise. The `preload` field contains all promises that share the same `resonate:branch` value as the task's promise. When a task transitions to the acquired state, its `pending` field is always cleared.
 
 **Errors**
 
@@ -897,7 +901,7 @@ type TaskSuspendRes = {
 }
 ```
 
-Returns status `300` if an action promise has already settled or if a previously awaited promise has already settled, indicating the worker can continue execution immediately with the current lease. The task remains in the acquired state with its `pending` message set cleared to empty. The `preload` field contains all promises that share the same `resonate:branch` value as the task's promise.
+Returns status `300` if an action promise has already settled or if a previously awaited promise has already settled, indicating the worker can continue execution immediately with the current lease. The task remains in the acquired state with its `pending` field cleared. The `preload` field contains all promises that share the same `resonate:branch` value as the task's promise.
 
 **Errors**
 
