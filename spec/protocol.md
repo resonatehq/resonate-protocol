@@ -695,7 +695,7 @@ type TaskCreateRes = {
     version: string;
   };
   data: {
-    task: Task;
+    task?: Task;
     promise: Promise;
     preload: Promise[];
   };

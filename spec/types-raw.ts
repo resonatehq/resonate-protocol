@@ -436,7 +436,7 @@ export type TaskCreateRes =
   | {
       kind: "task.create";
       head: ResponseHead<200>;
-      data: { task: TaskRecord; promise: PromiseRecord; preload: PromiseRecord[] };
+      data: { task?: TaskRecord; promise: PromiseRecord; preload: PromiseRecord[] };
     }
   | { kind: "task.create"; head: ResponseHead<400>; data: string }
   | { kind: "task.create"; head: ResponseHead<409>; data: string }
@@ -1193,7 +1193,7 @@ export function isTaskCreateRes(val: unknown): val is TaskCreateRes {
     if (typeof v.data !== "object" || v.data === null) return false;
     const d = v.data as Record<string, unknown>;
     return (
-      isTaskRecord(d.task) &&
+      (d.task === undefined || isTaskRecord(d.task)) &&
       isPromiseRecord(d.promise) &&
       Array.isArray(d.preload) &&
       (d.preload as unknown[]).every(isPromiseRecord)
