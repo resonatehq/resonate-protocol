@@ -69,6 +69,14 @@ The following errors may be returned by any operation.
 
    Bad request. The request was malformed or contained invalid data. The `data` field contains a description of the error.
 
+**401**
+
+   Unauthorized. The request is missing a valid JWT or the provided token is invalid.
+
+**403**
+
+   Forbidden. The JWT is valid but the caller does not have sufficient permissions to perform the requested operation.
+
 **429**
 
    Too many requests. The client has exceeded the rate limit. The client should retry after a delay.

@@ -361,6 +361,8 @@ export type PromiseGetRes =
       data: { promise: PromiseRecord };
     }
   | { kind: "promise.get"; head: ResponseHead<400>; data: string }
+  | { kind: "promise.get"; head: ResponseHead<401>; data: string }
+  | { kind: "promise.get"; head: ResponseHead<403>; data: string }
   | { kind: "promise.get"; head: ResponseHead<404>; data: string }
   | { kind: "promise.get"; head: ResponseHead<429>; data: string }
   | { kind: "promise.get"; head: ResponseHead<500>; data: string };
@@ -372,6 +374,8 @@ export type PromiseCreateRes =
       data: { promise: PromiseRecord };
     }
   | { kind: "promise.create"; head: ResponseHead<400>; data: string }
+  | { kind: "promise.create"; head: ResponseHead<401>; data: string }
+  | { kind: "promise.create"; head: ResponseHead<403>; data: string }
   | { kind: "promise.create"; head: ResponseHead<429>; data: string }
   | { kind: "promise.create"; head: ResponseHead<500>; data: string };
 
@@ -382,6 +386,8 @@ export type PromiseSettleRes =
       data: { promise: PromiseRecord };
     }
   | { kind: "promise.settle"; head: ResponseHead<400>; data: string }
+  | { kind: "promise.settle"; head: ResponseHead<401>; data: string }
+  | { kind: "promise.settle"; head: ResponseHead<403>; data: string }
   | { kind: "promise.settle"; head: ResponseHead<404>; data: string }
   | { kind: "promise.settle"; head: ResponseHead<429>; data: string }
   | { kind: "promise.settle"; head: ResponseHead<500>; data: string };
@@ -393,6 +399,8 @@ export type PromiseRegisterCallbackRes =
       data: { promise: PromiseRecord };
     }
   | { kind: "promise.register_callback"; head: ResponseHead<400>; data: string }
+  | { kind: "promise.register_callback"; head: ResponseHead<401>; data: string }
+  | { kind: "promise.register_callback"; head: ResponseHead<403>; data: string }
   | { kind: "promise.register_callback"; head: ResponseHead<404>; data: string }
   | { kind: "promise.register_callback"; head: ResponseHead<422>; data: string }
   | { kind: "promise.register_callback"; head: ResponseHead<429>; data: string }
@@ -405,6 +413,8 @@ export type PromiseRegisterListenerRes =
       data: { promise: PromiseRecord };
     }
   | { kind: "promise.register_listener"; head: ResponseHead<400>; data: string }
+  | { kind: "promise.register_listener"; head: ResponseHead<401>; data: string }
+  | { kind: "promise.register_listener"; head: ResponseHead<403>; data: string }
   | { kind: "promise.register_listener"; head: ResponseHead<404>; data: string }
   | { kind: "promise.register_listener"; head: ResponseHead<429>; data: string }
   | { kind: "promise.register_listener"; head: ResponseHead<500>; data: string }
@@ -417,6 +427,8 @@ export type PromiseSearchRes =
       data: { promises: PromiseRecord[]; cursor?: string };
     }
   | { kind: "promise.search"; head: ResponseHead<400>; data: string }
+  | { kind: "promise.search"; head: ResponseHead<401>; data: string }
+  | { kind: "promise.search"; head: ResponseHead<403>; data: string }
   | { kind: "promise.search"; head: ResponseHead<429>; data: string }
   | { kind: "promise.search"; head: ResponseHead<500>; data: string }
   | { kind: "promise.search"; head: ResponseHead<501>; data: string };
@@ -428,6 +440,8 @@ export type PromiseSearchRes =
 export type TaskGetRes =
   | { kind: "task.get"; head: ResponseHead<200>; data: { task: TaskRecord } }
   | { kind: "task.get"; head: ResponseHead<400>; data: string }
+  | { kind: "task.get"; head: ResponseHead<401>; data: string }
+  | { kind: "task.get"; head: ResponseHead<403>; data: string }
   | { kind: "task.get"; head: ResponseHead<404>; data: string }
   | { kind: "task.get"; head: ResponseHead<429>; data: string }
   | { kind: "task.get"; head: ResponseHead<500>; data: string };
@@ -439,6 +453,8 @@ export type TaskCreateRes =
       data: { task?: TaskRecord; promise: PromiseRecord; preload: PromiseRecord[] };
     }
   | { kind: "task.create"; head: ResponseHead<400>; data: string }
+  | { kind: "task.create"; head: ResponseHead<401>; data: string }
+  | { kind: "task.create"; head: ResponseHead<403>; data: string }
   | { kind: "task.create"; head: ResponseHead<409>; data: string }
   | { kind: "task.create"; head: ResponseHead<429>; data: string }
   | { kind: "task.create"; head: ResponseHead<500>; data: string }
@@ -451,6 +467,8 @@ export type TaskAcquireRes =
       data: { task: TaskRecord; promise: PromiseRecord; preload: PromiseRecord[] };
     }
   | { kind: "task.acquire"; head: ResponseHead<400>; data: string }
+  | { kind: "task.acquire"; head: ResponseHead<401>; data: string }
+  | { kind: "task.acquire"; head: ResponseHead<403>; data: string }
   | { kind: "task.acquire"; head: ResponseHead<404>; data: string }
   | { kind: "task.acquire"; head: ResponseHead<409>; data: string }
   | { kind: "task.acquire"; head: ResponseHead<429>; data: string }
@@ -463,6 +481,8 @@ export type TaskReleaseRes =
       data: Record<string, never>;
     }
   | { kind: "task.release"; head: ResponseHead<400>; data: string }
+  | { kind: "task.release"; head: ResponseHead<401>; data: string }
+  | { kind: "task.release"; head: ResponseHead<403>; data: string }
   | { kind: "task.release"; head: ResponseHead<404>; data: string }
   | { kind: "task.release"; head: ResponseHead<409>; data: string }
   | { kind: "task.release"; head: ResponseHead<429>; data: string }
@@ -480,6 +500,8 @@ export type TaskSuspendRes =
       data: { preload: PromiseRecord[] };
     }
   | { kind: "task.suspend"; head: ResponseHead<400>; data: string }
+  | { kind: "task.suspend"; head: ResponseHead<401>; data: string }
+  | { kind: "task.suspend"; head: ResponseHead<403>; data: string }
   | { kind: "task.suspend"; head: ResponseHead<404>; data: string }
   | { kind: "task.suspend"; head: ResponseHead<409>; data: string }
   | { kind: "task.suspend"; head: ResponseHead<422>; data: string }
@@ -493,6 +515,8 @@ export type TaskHaltRes =
       data: Record<string, never>;
     }
   | { kind: "task.halt"; head: ResponseHead<400>; data: string }
+  | { kind: "task.halt"; head: ResponseHead<401>; data: string }
+  | { kind: "task.halt"; head: ResponseHead<403>; data: string }
   | { kind: "task.halt"; head: ResponseHead<404>; data: string }
   | { kind: "task.halt"; head: ResponseHead<409>; data: string }
   | { kind: "task.halt"; head: ResponseHead<429>; data: string }
@@ -505,6 +529,8 @@ export type TaskContinueRes =
       data: Record<string, never>;
     }
   | { kind: "task.continue"; head: ResponseHead<400>; data: string }
+  | { kind: "task.continue"; head: ResponseHead<401>; data: string }
+  | { kind: "task.continue"; head: ResponseHead<403>; data: string }
   | { kind: "task.continue"; head: ResponseHead<404>; data: string }
   | { kind: "task.continue"; head: ResponseHead<409>; data: string }
   | { kind: "task.continue"; head: ResponseHead<429>; data: string }
@@ -517,6 +543,8 @@ export type TaskFulfillRes =
       data: { promise: PromiseRecord };
     }
   | { kind: "task.fulfill"; head: ResponseHead<400>; data: string }
+  | { kind: "task.fulfill"; head: ResponseHead<401>; data: string }
+  | { kind: "task.fulfill"; head: ResponseHead<403>; data: string }
   | { kind: "task.fulfill"; head: ResponseHead<404>; data: string }
   | { kind: "task.fulfill"; head: ResponseHead<409>; data: string }
   | { kind: "task.fulfill"; head: ResponseHead<429>; data: string }
@@ -529,6 +557,8 @@ export type TaskFenceRes =
       data: { action: PromiseCreateRes | PromiseSettleRes; preload: PromiseRecord[] };
     }
   | { kind: "task.fence"; head: ResponseHead<400>; data: string }
+  | { kind: "task.fence"; head: ResponseHead<401>; data: string }
+  | { kind: "task.fence"; head: ResponseHead<403>; data: string }
   | { kind: "task.fence"; head: ResponseHead<404>; data: string }
   | { kind: "task.fence"; head: ResponseHead<409>; data: string }
   | { kind: "task.fence"; head: ResponseHead<429>; data: string }
@@ -541,6 +571,8 @@ export type TaskHeartbeatRes =
       data: Record<string, never>;
     }
   | { kind: "task.heartbeat"; head: ResponseHead<400>; data: string }
+  | { kind: "task.heartbeat"; head: ResponseHead<401>; data: string }
+  | { kind: "task.heartbeat"; head: ResponseHead<403>; data: string }
   | { kind: "task.heartbeat"; head: ResponseHead<429>; data: string }
   | { kind: "task.heartbeat"; head: ResponseHead<500>; data: string };
 
@@ -551,6 +583,8 @@ export type TaskSearchRes =
       data: { tasks: TaskRecord[]; cursor?: string };
     }
   | { kind: "task.search"; head: ResponseHead<400>; data: string }
+  | { kind: "task.search"; head: ResponseHead<401>; data: string }
+  | { kind: "task.search"; head: ResponseHead<403>; data: string }
   | { kind: "task.search"; head: ResponseHead<429>; data: string }
   | { kind: "task.search"; head: ResponseHead<500>; data: string }
   | { kind: "task.search"; head: ResponseHead<501>; data: string };
@@ -566,6 +600,8 @@ export type ScheduleGetRes =
       data: { schedule: ScheduleRecord };
     }
   | { kind: "schedule.get"; head: ResponseHead<400>; data: string }
+  | { kind: "schedule.get"; head: ResponseHead<401>; data: string }
+  | { kind: "schedule.get"; head: ResponseHead<403>; data: string }
   | { kind: "schedule.get"; head: ResponseHead<404>; data: string }
   | { kind: "schedule.get"; head: ResponseHead<429>; data: string }
   | { kind: "schedule.get"; head: ResponseHead<500>; data: string }
@@ -578,6 +614,8 @@ export type ScheduleCreateRes =
       data: { schedule: ScheduleRecord };
     }
   | { kind: "schedule.create"; head: ResponseHead<400>; data: string }
+  | { kind: "schedule.create"; head: ResponseHead<401>; data: string }
+  | { kind: "schedule.create"; head: ResponseHead<403>; data: string }
   | { kind: "schedule.create"; head: ResponseHead<429>; data: string }
   | { kind: "schedule.create"; head: ResponseHead<500>; data: string }
   | { kind: "schedule.create"; head: ResponseHead<501>; data: string };
@@ -589,6 +627,8 @@ export type ScheduleDeleteRes =
       data: Record<string, never>;
     }
   | { kind: "schedule.delete"; head: ResponseHead<400>; data: string }
+  | { kind: "schedule.delete"; head: ResponseHead<401>; data: string }
+  | { kind: "schedule.delete"; head: ResponseHead<403>; data: string }
   | { kind: "schedule.delete"; head: ResponseHead<404>; data: string }
   | { kind: "schedule.delete"; head: ResponseHead<429>; data: string }
   | { kind: "schedule.delete"; head: ResponseHead<500>; data: string }
@@ -601,6 +641,8 @@ export type ScheduleSearchRes =
       data: { schedules: ScheduleRecord[]; cursor?: string };
     }
   | { kind: "schedule.search"; head: ResponseHead<400>; data: string }
+  | { kind: "schedule.search"; head: ResponseHead<401>; data: string }
+  | { kind: "schedule.search"; head: ResponseHead<403>; data: string }
   | { kind: "schedule.search"; head: ResponseHead<429>; data: string }
   | { kind: "schedule.search"; head: ResponseHead<500>; data: string }
   | { kind: "schedule.search"; head: ResponseHead<501>; data: string };
@@ -616,6 +658,8 @@ export type DebugStartRes =
       data: Record<string, never>;
     }
   | { kind: "debug.start"; head: ResponseHead<400>; data: string }
+  | { kind: "debug.start"; head: ResponseHead<401>; data: string }
+  | { kind: "debug.start"; head: ResponseHead<403>; data: string }
   | { kind: "debug.start"; head: ResponseHead<429>; data: string }
   | { kind: "debug.start"; head: ResponseHead<500>; data: string }
   | { kind: "debug.start"; head: ResponseHead<501>; data: string };
@@ -627,6 +671,8 @@ export type DebugResetRes =
       data: Record<string, never>;
     }
   | { kind: "debug.reset"; head: ResponseHead<400>; data: string }
+  | { kind: "debug.reset"; head: ResponseHead<401>; data: string }
+  | { kind: "debug.reset"; head: ResponseHead<403>; data: string }
   | { kind: "debug.reset"; head: ResponseHead<429>; data: string }
   | { kind: "debug.reset"; head: ResponseHead<500>; data: string }
   | { kind: "debug.reset"; head: ResponseHead<501>; data: string };
@@ -642,6 +688,8 @@ export type DebugTickAction =
 export type DebugTickRes =
   | { kind: "debug.tick"; head: ResponseHead<200>; data: DebugTickAction[] }
   | { kind: "debug.tick"; head: ResponseHead<400>; data: string }
+  | { kind: "debug.tick"; head: ResponseHead<401>; data: string }
+  | { kind: "debug.tick"; head: ResponseHead<403>; data: string }
   | { kind: "debug.tick"; head: ResponseHead<429>; data: string }
   | { kind: "debug.tick"; head: ResponseHead<500>; data: string }
   | { kind: "debug.tick"; head: ResponseHead<501>; data: string };
@@ -661,6 +709,8 @@ export type DebugSnapRes =
       };
     }
   | { kind: "debug.snap"; head: ResponseHead<400>; data: string }
+  | { kind: "debug.snap"; head: ResponseHead<401>; data: string }
+  | { kind: "debug.snap"; head: ResponseHead<403>; data: string }
   | { kind: "debug.snap"; head: ResponseHead<429>; data: string }
   | { kind: "debug.snap"; head: ResponseHead<500>; data: string }
   | { kind: "debug.snap"; head: ResponseHead<501>; data: string };
@@ -668,6 +718,8 @@ export type DebugSnapRes =
 export type DebugStopRes =
   | { kind: "debug.stop"; head: ResponseHead<200>; data: Record<string, never> }
   | { kind: "debug.stop"; head: ResponseHead<400>; data: string }
+  | { kind: "debug.stop"; head: ResponseHead<401>; data: string }
+  | { kind: "debug.stop"; head: ResponseHead<403>; data: string }
   | { kind: "debug.stop"; head: ResponseHead<429>; data: string }
   | { kind: "debug.stop"; head: ResponseHead<500>; data: string }
   | { kind: "debug.stop"; head: ResponseHead<501>; data: string };
@@ -718,6 +770,14 @@ export function isRedirect<T extends Response>(res: T): res is Extract<T, { head
 
 export function isBadRequest<T extends Response>(res: T): res is Extract<T, { head: { status: 400 } }> {
   return res.head.status === 400;
+}
+
+export function isUnauthorized<T extends Response>(res: T): res is Extract<T, { head: { status: 401 } }> {
+  return res.head.status === 401;
+}
+
+export function isForbidden<T extends Response>(res: T): res is Extract<T, { head: { status: 403 } }> {
+  return res.head.status === 403;
 }
 
 export function isNotFound<T extends Response>(res: T): res is Extract<T, { head: { status: 404 } }> {

@@ -474,6 +474,16 @@ export const PromiseGetResSchema = z.discriminatedUnion("kind", [
   }),
   z.object({
     kind: z.literal("promise.get"),
+    head: ResponseHeadSchema(401),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("promise.get"),
+    head: ResponseHeadSchema(403),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("promise.get"),
     head: ResponseHeadSchema(404),
     data: z.string(),
   }),
@@ -504,6 +514,16 @@ export const PromiseCreateResSchema = z.discriminatedUnion("kind", [
   }),
   z.object({
     kind: z.literal("promise.create"),
+    head: ResponseHeadSchema(401),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("promise.create"),
+    head: ResponseHeadSchema(403),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("promise.create"),
     head: ResponseHeadSchema(429),
     data: z.string(),
   }),
@@ -525,6 +545,16 @@ export const PromiseSettleResSchema = z.discriminatedUnion("kind", [
   z.object({
     kind: z.literal("promise.settle"),
     head: ResponseHeadSchema(400),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("promise.settle"),
+    head: ResponseHeadSchema(401),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("promise.settle"),
+    head: ResponseHeadSchema(403),
     data: z.string(),
   }),
   z.object({
@@ -555,6 +585,16 @@ export const PromiseRegisterCallbackResSchema = z.discriminatedUnion("kind", [
   z.object({
     kind: z.literal("promise.register_callback"),
     head: ResponseHeadSchema(400),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("promise.register_callback"),
+    head: ResponseHeadSchema(401),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("promise.register_callback"),
+    head: ResponseHeadSchema(403),
     data: z.string(),
   }),
   z.object({
@@ -590,6 +630,16 @@ export const PromiseRegisterListenerResSchema = z.discriminatedUnion("kind", [
   z.object({
     kind: z.literal("promise.register_listener"),
     head: ResponseHeadSchema(400),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("promise.register_listener"),
+    head: ResponseHeadSchema(401),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("promise.register_listener"),
+    head: ResponseHeadSchema(403),
     data: z.string(),
   }),
   z.object({
@@ -632,6 +682,16 @@ export const PromiseSearchResSchema = z.discriminatedUnion("kind", [
   }),
   z.object({
     kind: z.literal("promise.search"),
+    head: ResponseHeadSchema(401),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("promise.search"),
+    head: ResponseHeadSchema(403),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("promise.search"),
     head: ResponseHeadSchema(429),
     data: z.string(),
   }),
@@ -666,6 +726,16 @@ export const TaskGetResSchema = z.discriminatedUnion("kind", [
   }),
   z.object({
     kind: z.literal("task.get"),
+    head: ResponseHeadSchema(401),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("task.get"),
+    head: ResponseHeadSchema(403),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("task.get"),
     head: ResponseHeadSchema(404),
     data: z.string(),
   }),
@@ -696,6 +766,16 @@ export const TaskCreateResSchema = z.discriminatedUnion("kind", [
   z.object({
     kind: z.literal("task.create"),
     head: ResponseHeadSchema(400),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("task.create"),
+    head: ResponseHeadSchema(401),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("task.create"),
+    head: ResponseHeadSchema(403),
     data: z.string(),
   }),
   z.object({
@@ -739,6 +819,16 @@ export const TaskAcquireResSchema = z.discriminatedUnion("kind", [
   }),
   z.object({
     kind: z.literal("task.acquire"),
+    head: ResponseHeadSchema(401),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("task.acquire"),
+    head: ResponseHeadSchema(403),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("task.acquire"),
     head: ResponseHeadSchema(404),
     data: z.string(),
   }),
@@ -770,6 +860,16 @@ export const TaskReleaseResSchema = z.discriminatedUnion("kind", [
   z.object({
     kind: z.literal("task.release"),
     head: ResponseHeadSchema(400),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("task.release"),
+    head: ResponseHeadSchema(401),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("task.release"),
+    head: ResponseHeadSchema(403),
     data: z.string(),
   }),
   z.object({
@@ -814,6 +914,16 @@ export const TaskSuspendResSchema = z.discriminatedUnion("kind", [
   }),
   z.object({
     kind: z.literal("task.suspend"),
+    head: ResponseHeadSchema(401),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("task.suspend"),
+    head: ResponseHeadSchema(403),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("task.suspend"),
     head: ResponseHeadSchema(404),
     data: z.string(),
   }),
@@ -854,6 +964,16 @@ export const TaskHaltResSchema = z.discriminatedUnion("kind", [
   }),
   z.object({
     kind: z.literal("task.halt"),
+    head: ResponseHeadSchema(401),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("task.halt"),
+    head: ResponseHeadSchema(403),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("task.halt"),
     head: ResponseHeadSchema(404),
     data: z.string(),
   }),
@@ -889,6 +1009,16 @@ export const TaskContinueResSchema = z.discriminatedUnion("kind", [
   }),
   z.object({
     kind: z.literal("task.continue"),
+    head: ResponseHeadSchema(401),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("task.continue"),
+    head: ResponseHeadSchema(403),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("task.continue"),
     head: ResponseHeadSchema(404),
     data: z.string(),
   }),
@@ -920,6 +1050,16 @@ export const TaskFulfillResSchema = z.discriminatedUnion("kind", [
   z.object({
     kind: z.literal("task.fulfill"),
     head: ResponseHeadSchema(400),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("task.fulfill"),
+    head: ResponseHeadSchema(401),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("task.fulfill"),
+    head: ResponseHeadSchema(403),
     data: z.string(),
   }),
   z.object({
@@ -962,6 +1102,16 @@ export const TaskFenceResSchema = z.discriminatedUnion("kind", [
   }),
   z.object({
     kind: z.literal("task.fence"),
+    head: ResponseHeadSchema(401),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("task.fence"),
+    head: ResponseHeadSchema(403),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("task.fence"),
     head: ResponseHeadSchema(404),
     data: z.string(),
   }),
@@ -997,6 +1147,16 @@ export const TaskHeartbeatResSchema = z.discriminatedUnion("kind", [
   }),
   z.object({
     kind: z.literal("task.heartbeat"),
+    head: ResponseHeadSchema(401),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("task.heartbeat"),
+    head: ResponseHeadSchema(403),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("task.heartbeat"),
     head: ResponseHeadSchema(429),
     data: z.string(),
   }),
@@ -1021,6 +1181,16 @@ export const TaskSearchResSchema = z.discriminatedUnion("kind", [
   z.object({
     kind: z.literal("task.search"),
     head: ResponseHeadSchema(400),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("task.search"),
+    head: ResponseHeadSchema(401),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("task.search"),
+    head: ResponseHeadSchema(403),
     data: z.string(),
   }),
   z.object({
@@ -1055,6 +1225,16 @@ export const ScheduleGetResSchema = z.discriminatedUnion("kind", [
   z.object({
     kind: z.literal("schedule.get"),
     head: ResponseHeadSchema(400),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("schedule.get"),
+    head: ResponseHeadSchema(401),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("schedule.get"),
+    head: ResponseHeadSchema(403),
     data: z.string(),
   }),
   z.object({
@@ -1094,6 +1274,16 @@ export const ScheduleCreateResSchema = z.discriminatedUnion("kind", [
   }),
   z.object({
     kind: z.literal("schedule.create"),
+    head: ResponseHeadSchema(401),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("schedule.create"),
+    head: ResponseHeadSchema(403),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("schedule.create"),
     head: ResponseHeadSchema(429),
     data: z.string(),
   }),
@@ -1120,6 +1310,16 @@ export const ScheduleDeleteResSchema = z.discriminatedUnion("kind", [
   z.object({
     kind: z.literal("schedule.delete"),
     head: ResponseHeadSchema(400),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("schedule.delete"),
+    head: ResponseHeadSchema(401),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("schedule.delete"),
+    head: ResponseHeadSchema(403),
     data: z.string(),
   }),
   z.object({
@@ -1162,6 +1362,16 @@ export const ScheduleSearchResSchema = z.discriminatedUnion("kind", [
   }),
   z.object({
     kind: z.literal("schedule.search"),
+    head: ResponseHeadSchema(401),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("schedule.search"),
+    head: ResponseHeadSchema(403),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("schedule.search"),
     head: ResponseHeadSchema(429),
     data: z.string(),
   }),
@@ -1196,6 +1406,16 @@ export const DebugStartResSchema = z.discriminatedUnion("kind", [
   }),
   z.object({
     kind: z.literal("debug.start"),
+    head: ResponseHeadSchema(401),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("debug.start"),
+    head: ResponseHeadSchema(403),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("debug.start"),
     head: ResponseHeadSchema(429),
     data: z.string(),
   }),
@@ -1222,6 +1442,16 @@ export const DebugResetResSchema = z.discriminatedUnion("kind", [
   z.object({
     kind: z.literal("debug.reset"),
     head: ResponseHeadSchema(400),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("debug.reset"),
+    head: ResponseHeadSchema(401),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("debug.reset"),
+    head: ResponseHeadSchema(403),
     data: z.string(),
   }),
   z.object({
@@ -1282,6 +1512,16 @@ export const DebugTickResSchema = z.discriminatedUnion("kind", [
   }),
   z.object({
     kind: z.literal("debug.tick"),
+    head: ResponseHeadSchema(401),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("debug.tick"),
+    head: ResponseHeadSchema(403),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("debug.tick"),
     head: ResponseHeadSchema(429),
     data: z.string(),
   }),
@@ -1320,6 +1560,16 @@ export const DebugSnapResSchema = z.discriminatedUnion("kind", [
   }),
   z.object({
     kind: z.literal("debug.snap"),
+    head: ResponseHeadSchema(401),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("debug.snap"),
+    head: ResponseHeadSchema(403),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("debug.snap"),
     head: ResponseHeadSchema(429),
     data: z.string(),
   }),
@@ -1346,6 +1596,16 @@ export const DebugStopResSchema = z.discriminatedUnion("kind", [
   z.object({
     kind: z.literal("debug.stop"),
     head: ResponseHeadSchema(400),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("debug.stop"),
+    head: ResponseHeadSchema(401),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("debug.stop"),
+    head: ResponseHeadSchema(403),
     data: z.string(),
   }),
   z.object({
@@ -1420,6 +1680,14 @@ export function isRedirect<T extends Response>(res: T): res is Extract<T, { head
 
 export function isBadRequest<T extends Response>(res: T): res is Extract<T, { head: { status: 400 } }> {
   return res.head.status === 400;
+}
+
+export function isUnauthorized<T extends Response>(res: T): res is Extract<T, { head: { status: 401 } }> {
+  return res.head.status === 401;
+}
+
+export function isForbidden<T extends Response>(res: T): res is Extract<T, { head: { status: 403 } }> {
+  return res.head.status === 403;
 }
 
 export function isNotFound<T extends Response>(res: T): res is Extract<T, { head: { status: 404 } }> {
