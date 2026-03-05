@@ -141,7 +141,7 @@ Tick(t)
 | 85  | TaskHeartbeat(t, v)     | ⟨h, ⊥, ⊥, v, R⟩                   | ⟨h, ⊥, ⊥, v, R⟩     | 200    |                |
 | 86  | TaskHeartbeat(t, v')    | ⟨h, ⊥, ⊥, v, R⟩                   | ⟨h, ⊥, ⊥, v, R⟩     | 200    |                |
 | 87  | TaskHeartbeat(t, v)     | ⟨f, ⊥, ⊥, ⊥, ∅⟩                   | ⟨f, ⊥, ⊥, ⊥, ∅⟩     | 200    |                |
-| 88  | EnqueueInvoke(t, r)     | ⊥                                 | ⟨p, t+L, ⊥, 0, ∅⟩   |        | Send(Execute)  |
+| 88  | EnqueueInvoke(t, r)     | ⊥                                 | ⟨p, t+L, ⊥, 0, {r}⟩  |        | Send(Execute)  |
 | 89  | EnqueueInvoke(t, r)     | ⟨p, e, ⊥, v, R⟩                   | ⟨p, e, ⊥, v, R⟩     |        |                |
 | 90  | EnqueueInvoke(t, r)     | ⟨a, e, l, v, R⟩                   | ⟨a, e, l, v, R⟩     |        |                |
 | 91  | EnqueueInvoke(t, r)     | ⟨s, ⊥, ⊥, v, ∅⟩                   | ⟨s, ⊥, ⊥, v, ∅⟩     |        |                |

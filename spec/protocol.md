@@ -702,13 +702,13 @@ type TaskCreateRes = {
 }
 ```
 
-Returns the task and its associated promise. If the task is pending, acquires the task and returns it in the acquired state. The `preload` field contains all promises that share the same `resonate:branch` value as the task's promise. When a task transitions to the acquired state, its `resumes` field is always cleared.
+Returns the task and its associated promise. If the task is pending, acquires the task and returns it in the acquired state. If the task is fulfilled, returns the existing task and promise (idempotent). The `preload` field contains all promises that share the same `resonate:branch` value as the task's promise. When a task transitions to the acquired state, its `resumes` field is always cleared.
 
 **Errors**
 
 **409**
 
-   The task already exists and is acquired or suspended.
+   The task already exists and is acquired, suspended, or halted.
 
 **501**
 
@@ -1078,7 +1078,7 @@ type TaskFulfillRes = {
 }
 ```
 
-Returns the promise in its current state. If the promise is already settled, returns the existing state (idempotent).
+Returns the promise in its settled state.
 
 **Errors**
 
@@ -1545,10 +1545,6 @@ type ScheduleSearchRes = {
 Returns a list of matching schedules and an optional cursor for the next page of results.
 
 **Errors**
-
-**501**
-
-   Not implemented.
 
 **501**
 
