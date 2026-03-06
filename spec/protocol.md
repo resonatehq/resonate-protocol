@@ -710,13 +710,13 @@ type TaskCreateRes = {
 }
 ```
 
-Returns the task and its associated promise. If the task is pending, acquires the task and returns it in the acquired state. If the promise is already settled, returns the promise only. The `preload` field contains all promises that share the same `resonate:branch` value as the task's promise. When a task transitions to the acquired state, its `resumes` field is always cleared.
+Returns the task and its associated promise. If the task is pending, acquires the task and returns it in the acquired state. If the promise is already settled, the task transitions to the fulfilled state and is returned. The `preload` field contains all promises that share the same `resonate:branch` value as the task's promise. When a task transitions to the acquired state, its `resumes` field is always cleared.
 
 **Errors**
 
 **409**
 
-   The task already exists and is acquired, suspended, or halted.
+   The task already exists and is acquired, suspended, or halted, or the promise already exists without an associated task.
 
 **501**
 
