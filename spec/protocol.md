@@ -718,6 +718,10 @@ Returns the task and its associated promise. If the task is pending, acquires th
 
    The task already exists and is acquired, suspended, or halted, or the promise already exists without an associated task.
 
+**422**
+
+   The promise does not have a target address.
+
 **501**
 
    Not implemented.

@@ -456,6 +456,7 @@ export type TaskCreateRes =
   | { kind: "task.create"; head: ResponseHead<401>; data: string }
   | { kind: "task.create"; head: ResponseHead<403>; data: string }
   | { kind: "task.create"; head: ResponseHead<409>; data: string }
+  | { kind: "task.create"; head: ResponseHead<422>; data: string }
   | { kind: "task.create"; head: ResponseHead<429>; data: string }
   | { kind: "task.create"; head: ResponseHead<500>; data: string }
   | { kind: "task.create"; head: ResponseHead<501>; data: string };

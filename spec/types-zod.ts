@@ -604,12 +604,12 @@ export const PromiseRegisterCallbackResSchema = z.discriminatedUnion("kind", [
   }),
   z.object({
     kind: z.literal("promise.register_callback"),
-    head: ResponseHeadSchema(429),
+    head: ResponseHeadSchema(422),
     data: z.string(),
   }),
   z.object({
     kind: z.literal("promise.register_callback"),
-    head: ResponseHeadSchema(422),
+    head: ResponseHeadSchema(429),
     data: z.string(),
   }),
   z.object({
@@ -781,6 +781,11 @@ export const TaskCreateResSchema = z.discriminatedUnion("kind", [
   z.object({
     kind: z.literal("task.create"),
     head: ResponseHeadSchema(409),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("task.create"),
+    head: ResponseHeadSchema(422),
     data: z.string(),
   }),
   z.object({
