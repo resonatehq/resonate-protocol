@@ -26,6 +26,8 @@ export const PromiseRecordSchema = z.object({
   settledAt: z.number().optional(),
 });
 
+export type PromiseRecord = z.infer<typeof PromiseRecordSchema>;
+
 export const TaskRecordSchema = z.object({
   id: z.string(),
   state: z.enum(["pending", "acquired", "suspended", "halted", "fulfilled"]),
@@ -34,6 +36,8 @@ export const TaskRecordSchema = z.object({
   ttl: z.number().int().optional(),
   pid: z.string().optional(),
 });
+
+export type TaskRecord = z.infer<typeof TaskRecordSchema>;
 
 export const ScheduleRecordSchema = z.object({
   id: z.string(),
@@ -46,6 +50,8 @@ export const ScheduleRecordSchema = z.object({
   nextRunAt: z.number(),
   lastRunAt: z.number().optional(),
 });
+
+export type ScheduleRecord = z.infer<typeof ScheduleRecordSchema>;
 
 // =============================================================================
 // MESSAGES
