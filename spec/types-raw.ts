@@ -706,6 +706,8 @@ export type DebugSnapRes =
         listeners?: { id: string; address: string }[];
         tasks: TaskRecord[];
         taskTimeouts: { id: string; type: number; timeout: number }[];
+        schedules?: ScheduleRecord[];
+        scheduleTimeouts?: { id: string; timeout: number }[];
         messages: { address: string; message: Message }[];
       };
     }

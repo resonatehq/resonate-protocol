@@ -387,13 +387,17 @@ export const DebugResetReqSchema = z.object({
 
 export type DebugResetReq = z.infer<typeof DebugResetReqSchema>;
 
-export const DebugTickReqSchema = z.object({
-  kind: z.literal("debug.tick"),
-  head: RequestHeadSchema,
-  data: z.object({
-    time: z.number().int().nonnegative("Time must be a non-negative integer"),
-  }),
-});
+export const DebugTickReqSchema = z
+  .object({
+    kind: z.literal("debug.tick"),
+    head: RequestHeadSchema,
+    data: z.object({
+      time: z.number().int().nonnegative("Time must be a non-negative integer"),
+    }),
+  })
+  .refine((r) => r.head["resonate:debug_time"] === undefined || r.head["resonate:debug_time"] === r.data.time, {
+    message: "data.time must equal resonate:debug_time header when present",
+  });
 
 export type DebugTickReq = z.infer<typeof DebugTickReqSchema>;
 
@@ -1561,6 +1565,8 @@ export const DebugSnapResSchema = z.discriminatedUnion("kind", [
       listeners: z.array(z.object({ id: z.string(), address: z.string() })).optional(),
       tasks: z.array(TaskRecordSchema),
       taskTimeouts: z.array(z.object({ id: z.string(), type: z.number(), timeout: z.number() })),
+      schedules: z.array(ScheduleRecordSchema).optional(),
+      scheduleTimeouts: z.array(z.object({ id: z.string(), timeout: z.number() })).optional(),
       messages: z.array(z.object({ address: z.string(), message: MessageSchema })),
     }),
   }),
