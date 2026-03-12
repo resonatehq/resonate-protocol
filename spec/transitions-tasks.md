@@ -47,9 +47,12 @@ Tick(t)
 
 ## Side Effects
 
-| Side Effect   | Description  |
-| ------------- | ------------ |
-| Send(Execute) | Send message |
+| Side Effect             | Description                         |
+| ----------------------- | ----------------------------------- |
+| Send(Execute)           | Send message                        |
+| PromiseCreate           | Create a promise                    |
+| PromiseSettle           | Settle a promise                    |
+| PromiseRegisterCallback | Register task callback on a promise |
 
 ## Predicates
 
@@ -62,16 +65,16 @@ Tick(t)
 
 ## Transitions
 
-| #   | Operation               | Current State                     | Next State          | Result | Side Effect(s) |
-| --- | ----------------------- | --------------------------------- | ------------------- | ------ | -------------- |
+| #   | Operation               | Current State                     | Next State              | Result | Side Effect(s)                |
+| --- | ----------------------- | --------------------------------- | ----------------------- | ------ | ----------------------------- |
 | 1   | TaskGet()               | ⊥                                 | ⊥                   | 404    |                |
 | 2   | TaskGet()               | ⟨p, e, ⊥, v, R⟩                   | ⟨p, e, ⊥, v, R⟩     | 200    |                |
 | 3   | TaskGet()               | ⟨a, e, l, v, R⟩                   | ⟨a, e, l, v, R⟩     | 200    |                |
 | 4   | TaskGet()               | ⟨s, ⊥, ⊥, v, ∅⟩                   | ⟨s, ⊥, ⊥, v, ∅⟩     | 200    |                |
 | 5   | TaskGet()               | ⟨h, ⊥, ⊥, v, R⟩                   | ⟨h, ⊥, ⊥, v, R⟩     | 200    |                |
 | 6   | TaskGet()               | ⟨f, ⊥, ⊥, ⊥, ∅⟩                   | ⟨f, ⊥, ⊥, ⊥, ∅⟩     | 200    |                |
-| 7   | TaskCreate(t, l, p)     | ⊥ : HasAddress(p) ^ Pending(p)    | ⟨a, t+l, l, 0, ∅⟩   | 200    |                |
-| 8   | TaskCreate(t, l, p)     | ⊥ : HasAddress(p) ^ Settled(p)    | ⟨f, ⊥, ⊥, ⊥, ∅⟩    | 200    |                |
+| 7   | TaskCreate(t, l, p)     | ⊥ : HasAddress(p) ^ Pending(p)    | ⟨a, t+l, l, 0, ∅⟩   | 200    | PromiseCreate  |
+| 8   | TaskCreate(t, l, p)     | ⊥ : HasAddress(p) ^ Settled(p)    | ⟨f, ⊥, ⊥, ⊥, ∅⟩    | 200    | PromiseCreate  |
 | 9   | TaskCreate(t, l, p)     | ⊥ : ¬HasAddress(p)                | ⊥                   | 422    |                |
 | 10  | TaskCreate(t, l, p)     | ⟨p, e, ⊥, v, R⟩                   | ⟨a, t+l, l, v, ∅⟩   | 200    |                |
 | 11  | TaskCreate(t, l, p)     | ⟨a, e, l, v, R⟩                   | ⟨a, e, l, v, R⟩     | 409    |                |
@@ -101,88 +104,87 @@ Tick(t)
 | 35  | TaskSuspend(v, P)       | ⊥                                 | ⊥                   | 404    |                |
 | 36  | TaskSuspend(v, P)       | ⟨p, e, ⊥, v, R⟩                   | ⟨p, e, ⊥, v, R⟩     | 409    |                |
 | 37  | TaskSuspend(v', P)      | ⟨p, e, ⊥, v, R⟩                   | ⟨p, e, ⊥, v, R⟩     | 409    |                |
-| 38  | TaskSuspend(v, P)       | ⟨a, e, l, v, ∅⟩ : ¬Exists(p) ∃p∈P | ⟨a, e, l, v, ∅⟩     | 422    |                |
-| 39  | TaskSuspend(v, P)       | ⟨a, e, l, v, ∅⟩ : Settled(p) ∃p∈P | ⟨a, e, l, v, ∅⟩     | 300    |                |
-| 40  | TaskSuspend(v, P)       | ⟨a, e, l, v, ∅⟩ : Pending(p) ∀p∈P | ⟨s, ⊥, ⊥, v, ∅⟩     | 200    |                |
-| 41  | TaskSuspend(v, P)       | ⟨a, e, l, v, R⟩                   | ⟨a, e, l, v, ∅⟩     | 300    |                |
-| 42  | TaskSuspend(v', P)      | ⟨a, e, l, v, R⟩                   | ⟨a, e, l, v, R⟩     | 409    |                |
-| 43  | TaskSuspend(v, P)       | ⟨s, ⊥, ⊥, v, ∅⟩                   | ⟨s, ⊥, ⊥, v, ∅⟩     | 409    |                |
-| 44  | TaskSuspend(v', P)      | ⟨s, ⊥, ⊥, v, ∅⟩                   | ⟨s, ⊥, ⊥, v, ∅⟩     | 409    |                |
-| 45  | TaskSuspend(v, P)       | ⟨h, ⊥, ⊥, v, R⟩                   | ⟨h, ⊥, ⊥, v, R⟩     | 409    |                |
-| 46  | TaskSuspend(v', P)      | ⟨h, ⊥, ⊥, v, R⟩                   | ⟨h, ⊥, ⊥, v, R⟩     | 409    |                |
-| 47  | TaskSuspend(v, P)       | ⟨f, ⊥, ⊥, ⊥, ∅⟩                   | ⟨f, ⊥, ⊥, ⊥, ∅⟩     | 409    |                |
-| 48  | TaskHalt()              | ⊥                                 | ⊥                   | 404    |                |
-| 49  | TaskHalt()              | ⟨p, e, ⊥, v, R⟩                   | ⟨h, ⊥, ⊥, v, R⟩     | 200    |                |
-| 50  | TaskHalt()              | ⟨a, e, l, v, R⟩                   | ⟨h, ⊥, ⊥, v, R⟩     | 200    |                |
-| 51  | TaskHalt()              | ⟨s, ⊥, ⊥, v, ∅⟩                   | ⟨h, ⊥, ⊥, v, ∅⟩     | 200    |                |
-| 52  | TaskHalt()              | ⟨h, ⊥, ⊥, v, R⟩                   | ⟨h, ⊥, ⊥, v, R⟩     | 200    |                |
-| 53  | TaskHalt()              | ⟨f, ⊥, ⊥, ⊥, ∅⟩                   | ⟨f, ⊥, ⊥, ⊥, ∅⟩     | 409    |                |
-| 54  | TaskContinue(t)         | ⊥                                 | ⊥                   | 404    |                |
-| 55  | TaskContinue(t)         | ⟨p, e, ⊥, v, R⟩                   | ⟨p, e, ⊥, v, R⟩     | 409    |                |
-| 56  | TaskContinue(t)         | ⟨a, e, l, v, R⟩                   | ⟨a, e, l, v, R⟩     | 409    |                |
-| 57  | TaskContinue(t)         | ⟨s, ⊥, ⊥, v, ∅⟩                   | ⟨s, ⊥, ⊥, v, ∅⟩     | 409    |                |
-| 58  | TaskContinue(t)         | ⟨h, ⊥, ⊥, v, R⟩                   | ⟨p, t+L, ⊥, v+1, R⟩ | 200    | Send(Execute)  |
-| 59  | TaskContinue(t)         | ⟨f, ⊥, ⊥, ⊥, ∅⟩                   | ⟨f, ⊥, ⊥, ⊥, ∅⟩     | 409    |                |
-| 60  | TaskFulfill(v)          | ⊥                                 | ⊥                   | 404    |                |
-| 61  | TaskFulfill(v)          | ⟨p, e, ⊥, v, R⟩                   | ⟨p, e, ⊥, v, R⟩     | 409    |                |
-| 62  | TaskFulfill(v')         | ⟨p, e, ⊥, v, R⟩                   | ⟨p, e, ⊥, v, R⟩     | 409    |                |
-| 63  | TaskFulfill(v)          | ⟨a, e, l, v, R⟩                   | ⟨f, ⊥, ⊥, ⊥, ∅⟩     | 200    |                |
-| 64  | TaskFulfill(v')         | ⟨a, e, l, v, R⟩                   | ⟨a, e, l, v, R⟩     | 409    |                |
-| 65  | TaskFulfill(v)          | ⟨s, ⊥, ⊥, v, ∅⟩                   | ⟨s, ⊥, ⊥, v, ∅⟩     | 409    |                |
-| 66  | TaskFulfill(v')         | ⟨s, ⊥, ⊥, v, ∅⟩                   | ⟨s, ⊥, ⊥, v, ∅⟩     | 409    |                |
-| 67  | TaskFulfill(v)          | ⟨h, ⊥, ⊥, v, R⟩                   | ⟨h, ⊥, ⊥, v, R⟩     | 409    |                |
-| 68  | TaskFulfill(v')         | ⟨h, ⊥, ⊥, v, R⟩                   | ⟨h, ⊥, ⊥, v, R⟩     | 409    |                |
-| 69  | TaskFulfill(v)          | ⟨f, ⊥, ⊥, ⊥, ∅⟩                   | ⟨f, ⊥, ⊥, ⊥, ∅⟩     | 409    |                |
-| 70  | TaskFence(v, a)         | ⊥                                 | ⊥                   | 404    |                |
-| 71  | TaskFence(v, a)         | ⟨p, e, ⊥, v, R⟩                   | ⟨p, e, ⊥, v, R⟩     | 409    |                |
-| 72  | TaskFence(v', a)        | ⟨p, e, ⊥, v, R⟩                   | ⟨p, e, ⊥, v, R⟩     | 409    |                |
-| 73  | TaskFence(v, a)         | ⟨a, e, l, v, R⟩                   | ⟨a, e, l, v, R⟩     | 200    |                |
-| 74  | TaskFence(v', a)        | ⟨a, e, l, v, R⟩                   | ⟨a, e, l, v, R⟩     | 409    |                |
-| 75  | TaskFence(v, a)         | ⟨s, ⊥, ⊥, v, ∅⟩                   | ⟨s, ⊥, ⊥, v, ∅⟩     | 409    |                |
-| 76  | TaskFence(v', a)        | ⟨s, ⊥, ⊥, v, ∅⟩                   | ⟨s, ⊥, ⊥, v, ∅⟩     | 409    |                |
-| 77  | TaskFence(v, a)         | ⟨h, ⊥, ⊥, v, R⟩                   | ⟨h, ⊥, ⊥, v, R⟩     | 409    |                |
-| 78  | TaskFence(v', a)        | ⟨h, ⊥, ⊥, v, R⟩                   | ⟨h, ⊥, ⊥, v, R⟩     | 409    |                |
-| 79  | TaskFence(v, a)         | ⟨f, ⊥, ⊥, ⊥, ∅⟩                   | ⟨f, ⊥, ⊥, ⊥, ∅⟩     | 409    |                |
-| 80  | TaskHeartbeat(t, v)     | ⊥                                 | ⊥                   | 200    |                |
-| 81  | TaskHeartbeat(t, v)     | ⟨p, e, ⊥, v, R⟩                   | ⟨p, e, ⊥, v, R⟩     | 200    |                |
-| 82  | TaskHeartbeat(t, v')    | ⟨p, e, ⊥, v, R⟩                   | ⟨p, e, ⊥, v, R⟩     | 200    |                |
-| 83  | TaskHeartbeat(t, v)     | ⟨a, e, l, v, R⟩                   | ⟨a, t+l, l, v, R⟩   | 200    |                |
-| 84  | TaskHeartbeat(t, v')    | ⟨a, e, l, v, R⟩                   | ⟨a, e, l, v, R⟩     | 200    |                |
-| 85  | TaskHeartbeat(t, v)     | ⟨s, ⊥, ⊥, v, ∅⟩                   | ⟨s, ⊥, ⊥, v, ∅⟩     | 200    |                |
-| 86  | TaskHeartbeat(t, v')    | ⟨s, ⊥, ⊥, v, ∅⟩                   | ⟨s, ⊥, ⊥, v, ∅⟩     | 200    |                |
-| 87  | TaskHeartbeat(t, v)     | ⟨h, ⊥, ⊥, v, R⟩                   | ⟨h, ⊥, ⊥, v, R⟩     | 200    |                |
-| 88  | TaskHeartbeat(t, v')    | ⟨h, ⊥, ⊥, v, R⟩                   | ⟨h, ⊥, ⊥, v, R⟩     | 200    |                |
-| 89  | TaskHeartbeat(t, v)     | ⟨f, ⊥, ⊥, ⊥, ∅⟩                   | ⟨f, ⊥, ⊥, ⊥, ∅⟩     | 200    |                |
-| 90  | EnqueueInvoke(t, r)     | ⊥                                 | ⟨p, t+L, ⊥, 0, {r}⟩  |        | Send(Execute)  |
-| 91  | EnqueueInvoke(t, r)     | ⟨p, e, ⊥, v, R⟩                   | ⟨p, e, ⊥, v, R⟩     |        |                |
-| 92  | EnqueueInvoke(t, r)     | ⟨a, e, l, v, R⟩                   | ⟨a, e, l, v, R⟩     |        |                |
-| 93  | EnqueueInvoke(t, r)     | ⟨s, ⊥, ⊥, v, ∅⟩                   | ⟨s, ⊥, ⊥, v, ∅⟩     |        |                |
-| 94  | EnqueueInvoke(t, r)     | ⟨h, ⊥, ⊥, v, R⟩                   | ⟨h, ⊥, ⊥, v, R⟩     |        |                |
-| 95  | EnqueueInvoke(t, r)     | ⟨f, ⊥, ⊥, ⊥, ∅⟩                   | ⟨f, ⊥, ⊥, ⊥, ∅⟩     |        |                |
-| 96  | ~~EnqueueResume(t, r)~~ | ~~⊥~~                             | ~~⊥~~               |        |                |
-| 97  | EnqueueResume(t, r)     | ⟨p, e, ⊥, v, R⟩                   | ⟨p, e, ⊥, v, R::r⟩  |        |                |
-| 98  | EnqueueResume(t, r)     | ⟨a, e, l, v, R⟩                   | ⟨a, e, l, v, R::r⟩  |        |                |
-| 99  | EnqueueResume(t, r)     | ⟨s, ⊥, ⊥, v, ∅⟩                   | ⟨p, t+L, ⊥, v+1, {r}⟩ |        | Send(Execute)  |
-| 100 | EnqueueResume(t, r)     | ⟨h, ⊥, ⊥, v, R⟩                   | ⟨h, ⊥, ⊥, v, R::r⟩  |        |                |
-| 101 | EnqueueResume(t, r)     | ⟨f, ⊥, ⊥, ⊥, ∅⟩                   | ⟨f, ⊥, ⊥, ⊥, ∅⟩     |        |                |
-| 102 | EnqueueSettle()         | ⊥                                 | ⟨f, ⊥, ⊥, ⊥, ∅⟩     |        |                |
-| 103 | EnqueueSettle()         | ⟨p, e, ⊥, v, R⟩                   | ⟨f, ⊥, ⊥, ⊥, ∅⟩     |        |                |
-| 104 | EnqueueSettle()         | ⟨a, e, l, v, R⟩                   | ⟨f, ⊥, ⊥, ⊥, ∅⟩     |        |                |
-| 105 | EnqueueSettle()         | ⟨s, ⊥, ⊥, v, ∅⟩                   | ⟨f, ⊥, ⊥, ⊥, ∅⟩     |        |                |
-| 106 | EnqueueSettle()         | ⟨h, ⊥, ⊥, v, R⟩                   | ⟨f, ⊥, ⊥, ⊥, ∅⟩     |        |                |
-| 107 | EnqueueSettle()         | ⟨f, ⊥, ⊥, ⊥, ∅⟩                   | ⟨f, ⊥, ⊥, ⊥, ∅⟩     |        |                |
-| 108 | Tick(t)                 | ⊥                                 | ⊥                   |        |                |
-| 109 | Tick(t)                 | ⟨p, e, ⊥, v, R⟩ : t < e           | ⟨p, e, ⊥, v, R⟩     |        |                |
-| 110 | Tick(t)                 | ⟨p, e, ⊥, v, R⟩ : t ≥ e           | ⟨p, t+L, ⊥, v, R⟩   |        | Send(Execute)  |
-| 111 | Tick(t)                 | ⟨a, e, l, v, R⟩ : t < e           | ⟨a, e, l, v, R⟩     |        |                |
-| 112 | Tick(t)                 | ⟨a, e, l, v, R⟩ : t ≥ e           | ⟨p, t+L, ⊥, v+1, R⟩ |        | Send(Execute)  |
-| 113 | Tick(t)                 | ⟨s, ⊥, ⊥, v, ∅⟩                   | ⟨s, ⊥, ⊥, v, ∅⟩     |        |                |
-| 114 | Tick(t)                 | ⟨h, ⊥, ⊥, v, R⟩                   | ⟨h, ⊥, ⊥, v, R⟩     |        |                |
-| 115 | Tick(t)                 | ⟨f, ⊥, ⊥, ⊥, ∅⟩                   | ⟨f, ⊥, ⊥, ⊥, ∅⟩     |        |                |
+| 38  | TaskSuspend(v, P)       | ⟨a, e, l, v, R⟩ : ¬Exists(p) ∃p∈P | ⟨a, e, l, v, ∅⟩     | 422    |                |
+| 39  | TaskSuspend(v, P)       | ⟨a, e, l, v, R⟩ : Settled(p) ∃p∈P | ⟨a, e, l, v, ∅⟩     | 300    |                |
+| 40  | TaskSuspend(v, P)       | ⟨a, e, l, v, R⟩ : Pending(p) ∀p∈P | ⟨s, ⊥, ⊥, v, ∅⟩     | 200    | PromiseRegisterCallback ∀p∈P |
+| 41  | TaskSuspend(v', P)      | ⟨a, e, l, v, R⟩                   | ⟨a, e, l, v, R⟩     | 409    |                |
+| 42  | TaskSuspend(v, P)       | ⟨s, ⊥, ⊥, v, ∅⟩                   | ⟨s, ⊥, ⊥, v, ∅⟩     | 409    |                |
+| 43  | TaskSuspend(v', P)      | ⟨s, ⊥, ⊥, v, ∅⟩                   | ⟨s, ⊥, ⊥, v, ∅⟩     | 409    |                |
+| 44  | TaskSuspend(v, P)       | ⟨h, ⊥, ⊥, v, R⟩                   | ⟨h, ⊥, ⊥, v, R⟩     | 409    |                |
+| 45  | TaskSuspend(v', P)      | ⟨h, ⊥, ⊥, v, R⟩                   | ⟨h, ⊥, ⊥, v, R⟩     | 409    |                |
+| 46  | TaskSuspend(v, P)       | ⟨f, ⊥, ⊥, ⊥, ∅⟩                   | ⟨f, ⊥, ⊥, ⊥, ∅⟩     | 409    |                |
+| 47  | TaskHalt()              | ⊥                                 | ⊥                   | 404    |                |
+| 48  | TaskHalt()              | ⟨p, e, ⊥, v, R⟩                   | ⟨h, ⊥, ⊥, v, R⟩     | 200    |                |
+| 49  | TaskHalt()              | ⟨a, e, l, v, R⟩                   | ⟨h, ⊥, ⊥, v, R⟩     | 200    |                |
+| 50  | TaskHalt()              | ⟨s, ⊥, ⊥, v, ∅⟩                   | ⟨h, ⊥, ⊥, v, ∅⟩     | 200    |                |
+| 51  | TaskHalt()              | ⟨h, ⊥, ⊥, v, R⟩                   | ⟨h, ⊥, ⊥, v, R⟩     | 200    |                |
+| 52  | TaskHalt()              | ⟨f, ⊥, ⊥, ⊥, ∅⟩                   | ⟨f, ⊥, ⊥, ⊥, ∅⟩     | 409    |                |
+| 53  | TaskContinue(t)         | ⊥                                 | ⊥                   | 404    |                |
+| 54  | TaskContinue(t)         | ⟨p, e, ⊥, v, R⟩                   | ⟨p, e, ⊥, v, R⟩     | 409    |                |
+| 55  | TaskContinue(t)         | ⟨a, e, l, v, R⟩                   | ⟨a, e, l, v, R⟩     | 409    |                |
+| 56  | TaskContinue(t)         | ⟨s, ⊥, ⊥, v, ∅⟩                   | ⟨s, ⊥, ⊥, v, ∅⟩     | 409    |                |
+| 57  | TaskContinue(t)         | ⟨h, ⊥, ⊥, v, R⟩                   | ⟨p, t+L, ⊥, v+1, R⟩ | 200    | Send(Execute)  |
+| 58  | TaskContinue(t)         | ⟨f, ⊥, ⊥, ⊥, ∅⟩                   | ⟨f, ⊥, ⊥, ⊥, ∅⟩     | 409    |                |
+| 59  | TaskFulfill(v)          | ⊥                                 | ⊥                   | 404    |                |
+| 60  | TaskFulfill(v)          | ⟨p, e, ⊥, v, R⟩                   | ⟨p, e, ⊥, v, R⟩     | 409    |                |
+| 61  | TaskFulfill(v')         | ⟨p, e, ⊥, v, R⟩                   | ⟨p, e, ⊥, v, R⟩     | 409    |                |
+| 62  | TaskFulfill(v)          | ⟨a, e, l, v, R⟩                   | ⟨f, ⊥, ⊥, ⊥, ∅⟩     | 200    |                |
+| 63  | TaskFulfill(v')         | ⟨a, e, l, v, R⟩                   | ⟨a, e, l, v, R⟩     | 409    |                |
+| 64  | TaskFulfill(v)          | ⟨s, ⊥, ⊥, v, ∅⟩                   | ⟨s, ⊥, ⊥, v, ∅⟩     | 409    |                |
+| 65  | TaskFulfill(v')         | ⟨s, ⊥, ⊥, v, ∅⟩                   | ⟨s, ⊥, ⊥, v, ∅⟩     | 409    |                |
+| 66  | TaskFulfill(v)          | ⟨h, ⊥, ⊥, v, R⟩                   | ⟨h, ⊥, ⊥, v, R⟩     | 409    |                |
+| 67  | TaskFulfill(v')         | ⟨h, ⊥, ⊥, v, R⟩                   | ⟨h, ⊥, ⊥, v, R⟩     | 409    |                |
+| 68  | TaskFulfill(v)          | ⟨f, ⊥, ⊥, ⊥, ∅⟩                   | ⟨f, ⊥, ⊥, ⊥, ∅⟩     | 409    |                |
+| 69  | TaskFence(v, a)         | ⊥                                 | ⊥                   | 404    |                |
+| 70  | TaskFence(v, a)         | ⟨p, e, ⊥, v, R⟩                   | ⟨p, e, ⊥, v, R⟩     | 409    |                |
+| 71  | TaskFence(v', a)        | ⟨p, e, ⊥, v, R⟩                   | ⟨p, e, ⊥, v, R⟩     | 409    |                |
+| 72  | TaskFence(v, a)         | ⟨a, e, l, v, R⟩                   | ⟨a, e, l, v, R⟩     | 200    | PromiseCreate ∨ PromiseSettle |
+| 73  | TaskFence(v', a)        | ⟨a, e, l, v, R⟩                   | ⟨a, e, l, v, R⟩     | 409    |                |
+| 74  | TaskFence(v, a)         | ⟨s, ⊥, ⊥, v, ∅⟩                   | ⟨s, ⊥, ⊥, v, ∅⟩     | 409    |                |
+| 75  | TaskFence(v', a)        | ⟨s, ⊥, ⊥, v, ∅⟩                   | ⟨s, ⊥, ⊥, v, ∅⟩     | 409    |                |
+| 76  | TaskFence(v, a)         | ⟨h, ⊥, ⊥, v, R⟩                   | ⟨h, ⊥, ⊥, v, R⟩     | 409    |                |
+| 77  | TaskFence(v', a)        | ⟨h, ⊥, ⊥, v, R⟩                   | ⟨h, ⊥, ⊥, v, R⟩     | 409    |                |
+| 78  | TaskFence(v, a)         | ⟨f, ⊥, ⊥, ⊥, ∅⟩                   | ⟨f, ⊥, ⊥, ⊥, ∅⟩     | 409    |                |
+| 79  | TaskHeartbeat(t, v)     | ⊥                                 | ⊥                   | 200    |                |
+| 80  | TaskHeartbeat(t, v)     | ⟨p, e, ⊥, v, R⟩                   | ⟨p, e, ⊥, v, R⟩     | 200    |                |
+| 81  | TaskHeartbeat(t, v')    | ⟨p, e, ⊥, v, R⟩                   | ⟨p, e, ⊥, v, R⟩     | 200    |                |
+| 82  | TaskHeartbeat(t, v)     | ⟨a, e, l, v, R⟩                   | ⟨a, t+l, l, v, R⟩   | 200    |                |
+| 83  | TaskHeartbeat(t, v')    | ⟨a, e, l, v, R⟩                   | ⟨a, e, l, v, R⟩     | 200    |                |
+| 84  | TaskHeartbeat(t, v)     | ⟨s, ⊥, ⊥, v, ∅⟩                   | ⟨s, ⊥, ⊥, v, ∅⟩     | 200    |                |
+| 85  | TaskHeartbeat(t, v')    | ⟨s, ⊥, ⊥, v, ∅⟩                   | ⟨s, ⊥, ⊥, v, ∅⟩     | 200    |                |
+| 86  | TaskHeartbeat(t, v)     | ⟨h, ⊥, ⊥, v, R⟩                   | ⟨h, ⊥, ⊥, v, R⟩     | 200    |                |
+| 87  | TaskHeartbeat(t, v')    | ⟨h, ⊥, ⊥, v, R⟩                   | ⟨h, ⊥, ⊥, v, R⟩     | 200    |                |
+| 88  | TaskHeartbeat(t, v)     | ⟨f, ⊥, ⊥, ⊥, ∅⟩                   | ⟨f, ⊥, ⊥, ⊥, ∅⟩     | 200    |                |
+| 89  | EnqueueInvoke(t, r)     | ⊥                                 | ⟨p, t+L, ⊥, 0, {r}⟩  |        | Send(Execute)  |
+| 90  | EnqueueInvoke(t, r)     | ⟨p, e, ⊥, v, R⟩                   | ⟨p, e, ⊥, v, R⟩     |        |                |
+| 91  | EnqueueInvoke(t, r)     | ⟨a, e, l, v, R⟩                   | ⟨a, e, l, v, R⟩     |        |                |
+| 92  | EnqueueInvoke(t, r)     | ⟨s, ⊥, ⊥, v, ∅⟩                   | ⟨s, ⊥, ⊥, v, ∅⟩     |        |                |
+| 93  | EnqueueInvoke(t, r)     | ⟨h, ⊥, ⊥, v, R⟩                   | ⟨h, ⊥, ⊥, v, R⟩     |        |                |
+| 94  | EnqueueInvoke(t, r)     | ⟨f, ⊥, ⊥, ⊥, ∅⟩                   | ⟨f, ⊥, ⊥, ⊥, ∅⟩     |        |                |
+| 95  | ~~EnqueueResume(t, r)~~ | ~~⊥~~                             | ~~⊥~~               |        |                |
+| 96  | EnqueueResume(t, r)     | ⟨p, e, ⊥, v, R⟩                   | ⟨p, e, ⊥, v, R::r⟩  |        |                |
+| 97  | EnqueueResume(t, r)     | ⟨a, e, l, v, R⟩                   | ⟨a, e, l, v, R::r⟩  |        |                |
+| 98  | EnqueueResume(t, r)     | ⟨s, ⊥, ⊥, v, ∅⟩                   | ⟨p, t+L, ⊥, v+1, {r}⟩ |        | Send(Execute)  |
+| 99  | EnqueueResume(t, r)     | ⟨h, ⊥, ⊥, v, R⟩                   | ⟨h, ⊥, ⊥, v, R::r⟩  |        |                |
+| 100 | EnqueueResume(t, r)     | ⟨f, ⊥, ⊥, ⊥, ∅⟩                   | ⟨f, ⊥, ⊥, ⊥, ∅⟩     |        |                |
+| 101 | EnqueueSettle()         | ⊥                                 | ⟨f, ⊥, ⊥, ⊥, ∅⟩     |        |                |
+| 102 | EnqueueSettle()         | ⟨p, e, ⊥, v, R⟩                   | ⟨f, ⊥, ⊥, ⊥, ∅⟩     |        |                |
+| 103 | EnqueueSettle()         | ⟨a, e, l, v, R⟩                   | ⟨f, ⊥, ⊥, ⊥, ∅⟩     |        |                |
+| 104 | EnqueueSettle()         | ⟨s, ⊥, ⊥, v, ∅⟩                   | ⟨f, ⊥, ⊥, ⊥, ∅⟩     |        |                |
+| 105 | EnqueueSettle()         | ⟨h, ⊥, ⊥, v, R⟩                   | ⟨f, ⊥, ⊥, ⊥, ∅⟩     |        |                |
+| 106 | EnqueueSettle()         | ⟨f, ⊥, ⊥, ⊥, ∅⟩                   | ⟨f, ⊥, ⊥, ⊥, ∅⟩     |        |                |
+| 107 | Tick(t)                 | ⊥                                 | ⊥                   |        |                |
+| 108 | Tick(t)                 | ⟨p, e, ⊥, v, R⟩ : t < e           | ⟨p, e, ⊥, v, R⟩     |        |                |
+| 109 | Tick(t)                 | ⟨p, e, ⊥, v, R⟩ : t ≥ e           | ⟨p, t+L, ⊥, v, R⟩   |        | Send(Execute)  |
+| 110 | Tick(t)                 | ⟨a, e, l, v, R⟩ : t < e           | ⟨a, e, l, v, R⟩     |        |                |
+| 111 | Tick(t)                 | ⟨a, e, l, v, R⟩ : t ≥ e           | ⟨p, t+L, ⊥, v+1, R⟩ |        | Send(Execute)  |
+| 112 | Tick(t)                 | ⟨s, ⊥, ⊥, v, ∅⟩                   | ⟨s, ⊥, ⊥, v, ∅⟩     |        |                |
+| 113 | Tick(t)                 | ⟨h, ⊥, ⊥, v, R⟩                   | ⟨h, ⊥, ⊥, v, R⟩     |        |                |
+| 114 | Tick(t)                 | ⟨f, ⊥, ⊥, ⊥, ∅⟩                   | ⟨f, ⊥, ⊥, ⊥, ∅⟩     |        |                |
 
 ## Fence Transitions
 
-When a task is acquired and the version matches (transition #73 above), the task.fence operation executes an inner promise action. The task state remains `⟨a, e, l, v, R⟩` throughout — the transitions below describe the promise state changes and side effects that occur within a successful fence.
+When a task is acquired and the version matches (transition #72 above), the task.fence operation executes an inner promise action. The task state remains `⟨a, e, l, v, R⟩` throughout — the transitions below describe the promise state changes and side effects that occur within a successful fence.
 
 | #  | Operation                                  | Promise Current State              | Promise Next State   | Result | Side Effect(s)                                        |
 | -- | ------------------------------------------ | ---------------------------------- | -------------------- | ------ | ----------------------------------------------------- |
