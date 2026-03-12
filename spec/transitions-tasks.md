@@ -104,7 +104,7 @@ Tick(t)
 | 35  | TaskSuspend(v, P)       | ⊥                                 | ⊥                   | 404    |                |
 | 36  | TaskSuspend(v, P)       | ⟨p, e, ⊥, v, R⟩                   | ⟨p, e, ⊥, v, R⟩     | 409    |                |
 | 37  | TaskSuspend(v', P)      | ⟨p, e, ⊥, v, R⟩                   | ⟨p, e, ⊥, v, R⟩     | 409    |                |
-| 38  | TaskSuspend(v, P)       | ⟨a, e, l, v, R⟩ : ¬Exists(p) ∃p∈P | ⟨a, e, l, v, ∅⟩     | 422    |                |
+| 38  | TaskSuspend(v, P)       | ⟨a, e, l, v, R⟩ : ¬Exists(p) ∃p∈P | ⟨a, e, l, v, R⟩     | 422    |                |
 | 39  | TaskSuspend(v, P)       | ⟨a, e, l, v, R⟩ : Settled(p) ∃p∈P | ⟨a, e, l, v, ∅⟩     | 300    |                |
 | 40  | TaskSuspend(v, P)       | ⟨a, e, l, v, R⟩ : Pending(p) ∀p∈P | ⟨s, ⊥, ⊥, v, ∅⟩     | 200    | PromiseRegisterCallback ∀p∈P |
 | 41  | TaskSuspend(v', P)      | ⟨a, e, l, v, R⟩                   | ⟨a, e, l, v, R⟩     | 409    |                |
