@@ -1,0 +1,524 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Resonate Request",
+  "description": "Discriminated union of all Resonate server request types",
+  "oneOf": [
+    { "$ref": "#/$defs/PromiseGetReq" },
+    { "$ref": "#/$defs/PromiseCreateReq" },
+    { "$ref": "#/$defs/PromiseSettleReq" },
+    { "$ref": "#/$defs/PromiseRegisterCallbackReq" },
+    { "$ref": "#/$defs/PromiseRegisterListenerReq" },
+    { "$ref": "#/$defs/PromiseSearchReq" },
+    { "$ref": "#/$defs/TaskGetReq" },
+    { "$ref": "#/$defs/TaskCreateReq" },
+    { "$ref": "#/$defs/TaskAcquireReq" },
+    { "$ref": "#/$defs/TaskReleaseReq" },
+    { "$ref": "#/$defs/TaskSuspendReq" },
+    { "$ref": "#/$defs/TaskHaltReq" },
+    { "$ref": "#/$defs/TaskContinueReq" },
+    { "$ref": "#/$defs/TaskFulfillReq" },
+    { "$ref": "#/$defs/TaskFenceReq" },
+    { "$ref": "#/$defs/TaskHeartbeatReq" },
+    { "$ref": "#/$defs/TaskSearchReq" },
+    { "$ref": "#/$defs/ScheduleGetReq" },
+    { "$ref": "#/$defs/ScheduleCreateReq" },
+    { "$ref": "#/$defs/ScheduleDeleteReq" },
+    { "$ref": "#/$defs/ScheduleSearchReq" },
+    { "$ref": "#/$defs/DebugStartReq" },
+    { "$ref": "#/$defs/DebugResetReq" },
+    { "$ref": "#/$defs/DebugTickReq" },
+    { "$ref": "#/$defs/DebugSnapReq" },
+    { "$ref": "#/$defs/DebugStopReq" }
+  ],
+  "$defs": {
+    "Value": {
+      "type": "object",
+      "properties": {
+        "headers": {
+          "type": "object",
+          "additionalProperties": { "type": "string" }
+        },
+        "data": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "RequestHead": {
+      "type": "object",
+      "properties": {
+        "auth": { "type": "string" },
+        "corrId": { "type": "string" },
+        "version": { "type": "string" },
+        "resonate:debug_time": { "type": "integer" }
+      },
+      "required": ["corrId", "version"],
+      "additionalProperties": false
+    },
+    "Tags": {
+      "type": "object",
+      "additionalProperties": { "type": "string" }
+    },
+    "PromiseGetReq": {
+      "type": "object",
+      "properties": {
+        "kind": { "const": "promise.get" },
+        "head": { "$ref": "#/$defs/RequestHead" },
+        "data": {
+          "type": "object",
+          "properties": {
+            "id": { "type": "string", "minLength": 1 }
+          },
+          "required": ["id"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["kind", "head", "data"],
+      "additionalProperties": false
+    },
+    "PromiseCreateReq": {
+      "type": "object",
+      "properties": {
+        "kind": { "const": "promise.create" },
+        "head": { "$ref": "#/$defs/RequestHead" },
+        "data": {
+          "type": "object",
+          "properties": {
+            "id": { "type": "string", "minLength": 1 },
+            "timeoutAt": { "type": "integer", "minimum": 0 },
+            "param": { "$ref": "#/$defs/Value" },
+            "tags": { "$ref": "#/$defs/Tags" }
+          },
+          "required": ["id", "timeoutAt", "param", "tags"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["kind", "head", "data"],
+      "additionalProperties": false
+    },
+    "PromiseSettleReq": {
+      "type": "object",
+      "properties": {
+        "kind": { "const": "promise.settle" },
+        "head": { "$ref": "#/$defs/RequestHead" },
+        "data": {
+          "type": "object",
+          "properties": {
+            "id": { "type": "string", "minLength": 1 },
+            "state": { "enum": ["resolved", "rejected", "rejected_canceled"] },
+            "value": { "$ref": "#/$defs/Value" }
+          },
+          "required": ["id", "state", "value"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["kind", "head", "data"],
+      "additionalProperties": false
+    },
+    "PromiseRegisterCallbackReq": {
+      "type": "object",
+      "properties": {
+        "kind": { "const": "promise.register_callback" },
+        "head": { "$ref": "#/$defs/RequestHead" },
+        "data": {
+          "type": "object",
+          "properties": {
+            "awaited": { "type": "string", "minLength": 1 },
+            "awaiter": { "type": "string", "minLength": 1 }
+          },
+          "required": ["awaited", "awaiter"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["kind", "head", "data"],
+      "additionalProperties": false
+    },
+    "PromiseRegisterListenerReq": {
+      "type": "object",
+      "properties": {
+        "kind": { "const": "promise.register_listener" },
+        "head": { "$ref": "#/$defs/RequestHead" },
+        "data": {
+          "type": "object",
+          "properties": {
+            "awaited": { "type": "string", "minLength": 1 },
+            "address": { "type": "string", "minLength": 1 }
+          },
+          "required": ["awaited", "address"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["kind", "head", "data"],
+      "additionalProperties": false
+    },
+    "PromiseSearchReq": {
+      "type": "object",
+      "properties": {
+        "kind": { "const": "promise.search" },
+        "head": { "$ref": "#/$defs/RequestHead" },
+        "data": {
+          "type": "object",
+          "properties": {
+            "state": { "enum": ["pending", "resolved", "rejected", "rejected_canceled", "rejected_timedout"] },
+            "tags": { "$ref": "#/$defs/Tags" },
+            "limit": { "type": "integer", "minimum": 1 },
+            "cursor": { "type": "string" }
+          },
+          "additionalProperties": false
+        }
+      },
+      "required": ["kind", "head", "data"],
+      "additionalProperties": false
+    },
+    "TaskGetReq": {
+      "type": "object",
+      "properties": {
+        "kind": { "const": "task.get" },
+        "head": { "$ref": "#/$defs/RequestHead" },
+        "data": {
+          "type": "object",
+          "properties": {
+            "id": { "type": "string", "minLength": 1 }
+          },
+          "required": ["id"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["kind", "head", "data"],
+      "additionalProperties": false
+    },
+    "TaskCreateReq": {
+      "type": "object",
+      "properties": {
+        "kind": { "const": "task.create" },
+        "head": { "$ref": "#/$defs/RequestHead" },
+        "data": {
+          "type": "object",
+          "properties": {
+            "pid": { "type": "string", "minLength": 1 },
+            "ttl": { "type": "integer", "minimum": 1 },
+            "action": { "$ref": "#/$defs/PromiseCreateReq" }
+          },
+          "required": ["pid", "ttl", "action"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["kind", "head", "data"],
+      "additionalProperties": false
+    },
+    "TaskAcquireReq": {
+      "type": "object",
+      "properties": {
+        "kind": { "const": "task.acquire" },
+        "head": { "$ref": "#/$defs/RequestHead" },
+        "data": {
+          "type": "object",
+          "properties": {
+            "id": { "type": "string", "minLength": 1 },
+            "version": { "type": "integer", "minimum": 0 },
+            "pid": { "type": "string", "minLength": 1 },
+            "ttl": { "type": "integer", "minimum": 1 }
+          },
+          "required": ["id", "version", "pid", "ttl"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["kind", "head", "data"],
+      "additionalProperties": false
+    },
+    "TaskReleaseReq": {
+      "type": "object",
+      "properties": {
+        "kind": { "const": "task.release" },
+        "head": { "$ref": "#/$defs/RequestHead" },
+        "data": {
+          "type": "object",
+          "properties": {
+            "id": { "type": "string", "minLength": 1 },
+            "version": { "type": "integer", "minimum": 0 }
+          },
+          "required": ["id", "version"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["kind", "head", "data"],
+      "additionalProperties": false
+    },
+    "TaskSuspendReq": {
+      "type": "object",
+      "properties": {
+        "kind": { "const": "task.suspend" },
+        "head": { "$ref": "#/$defs/RequestHead" },
+        "data": {
+          "type": "object",
+          "properties": {
+            "id": { "type": "string", "minLength": 1 },
+            "version": { "type": "integer", "minimum": 0 },
+            "actions": {
+              "type": "array",
+              "items": { "$ref": "#/$defs/PromiseRegisterCallbackReq" },
+              "minItems": 1
+            }
+          },
+          "required": ["id", "version", "actions"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["kind", "head", "data"],
+      "additionalProperties": false
+    },
+    "TaskHaltReq": {
+      "type": "object",
+      "properties": {
+        "kind": { "const": "task.halt" },
+        "head": { "$ref": "#/$defs/RequestHead" },
+        "data": {
+          "type": "object",
+          "properties": {
+            "id": { "type": "string", "minLength": 1 }
+          },
+          "required": ["id"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["kind", "head", "data"],
+      "additionalProperties": false
+    },
+    "TaskContinueReq": {
+      "type": "object",
+      "properties": {
+        "kind": { "const": "task.continue" },
+        "head": { "$ref": "#/$defs/RequestHead" },
+        "data": {
+          "type": "object",
+          "properties": {
+            "id": { "type": "string", "minLength": 1 }
+          },
+          "required": ["id"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["kind", "head", "data"],
+      "additionalProperties": false
+    },
+    "TaskFulfillReq": {
+      "type": "object",
+      "properties": {
+        "kind": { "const": "task.fulfill" },
+        "head": { "$ref": "#/$defs/RequestHead" },
+        "data": {
+          "type": "object",
+          "properties": {
+            "id": { "type": "string", "minLength": 1 },
+            "version": { "type": "integer", "minimum": 0 },
+            "action": { "$ref": "#/$defs/PromiseSettleReq" }
+          },
+          "required": ["id", "version", "action"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["kind", "head", "data"],
+      "additionalProperties": false
+    },
+    "TaskFenceReq": {
+      "type": "object",
+      "properties": {
+        "kind": { "const": "task.fence" },
+        "head": { "$ref": "#/$defs/RequestHead" },
+        "data": {
+          "type": "object",
+          "properties": {
+            "id": { "type": "string", "minLength": 1 },
+            "version": { "type": "integer", "minimum": 0 },
+            "action": {
+              "oneOf": [
+                { "$ref": "#/$defs/PromiseCreateReq" },
+                { "$ref": "#/$defs/PromiseSettleReq" }
+              ]
+            }
+          },
+          "required": ["id", "version", "action"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["kind", "head", "data"],
+      "additionalProperties": false
+    },
+    "TaskHeartbeatReq": {
+      "type": "object",
+      "properties": {
+        "kind": { "const": "task.heartbeat" },
+        "head": { "$ref": "#/$defs/RequestHead" },
+        "data": {
+          "type": "object",
+          "properties": {
+            "pid": { "type": "string", "minLength": 1 },
+            "tasks": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "id": { "type": "string" },
+                  "version": { "type": "integer" }
+                },
+                "required": ["id", "version"],
+                "additionalProperties": false
+              }
+            }
+          },
+          "required": ["pid", "tasks"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["kind", "head", "data"],
+      "additionalProperties": false
+    },
+    "TaskSearchReq": {
+      "type": "object",
+      "properties": {
+        "kind": { "const": "task.search" },
+        "head": { "$ref": "#/$defs/RequestHead" },
+        "data": {
+          "type": "object",
+          "properties": {
+            "state": { "enum": ["pending", "acquired", "suspended", "halted", "fulfilled"] },
+            "limit": { "type": "integer", "minimum": 1 },
+            "cursor": { "type": "string" }
+          },
+          "additionalProperties": false
+        }
+      },
+      "required": ["kind", "head", "data"],
+      "additionalProperties": false
+    },
+    "ScheduleGetReq": {
+      "type": "object",
+      "properties": {
+        "kind": { "const": "schedule.get" },
+        "head": { "$ref": "#/$defs/RequestHead" },
+        "data": {
+          "type": "object",
+          "properties": {
+            "id": { "type": "string", "minLength": 1 }
+          },
+          "required": ["id"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["kind", "head", "data"],
+      "additionalProperties": false
+    },
+    "ScheduleCreateReq": {
+      "type": "object",
+      "properties": {
+        "kind": { "const": "schedule.create" },
+        "head": { "$ref": "#/$defs/RequestHead" },
+        "data": {
+          "type": "object",
+          "properties": {
+            "id": { "type": "string", "minLength": 1 },
+            "cron": { "type": "string", "minLength": 1 },
+            "promiseId": { "type": "string", "minLength": 1 },
+            "promiseTimeout": { "type": "integer", "minimum": 0 },
+            "promiseParam": { "$ref": "#/$defs/Value" },
+            "promiseTags": { "$ref": "#/$defs/Tags" }
+          },
+          "required": ["id", "cron", "promiseId", "promiseTimeout", "promiseParam", "promiseTags"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["kind", "head", "data"],
+      "additionalProperties": false
+    },
+    "ScheduleDeleteReq": {
+      "type": "object",
+      "properties": {
+        "kind": { "const": "schedule.delete" },
+        "head": { "$ref": "#/$defs/RequestHead" },
+        "data": {
+          "type": "object",
+          "properties": {
+            "id": { "type": "string", "minLength": 1 }
+          },
+          "required": ["id"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["kind", "head", "data"],
+      "additionalProperties": false
+    },
+    "ScheduleSearchReq": {
+      "type": "object",
+      "properties": {
+        "kind": { "const": "schedule.search" },
+        "head": { "$ref": "#/$defs/RequestHead" },
+        "data": {
+          "type": "object",
+          "properties": {
+            "tags": { "$ref": "#/$defs/Tags" },
+            "limit": { "type": "integer", "minimum": 1 },
+            "cursor": { "type": "string" }
+          },
+          "additionalProperties": false
+        }
+      },
+      "required": ["kind", "head", "data"],
+      "additionalProperties": false
+    },
+    "DebugStartReq": {
+      "type": "object",
+      "properties": {
+        "kind": { "const": "debug.start" },
+        "head": { "$ref": "#/$defs/RequestHead" },
+        "data": { "type": "object", "additionalProperties": false }
+      },
+      "required": ["kind", "head", "data"],
+      "additionalProperties": false
+    },
+    "DebugResetReq": {
+      "type": "object",
+      "properties": {
+        "kind": { "const": "debug.reset" },
+        "head": { "$ref": "#/$defs/RequestHead" },
+        "data": { "type": "object", "additionalProperties": false }
+      },
+      "required": ["kind", "head", "data"],
+      "additionalProperties": false
+    },
+    "DebugTickReq": {
+      "type": "object",
+      "properties": {
+        "kind": { "const": "debug.tick" },
+        "head": { "$ref": "#/$defs/RequestHead" },
+        "data": {
+          "type": "object",
+          "properties": {
+            "time": { "type": "integer", "minimum": 0 }
+          },
+          "required": ["time"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["kind", "head", "data"],
+      "additionalProperties": false
+    },
+    "DebugSnapReq": {
+      "type": "object",
+      "properties": {
+        "kind": { "const": "debug.snap" },
+        "head": { "$ref": "#/$defs/RequestHead" },
+        "data": { "type": "object", "additionalProperties": false }
+      },
+      "required": ["kind", "head", "data"],
+      "additionalProperties": false
+    },
+    "DebugStopReq": {
+      "type": "object",
+      "properties": {
+        "kind": { "const": "debug.stop" },
+        "head": { "$ref": "#/$defs/RequestHead" },
+        "data": { "type": "object", "additionalProperties": false }
+      },
+      "required": ["kind", "head", "data"],
+      "additionalProperties": false
+    }
+  }
+}
