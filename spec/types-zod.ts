@@ -91,7 +91,7 @@ export const RequestHeadSchema = z.object({
   auth: z.string().optional(),
   corrId: z.string(),
   version: z.string(),
-  "resonate:debug_time": z.number().optional(),
+  "resonate:debug_time": z.number().int().nonnegative().optional(),
 });
 
 // =============================================================================
