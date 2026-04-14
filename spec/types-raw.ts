@@ -1273,7 +1273,7 @@ export function isTaskAcquireRes(val: unknown): val is TaskAcquireRes {
   if (status === 200) {
     if (typeof v.data !== "object" || v.data === null) return false;
     const d = v.data as Record<string, unknown>;
-    return isPromiseRecord(d.promise) && Array.isArray(d.preload) && (d.preload as unknown[]).every(isPromiseRecord);
+    return isTaskRecord(d.task) && isPromiseRecord(d.promise) && Array.isArray(d.preload) && (d.preload as unknown[]).every(isPromiseRecord);
   }
   return typeof v.data === "string";
 }

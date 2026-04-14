@@ -335,7 +335,13 @@ export const ScheduleCreateReqSchema = z.object({
   head: RequestHeadSchema,
   data: z.object({
     id: z.string().min(1, "Schedule ID is required"),
-    cron: z.string().min(1, "Cron expression is required"),
+    cron: z
+      .string()
+      .min(1, "Cron expression is required")
+      .refine(
+        (v) => v.trim().split(/\s+/).length >= 5,
+        "Cron expression must have at least 5 fields",
+      ),
     promiseId: z.string().min(1, "Promise ID template is required"),
     promiseTimeout: z.number().int().nonnegative("Promise timeout must be a non-negative integer"),
     promiseParam: ValueSchema,

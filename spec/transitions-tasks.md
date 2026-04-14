@@ -73,16 +73,16 @@ Tick(t)
 | 4   | TaskGet()               | ⟨s, ⊥, ⊥, v, ∅⟩                   | ⟨s, ⊥, ⊥, v, ∅⟩     | 200    |                |
 | 5   | TaskGet()               | ⟨h, ⊥, ⊥, v, R⟩                   | ⟨h, ⊥, ⊥, v, R⟩     | 200    |                |
 | 6   | TaskGet()               | ⟨f, ⊥, ⊥, ⊥, ∅⟩                   | ⟨f, ⊥, ⊥, ⊥, ∅⟩     | 200    |                |
-| 7   | TaskCreate(t, l, p)     | ⊥ : HasAddress(p) ^ Pending(p)    | ⟨a, t+l, l, 0, ∅⟩   | 200    | PromiseCreate  |
+| 7   | TaskCreate(t, l, p)     | ⊥ : HasAddress(p) ^ Pending(p)    | ⟨a, t+l, l, 1, ∅⟩   | 200    | PromiseCreate  |
 | 8   | TaskCreate(t, l, p)     | ⊥ : HasAddress(p) ^ Settled(p)    | ⟨f, ⊥, ⊥, ⊥, ∅⟩    | 200    | PromiseCreate  |
 | 9   | TaskCreate(t, l, p)     | ⊥ : ¬HasAddress(p)                | ⊥                   | 422    |                |
-| 10  | TaskCreate(t, l, p)     | ⟨p, e, ⊥, v, R⟩                   | ⟨a, t+l, l, v, ∅⟩   | 200    |                |
+| 10  | TaskCreate(t, l, p)     | ⟨p, e, ⊥, v, R⟩                   | ⟨a, t+l, l, v+1, ∅⟩  | 200    |                |
 | 11  | TaskCreate(t, l, p)     | ⟨a, e, l, v, R⟩                   | ⟨a, e, l, v, R⟩     | 409    |                |
 | 12  | TaskCreate(t, l, p)     | ⟨s, ⊥, ⊥, v, ∅⟩                   | ⟨s, ⊥, ⊥, v, ∅⟩     | 409    |                |
 | 13  | TaskCreate(t, l, p)     | ⟨h, ⊥, ⊥, v, R⟩                   | ⟨h, ⊥, ⊥, v, R⟩     | 409    |                |
 | 14  | TaskCreate(t, l, p)     | ⟨f, ⊥, ⊥, ⊥, ∅⟩                   | ⟨f, ⊥, ⊥, ⊥, ∅⟩     | 200    |                |
 | 15  | TaskAcquire(t, l, v)    | ⊥                                 | ⊥                   | 404    |                |
-| 16  | TaskAcquire(t, l, v)    | ⟨p, e, ⊥, v, R⟩                   | ⟨a, t+l, l, v, ∅⟩   | 200    |                |
+| 16  | TaskAcquire(t, l, v)    | ⟨p, e, ⊥, v, R⟩                   | ⟨a, t+l, l, v+1, ∅⟩  | 200    |                |
 | 17  | TaskAcquire(t, l, v')   | ⟨p, e, ⊥, v, R⟩                   | ⟨p, e, ⊥, v, R⟩     | 409    |                |
 | 18  | TaskAcquire(t, l, v)    | ⟨a, e, l, v, R⟩                   | ⟨a, e, l, v, R⟩     | 409    |                |
 | 19  | TaskAcquire(t, l, v')   | ⟨a, e, l, v, R⟩                   | ⟨a, e, l, v, R⟩     | 409    |                |
@@ -94,7 +94,7 @@ Tick(t)
 | 25  | TaskRelease(t, v)       | ⊥                                 | ⊥                   | 404    |                |
 | 26  | TaskRelease(t, v)       | ⟨p, e, ⊥, v, R⟩                   | ⟨p, e, ⊥, v, R⟩     | 409    |                |
 | 27  | TaskRelease(t, v')      | ⟨p, e, ⊥, v, R⟩                   | ⟨p, e, ⊥, v, R⟩     | 409    |                |
-| 28  | TaskRelease(t, v)       | ⟨a, e, l, v, R⟩                   | ⟨p, t+L, ⊥, v+1, R⟩ | 200    | Send(Execute)  |
+| 28  | TaskRelease(t, v)       | ⟨a, e, l, v, R⟩                   | ⟨p, t+L, ⊥, v, R⟩   | 200    | Send(Execute)  |
 | 29  | TaskRelease(t, v')      | ⟨a, e, l, v, R⟩                   | ⟨a, e, l, v, R⟩     | 409    |                |
 | 30  | TaskRelease(t, v)       | ⟨s, ⊥, ⊥, v, ∅⟩                   | ⟨s, ⊥, ⊥, v, ∅⟩     | 409    |                |
 | 31  | TaskRelease(t, v')      | ⟨s, ⊥, ⊥, v, ∅⟩                   | ⟨s, ⊥, ⊥, v, ∅⟩     | 409    |                |
@@ -123,7 +123,7 @@ Tick(t)
 | 54  | TaskContinue(t)         | ⟨p, e, ⊥, v, R⟩                   | ⟨p, e, ⊥, v, R⟩     | 409    |                |
 | 55  | TaskContinue(t)         | ⟨a, e, l, v, R⟩                   | ⟨a, e, l, v, R⟩     | 409    |                |
 | 56  | TaskContinue(t)         | ⟨s, ⊥, ⊥, v, ∅⟩                   | ⟨s, ⊥, ⊥, v, ∅⟩     | 409    |                |
-| 57  | TaskContinue(t)         | ⟨h, ⊥, ⊥, v, R⟩                   | ⟨p, t+L, ⊥, v+1, R⟩ | 200    | Send(Execute)  |
+| 57  | TaskContinue(t)         | ⟨h, ⊥, ⊥, v, R⟩                   | ⟨p, t+L, ⊥, v, R⟩   | 200    | Send(Execute)  |
 | 58  | TaskContinue(t)         | ⟨f, ⊥, ⊥, ⊥, ∅⟩                   | ⟨f, ⊥, ⊥, ⊥, ∅⟩     | 409    |                |
 | 59  | TaskFulfill(v)          | ⊥                                 | ⊥                   | 404    |                |
 | 60  | TaskFulfill(v)          | ⟨p, e, ⊥, v, R⟩                   | ⟨p, e, ⊥, v, R⟩     | 409    |                |
@@ -164,7 +164,7 @@ Tick(t)
 | 95  | ~~EnqueueResume(t, r)~~ | ~~⊥~~                             | ~~⊥~~               |        |                |
 | 96  | EnqueueResume(t, r)     | ⟨p, e, ⊥, v, R⟩                   | ⟨p, e, ⊥, v, R::r⟩  |        |                |
 | 97  | EnqueueResume(t, r)     | ⟨a, e, l, v, R⟩                   | ⟨a, e, l, v, R::r⟩  |        |                |
-| 98  | EnqueueResume(t, r)     | ⟨s, ⊥, ⊥, v, ∅⟩                   | ⟨p, t+L, ⊥, v+1, {r}⟩ |        | Send(Execute)  |
+| 98  | EnqueueResume(t, r)     | ⟨s, ⊥, ⊥, v, ∅⟩                   | ⟨p, t+L, ⊥, v, {r}⟩  |        | Send(Execute)  |
 | 99  | EnqueueResume(t, r)     | ⟨h, ⊥, ⊥, v, R⟩                   | ⟨h, ⊥, ⊥, v, R::r⟩  |        |                |
 | 100 | EnqueueResume(t, r)     | ⟨f, ⊥, ⊥, ⊥, ∅⟩                   | ⟨f, ⊥, ⊥, ⊥, ∅⟩     |        |                |
 | 101 | EnqueueSettle()         | ⊥                                 | ⟨f, ⊥, ⊥, ⊥, ∅⟩     |        |                |
@@ -177,7 +177,7 @@ Tick(t)
 | 108 | Tick(t)                 | ⟨p, e, ⊥, v, R⟩ : t < e           | ⟨p, e, ⊥, v, R⟩     |        |                |
 | 109 | Tick(t)                 | ⟨p, e, ⊥, v, R⟩ : t ≥ e           | ⟨p, t+L, ⊥, v, R⟩   |        | Send(Execute)  |
 | 110 | Tick(t)                 | ⟨a, e, l, v, R⟩ : t < e           | ⟨a, e, l, v, R⟩     |        |                |
-| 111 | Tick(t)                 | ⟨a, e, l, v, R⟩ : t ≥ e           | ⟨p, t+L, ⊥, v+1, R⟩ |        | Send(Execute)  |
+| 111 | Tick(t)                 | ⟨a, e, l, v, R⟩ : t ≥ e           | ⟨p, t+L, ⊥, v, R⟩   |        | Send(Execute)  |
 | 112 | Tick(t)                 | ⟨s, ⊥, ⊥, v, ∅⟩                   | ⟨s, ⊥, ⊥, v, ∅⟩     |        |                |
 | 113 | Tick(t)                 | ⟨h, ⊥, ⊥, v, R⟩                   | ⟨h, ⊥, ⊥, v, R⟩     |        |                |
 | 114 | Tick(t)                 | ⟨f, ⊥, ⊥, ⊥, ∅⟩                   | ⟨f, ⊥, ⊥, ⊥, ∅⟩     |        |                |

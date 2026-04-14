@@ -1296,7 +1296,7 @@ type Schedule = {
 
 **cron**
 
-   A cron expression (standard 5-field format) specifying when to create promises.
+   A cron expression with at least 5 fields specifying when to create promises. Implementations must support at minimum the standard 5-field format (minute hour day-of-month month day-of-week), but may support additional fields (e.g. seconds, year).
 
 **promiseId**
 
@@ -1411,7 +1411,7 @@ type ScheduleCreateReq = {
 
 **cron**
 
-   A cron expression (standard 5-field format) specifying when to create promises.
+   A cron expression with at least 5 fields specifying when to create promises. Implementations must support at minimum the standard 5-field format (minute hour day-of-month month day-of-week), but may support additional fields (e.g. seconds, year).
 
 **promiseId**
 
