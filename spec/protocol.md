@@ -290,6 +290,7 @@ type PromiseCreateReq = {
    - If a `resonate:origin` tag is present, it identifies the root promise that initiated the execution. All promises in an execution tree share the same `resonate:origin` value.
    - If a `resonate:branch` tag is present, it identifies the current execution branch. Set when a promise in an execution tree has a `resonate:target` tag.
    - If a `resonate:parent` tag is present, it identifies the direct parent promise that created this promise in the execution tree.
+   - If a `resonate:schedule` tag is present, it identifies the schedule that created this promise.
 
 **timeoutAt**
 

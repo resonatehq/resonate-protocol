@@ -94,6 +94,8 @@ export const RequestHeadSchema = z.object({
   "resonate:debug_time": z.number().int().nonnegative().optional(),
 });
 
+export type RequestHead = z.infer<typeof RequestHeadSchema>;
+
 // =============================================================================
 // REQUEST SCHEMAS - PROMISE
 // =============================================================================
@@ -112,7 +114,10 @@ export const PromiseCreateReqSchema = z.object({
   kind: z.literal("promise.create"),
   head: RequestHeadSchema,
   data: z.object({
-    id: z.string().min(1, "Promise ID is required"),
+    id: z
+      .string()
+      .min(1, "Promise ID is required")
+      .refine((s) => !s.includes("\x00"), "Promise ID must not contain null bytes"),
     timeoutAt: z.number().int().nonnegative("TimeoutAt must be a non-negative integer"),
     param: ValueSchema,
     tags: z.record(z.string(), z.string()),
@@ -338,10 +343,7 @@ export const ScheduleCreateReqSchema = z.object({
     cron: z
       .string()
       .min(1, "Cron expression is required")
-      .refine(
-        (v) => v.trim().split(/\s+/).length >= 5,
-        "Cron expression must have at least 5 fields",
-      ),
+      .refine((v) => v.trim().split(/\s+/).length >= 5, "Cron expression must have at least 5 fields"),
     promiseId: z.string().min(1, "Promise ID template is required"),
     promiseTimeout: z.number().int().nonnegative("Promise timeout must be a non-negative integer"),
     promiseParam: ValueSchema,
@@ -472,6 +474,8 @@ export const ResponseHeadSchema = <S extends number>(status: S) =>
     status: z.literal(status),
     version: z.string(),
   });
+
+export type ResponseHead<S extends number> = z.infer<ReturnType<typeof ResponseHeadSchema<S>>>;
 
 // =============================================================================
 // RESPONSE SCHEMAS - PROMISE

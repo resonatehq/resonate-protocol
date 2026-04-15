@@ -329,10 +329,7 @@
             "id": { "type": "string", "minLength": 1 },
             "version": { "type": "integer", "minimum": 0 },
             "action": {
-              "oneOf": [
-                { "$ref": "#/$defs/PromiseCreateReq" },
-                { "$ref": "#/$defs/PromiseSettleReq" }
-              ]
+              "oneOf": [{ "$ref": "#/$defs/PromiseCreateReq" }, { "$ref": "#/$defs/PromiseSettleReq" }]
             }
           },
           "required": ["id", "version", "action"],
