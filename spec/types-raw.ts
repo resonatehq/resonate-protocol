@@ -71,6 +71,7 @@ export type RequestHead = {
   auth?: string;
   corrId: string;
   version: string;
+  "resonate:origin"?: string;
   "resonate:debug_time"?: number;
 };
 
@@ -836,6 +837,7 @@ function isRequestHead(val: unknown): val is RequestHead {
     typeof v.corrId === "string" &&
     typeof v.version === "string" &&
     (v.auth === undefined || typeof v.auth === "string") &&
+    (v["resonate:origin"] === undefined || typeof v["resonate:origin"] === "string") &&
     (v["resonate:debug_time"] === undefined || typeof v["resonate:debug_time"] === "number")
   );
 }

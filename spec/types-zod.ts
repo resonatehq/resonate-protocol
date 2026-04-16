@@ -91,6 +91,7 @@ export const RequestHeadSchema = z.object({
   auth: z.string().optional(),
   corrId: z.string(),
   version: z.string(),
+  "resonate:origin": z.string().optional(),
   "resonate:debug_time": z.number().int().nonnegative().optional(),
 });
 
@@ -110,19 +111,27 @@ export const PromiseGetReqSchema = z.object({
 
 export type PromiseGetReq = z.infer<typeof PromiseGetReqSchema>;
 
-export const PromiseCreateReqSchema = z.object({
-  kind: z.literal("promise.create"),
-  head: RequestHeadSchema,
-  data: z.object({
-    id: z
-      .string()
-      .min(1, "Promise ID is required")
-      .refine((s) => !s.includes("\x00"), "Promise ID must not contain null bytes"),
-    timeoutAt: z.number().int().nonnegative("TimeoutAt must be a non-negative integer"),
-    param: ValueSchema,
-    tags: z.record(z.string(), z.string()),
-  }),
-});
+export const PromiseCreateReqSchema = z
+  .object({
+    kind: z.literal("promise.create"),
+    head: RequestHeadSchema,
+    data: z.object({
+      id: z
+        .string()
+        .min(1, "Promise ID is required")
+        .refine((s) => !s.includes("\x00"), "Promise ID must not contain null bytes"),
+      timeoutAt: z.number().int().nonnegative("TimeoutAt must be a non-negative integer"),
+      param: ValueSchema,
+      tags: z.record(z.string(), z.string()),
+    }),
+  })
+  .refine(
+    (r) =>
+      r.head["resonate:origin"] === undefined ||
+      r.data.tags["resonate:origin"] === undefined ||
+      r.head["resonate:origin"] === r.data.tags["resonate:origin"],
+    { message: "head resonate:origin must match data.tags resonate:origin when both are present" },
+  );
 
 export type PromiseCreateReq = z.infer<typeof PromiseCreateReqSchema>;
 
@@ -191,19 +200,27 @@ export const TaskGetReqSchema = z.object({
 
 export type TaskGetReq = z.infer<typeof TaskGetReqSchema>;
 
-export const TaskCreateReqSchema = z.object({
-  kind: z.literal("task.create"),
-  head: RequestHeadSchema,
-  data: z
-    .object({
-      pid: z.string().min(1, "Process ID is required"),
-      ttl: z.number().int().positive("TTL must be a positive integer"),
-      action: PromiseCreateReqSchema,
-    })
-    .refine((r) => "resonate:target" in r.action.data.tags, {
-      message: "Action must have a resonate:target tag",
-    }),
-});
+export const TaskCreateReqSchema = z
+  .object({
+    kind: z.literal("task.create"),
+    head: RequestHeadSchema,
+    data: z
+      .object({
+        pid: z.string().min(1, "Process ID is required"),
+        ttl: z.number().int().positive("TTL must be a positive integer"),
+        action: PromiseCreateReqSchema,
+      })
+      .refine((r) => "resonate:target" in r.action.data.tags, {
+        message: "Action must have a resonate:target tag",
+      }),
+  })
+  .refine(
+    (r) =>
+      r.head["resonate:origin"] === undefined ||
+      r.data.action.data.tags["resonate:origin"] === undefined ||
+      r.head["resonate:origin"] === r.data.action.data.tags["resonate:origin"],
+    { message: "head resonate:origin must match data.action.data.tags resonate:origin when both are present" },
+  );
 
 export type TaskCreateReq = z.infer<typeof TaskCreateReqSchema>;
 
@@ -286,15 +303,24 @@ export const TaskFulfillReqSchema = z.object({
 
 export type TaskFulfillReq = z.infer<typeof TaskFulfillReqSchema>;
 
-export const TaskFenceReqSchema = z.object({
-  kind: z.literal("task.fence"),
-  head: RequestHeadSchema,
-  data: z.object({
-    id: z.string().min(1, "Task ID is required"),
-    version: z.number().int().nonnegative("Version must be a non-negative integer"),
-    action: z.discriminatedUnion("kind", [PromiseCreateReqSchema, PromiseSettleReqSchema]),
-  }),
-});
+export const TaskFenceReqSchema = z
+  .object({
+    kind: z.literal("task.fence"),
+    head: RequestHeadSchema,
+    data: z.object({
+      id: z.string().min(1, "Task ID is required"),
+      version: z.number().int().nonnegative("Version must be a non-negative integer"),
+      action: z.discriminatedUnion("kind", [PromiseCreateReqSchema, PromiseSettleReqSchema]),
+    }),
+  })
+  .refine(
+    (r) =>
+      r.data.action.kind !== "promise.create" ||
+      r.data.action.head["resonate:origin"] === undefined ||
+      r.data.action.data.tags["resonate:origin"] === undefined ||
+      r.data.action.head["resonate:origin"] === r.data.action.data.tags["resonate:origin"],
+    { message: "action head resonate:origin must match action data.tags resonate:origin when both are present" },
+  );
 
 export type TaskFenceReq = z.infer<typeof TaskFenceReqSchema>;
 
@@ -335,21 +361,29 @@ export const ScheduleGetReqSchema = z.object({
 
 export type ScheduleGetReq = z.infer<typeof ScheduleGetReqSchema>;
 
-export const ScheduleCreateReqSchema = z.object({
-  kind: z.literal("schedule.create"),
-  head: RequestHeadSchema,
-  data: z.object({
-    id: z.string().min(1, "Schedule ID is required"),
-    cron: z
-      .string()
-      .min(1, "Cron expression is required")
-      .refine((v) => v.trim().split(/\s+/).length >= 5, "Cron expression must have at least 5 fields"),
-    promiseId: z.string().min(1, "Promise ID template is required"),
-    promiseTimeout: z.number().int().nonnegative("Promise timeout must be a non-negative integer"),
-    promiseParam: ValueSchema,
-    promiseTags: z.record(z.string(), z.string()),
-  }),
-});
+export const ScheduleCreateReqSchema = z
+  .object({
+    kind: z.literal("schedule.create"),
+    head: RequestHeadSchema,
+    data: z.object({
+      id: z.string().min(1, "Schedule ID is required"),
+      cron: z
+        .string()
+        .min(1, "Cron expression is required")
+        .refine((v) => v.trim().split(/\s+/).length >= 5, "Cron expression must have at least 5 fields"),
+      promiseId: z.string().min(1, "Promise ID template is required"),
+      promiseTimeout: z.number().int().nonnegative("Promise timeout must be a non-negative integer"),
+      promiseParam: ValueSchema,
+      promiseTags: z.record(z.string(), z.string()),
+    }),
+  })
+  .refine(
+    (r) =>
+      r.head["resonate:origin"] === undefined ||
+      r.data.promiseTags["resonate:origin"] === undefined ||
+      r.head["resonate:origin"] === r.data.promiseTags["resonate:origin"],
+    { message: "head resonate:origin must match data.promiseTags resonate:origin when both are present" },
+  );
 
 export type ScheduleCreateReq = z.infer<typeof ScheduleCreateReqSchema>;
 
