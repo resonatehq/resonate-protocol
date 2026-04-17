@@ -1699,6 +1699,10 @@ type DebugTickReq = {
 
    Unix timestamp in milliseconds to advance to.
 
+**Validation**
+
+- If `resonate:debug_time` is present in the request head, it must equal `data.time`.
+
 **Response**
 
 ```ts
