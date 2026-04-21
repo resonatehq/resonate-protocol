@@ -106,15 +106,6 @@ export type PromiseSettleReq = {
   };
 };
 
-export type PromiseRegisterCallbackReq = {
-  kind: "promise.register_callback";
-  head: RequestHead;
-  data: {
-    awaited: string;
-    awaiter: string;
-  };
-};
-
 export type PromiseRegisterListenerReq = {
   kind: "promise.register_listener";
   head: RequestHead;
@@ -181,7 +172,7 @@ export type TaskSuspendReq = {
   data: {
     id: string;
     version: number;
-    actions: PromiseRegisterCallbackReq[];
+    promises: string[];
   };
 };
 
@@ -317,7 +308,6 @@ export type Request =
   | PromiseGetReq
   | PromiseCreateReq
   | PromiseSettleReq
-  | PromiseRegisterCallbackReq
   | PromiseRegisterListenerReq
   | PromiseSearchReq
   | TaskGetReq
@@ -392,20 +382,6 @@ export type PromiseSettleRes =
   | { kind: "promise.settle"; head: ResponseHead<404>; data: string }
   | { kind: "promise.settle"; head: ResponseHead<429>; data: string }
   | { kind: "promise.settle"; head: ResponseHead<500>; data: string };
-
-export type PromiseRegisterCallbackRes =
-  | {
-      kind: "promise.register_callback";
-      head: ResponseHead<200>;
-      data: { promise: PromiseRecord };
-    }
-  | { kind: "promise.register_callback"; head: ResponseHead<400>; data: string }
-  | { kind: "promise.register_callback"; head: ResponseHead<401>; data: string }
-  | { kind: "promise.register_callback"; head: ResponseHead<403>; data: string }
-  | { kind: "promise.register_callback"; head: ResponseHead<404>; data: string }
-  | { kind: "promise.register_callback"; head: ResponseHead<422>; data: string }
-  | { kind: "promise.register_callback"; head: ResponseHead<429>; data: string }
-  | { kind: "promise.register_callback"; head: ResponseHead<500>; data: string };
 
 export type PromiseRegisterListenerRes =
   | {
@@ -736,7 +712,6 @@ export type Response =
   | PromiseGetRes
   | PromiseCreateRes
   | PromiseSettleRes
-  | PromiseRegisterCallbackRes
   | PromiseRegisterListenerRes
   | PromiseSearchRes
   | TaskGetRes
@@ -878,15 +853,6 @@ export function isPromiseSettleReq(val: unknown): val is PromiseSettleReq {
   );
 }
 
-export function isPromiseRegisterCallbackReq(val: unknown): val is PromiseRegisterCallbackReq {
-  if (typeof val !== "object" || val === null) return false;
-  const v = val as Record<string, unknown>;
-  if (v.kind !== "promise.register_callback" || !isRequestHead(v.head)) return false;
-  if (typeof v.data !== "object" || v.data === null) return false;
-  const d = v.data as Record<string, unknown>;
-  return typeof d.awaited === "string" && typeof d.awaiter === "string";
-}
-
 export function isPromiseRegisterListenerReq(val: unknown): val is PromiseRegisterListenerReq {
   if (typeof val !== "object" || val === null) return false;
   const v = val as Record<string, unknown>;
@@ -961,8 +927,8 @@ export function isTaskSuspendReq(val: unknown): val is TaskSuspendReq {
   return (
     typeof d.id === "string" &&
     typeof d.version === "number" &&
-    Array.isArray(d.actions) &&
-    (d.actions as unknown[]).every(isPromiseRegisterCallbackReq)
+    Array.isArray(d.promises) &&
+    (d.promises as unknown[]).every((p) => typeof p === "string")
   );
 }
 
@@ -1124,7 +1090,6 @@ export function isRequest(val: unknown): val is Request {
     isPromiseGetReq(val) ||
     isPromiseCreateReq(val) ||
     isPromiseSettleReq(val) ||
-    isPromiseRegisterCallbackReq(val) ||
     isPromiseRegisterListenerReq(val) ||
     isPromiseSearchReq(val) ||
     isTaskGetReq(val) ||
@@ -1188,18 +1153,6 @@ export function isPromiseSettleRes(val: unknown): val is PromiseSettleRes {
   if (typeof val !== "object" || val === null) return false;
   const v = val as Record<string, unknown>;
   if (v.kind !== "promise.settle" || !isResponseHead(v.head)) return false;
-  const { status } = v.head as ResponseHead<number>;
-  if (status === 200) {
-    if (typeof v.data !== "object" || v.data === null) return false;
-    return isPromiseRecord((v.data as Record<string, unknown>).promise);
-  }
-  return typeof v.data === "string";
-}
-
-export function isPromiseRegisterCallbackRes(val: unknown): val is PromiseRegisterCallbackRes {
-  if (typeof val !== "object" || val === null) return false;
-  const v = val as Record<string, unknown>;
-  if (v.kind !== "promise.register_callback" || !isResponseHead(v.head)) return false;
   const { status } = v.head as ResponseHead<number>;
   if (status === 200) {
     if (typeof v.data !== "object" || v.data === null) return false;
@@ -1534,7 +1487,6 @@ export function isResponse(val: unknown): val is Response {
     isPromiseGetRes(val) ||
     isPromiseCreateRes(val) ||
     isPromiseSettleRes(val) ||
-    isPromiseRegisterCallbackRes(val) ||
     isPromiseRegisterListenerRes(val) ||
     isPromiseSearchRes(val) ||
     isTaskGetRes(val) ||

@@ -97,7 +97,6 @@ type Request =
   | PromiseGetReq
   | PromiseCreateReq
   | PromiseSettleReq
-  | PromiseRegisterCallbackReq
   | PromiseRegisterListenerReq
   | PromiseSearchReq
   | TaskGetReq
@@ -129,7 +128,6 @@ type Response =
   | PromiseGetRes
   | PromiseCreateRes
   | PromiseSettleRes
-  | PromiseRegisterCallbackRes
   | PromiseRegisterListenerRes
   | PromiseSearchRes
   | TaskGetRes
@@ -380,69 +378,6 @@ type PromiseSettleRes = {
 ```
 
 Returns the promise in its current state. If the promise is already settled, returns the existing state (idempotent).
-
-### Register Callback
-
-Registers a dependency between two promises, indicating that the awaiter is waiting for the awaited promise to settle.
-
-**Request**
-
-```ts
-type PromiseRegisterCallbackReq = {
-  kind: "promise.register_callback";
-  head: {
-    auth?: string;
-    corrId: string;
-    version: string;
-    "resonate:origin"?: string;
-    "resonate:debug_time"?: number;
-  };
-  data: {
-    awaiter: string;
-    awaited: string;
-  };
-}
-```
-
-**awaiter**
-
-   The identifier of the promise that is waiting.
-
-**awaited**
-
-   The identifier of the promise being waited on.
-
-**Validation**
-
-- The `awaiter` and `awaited` must be different promises. A promise cannot register a dependency on itself.
-
-**Response**
-
-```ts
-type PromiseRegisterCallbackRes = {
-  kind: "promise.register_callback";
-  head: {
-    corrId: string;
-    status: 200;
-    version: string;
-  };
-  data: {
-    promise: Promise;
-  };
-}
-```
-
-Returns the awaited promise. If the awaited promise is already settled, no dependency is registered.
-
-**Errors**
-
-**404**
-
-   Awaited promise not found.
-
-**422**
-
-   Awaiter promise not found or does not have a target address.
 
 ### Register Listener
 
@@ -885,7 +820,7 @@ type TaskSuspendReq = {
   data: {
     id: string;
     version: number;
-    actions: PromiseRegisterCallbackReq[];
+    promises: string[];
   };
 }
 ```
@@ -898,15 +833,14 @@ type TaskSuspendReq = {
 
    The expected task version for optimistic concurrency control.
 
-**actions**
+**promises**
 
-   An array of `PromiseRegisterCallbackReq` specifying the promises to await.
+   A non-empty array of promise identifiers the task is waiting on. For each pending promise in this array, the task's identifier is added to that promise's awaiter set so that the task is resumed when any of those promises settle.
 
 **Validation**
 
-- The `actions` array must not be empty.
-- All actions must have their `awaiter` equal to the task `id`.
-- No action's `awaited` promise may equal the task `id`.
+- The `promises` array must not be empty.
+- No element may equal the task `id` (a task cannot await itself).
 
 **Response**
 

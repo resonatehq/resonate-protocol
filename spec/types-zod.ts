@@ -147,21 +147,6 @@ export const PromiseSettleReqSchema = z.object({
 
 export type PromiseSettleReq = z.infer<typeof PromiseSettleReqSchema>;
 
-export const PromiseRegisterCallbackReqSchema = z.object({
-  kind: z.literal("promise.register_callback"),
-  head: RequestHeadSchema,
-  data: z
-    .object({
-      awaited: z.string().min(1, "Awaited promise ID is required"),
-      awaiter: z.string().min(1, "Awaiter promise ID is required"),
-    })
-    .refine((d) => d.awaited !== d.awaiter, {
-      message: "Awaited and awaiter must be different promises",
-    }),
-});
-
-export type PromiseRegisterCallbackReq = z.infer<typeof PromiseRegisterCallbackReqSchema>;
-
 export const PromiseRegisterListenerReqSchema = z.object({
   kind: z.literal("promise.register_listener"),
   head: RequestHeadSchema,
@@ -255,13 +240,10 @@ export const TaskSuspendReqSchema = z.object({
     .object({
       id: z.string().min(1, "Task ID is required"),
       version: z.number().int().nonnegative("Version must be a non-negative integer"),
-      actions: z.array(PromiseRegisterCallbackReqSchema).nonempty("Actions array cannot be empty"),
+      promises: z.array(z.string().min(1)).nonempty("Promises array cannot be empty"),
     })
-    .refine((r) => r.actions.every((a) => a.data.awaiter === r.id), {
-      message: "All action awaiter IDs must match the task ID",
-    })
-    .refine((r) => r.actions.every((a) => a.data.awaited !== r.id), {
-      message: "Action awaited promise must not equal the task ID",
+    .refine((r) => r.promises.every((p) => p !== r.id), {
+      message: "Promise IDs must not equal the task ID",
     }),
 });
 
@@ -460,7 +442,6 @@ export const RequestSchema = z.discriminatedUnion("kind", [
   PromiseGetReqSchema,
   PromiseCreateReqSchema,
   PromiseSettleReqSchema,
-  PromiseRegisterCallbackReqSchema,
   PromiseRegisterListenerReqSchema,
   PromiseSearchReqSchema,
   // Task
@@ -621,51 +602,6 @@ export const PromiseSettleResSchema = z.discriminatedUnion("kind", [
 ]);
 
 export type PromiseSettleRes = z.infer<typeof PromiseSettleResSchema>;
-
-export const PromiseRegisterCallbackResSchema = z.discriminatedUnion("kind", [
-  z.object({
-    kind: z.literal("promise.register_callback"),
-    head: ResponseHeadSchema(200),
-    data: z.object({ promise: PromiseRecordSchema }),
-  }),
-  z.object({
-    kind: z.literal("promise.register_callback"),
-    head: ResponseHeadSchema(400),
-    data: z.string(),
-  }),
-  z.object({
-    kind: z.literal("promise.register_callback"),
-    head: ResponseHeadSchema(401),
-    data: z.string(),
-  }),
-  z.object({
-    kind: z.literal("promise.register_callback"),
-    head: ResponseHeadSchema(403),
-    data: z.string(),
-  }),
-  z.object({
-    kind: z.literal("promise.register_callback"),
-    head: ResponseHeadSchema(404),
-    data: z.string(),
-  }),
-  z.object({
-    kind: z.literal("promise.register_callback"),
-    head: ResponseHeadSchema(422),
-    data: z.string(),
-  }),
-  z.object({
-    kind: z.literal("promise.register_callback"),
-    head: ResponseHeadSchema(429),
-    data: z.string(),
-  }),
-  z.object({
-    kind: z.literal("promise.register_callback"),
-    head: ResponseHeadSchema(500),
-    data: z.string(),
-  }),
-]);
-
-export type PromiseRegisterCallbackRes = z.infer<typeof PromiseRegisterCallbackResSchema>;
 
 export const PromiseRegisterListenerResSchema = z.discriminatedUnion("kind", [
   z.object({
@@ -1689,7 +1625,6 @@ export const ResponseSchema = z.discriminatedUnion("kind", [
   PromiseGetResSchema,
   PromiseCreateResSchema,
   PromiseSettleResSchema,
-  PromiseRegisterCallbackResSchema,
   PromiseRegisterListenerResSchema,
   PromiseSearchResSchema,
   // Task

@@ -47,12 +47,11 @@ Tick(t)
 
 ## Side Effects
 
-| Side Effect             | Description                         |
-| ----------------------- | ----------------------------------- |
-| Send(Execute)           | Send message                        |
-| PromiseCreate           | Create a promise                    |
-| PromiseSettle           | Settle a promise                    |
-| PromiseRegisterCallback | Register task callback on a promise |
+| Side Effect   | Description      |
+| ------------- | ---------------- |
+| Send(Execute) | Send message     |
+| PromiseCreate | Create a promise |
+| PromiseSettle | Settle a promise |
 
 ## Predicates
 
@@ -106,7 +105,7 @@ Tick(t)
 | 37  | TaskSuspend(v', P)      | ⟨p, e, ⊥, v, R⟩                   | ⟨p, e, ⊥, v, R⟩     | 409    |                |
 | 38  | TaskSuspend(v, P)       | ⟨a, e, l, v, R⟩ : ¬Exists(p) ∃p∈P | ⟨a, e, l, v, R⟩     | 422    |                |
 | 39  | TaskSuspend(v, P)       | ⟨a, e, l, v, R⟩ : Settled(p) ∃p∈P | ⟨a, e, l, v, ∅⟩     | 300    |                |
-| 40  | TaskSuspend(v, P)       | ⟨a, e, l, v, R⟩ : Pending(p) ∀p∈P | ⟨s, ⊥, ⊥, v, ∅⟩     | 200    | PromiseRegisterCallback ∀p∈P |
+| 40  | TaskSuspend(v, P)       | ⟨a, e, l, v, R⟩ : Pending(p) ∀p∈P | ⟨s, ⊥, ⊥, v, ∅⟩     | 200    | Add task.id to awaiter set ∀p∈P |
 | 41  | TaskSuspend(v', P)      | ⟨a, e, l, v, R⟩                   | ⟨a, e, l, v, R⟩     | 409    |                |
 | 42  | TaskSuspend(v, P)       | ⟨s, ⊥, ⊥, v, ∅⟩                   | ⟨s, ⊥, ⊥, v, ∅⟩     | 409    |                |
 | 43  | TaskSuspend(v', P)      | ⟨s, ⊥, ⊥, v, ∅⟩                   | ⟨s, ⊥, ⊥, v, ∅⟩     | 409    |                |

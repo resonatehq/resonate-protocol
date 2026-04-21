@@ -6,7 +6,6 @@
     { "$ref": "#/$defs/PromiseGetReq" },
     { "$ref": "#/$defs/PromiseCreateReq" },
     { "$ref": "#/$defs/PromiseSettleReq" },
-    { "$ref": "#/$defs/PromiseRegisterCallbackReq" },
     { "$ref": "#/$defs/PromiseRegisterListenerReq" },
     { "$ref": "#/$defs/PromiseSearchReq" },
     { "$ref": "#/$defs/TaskGetReq" },
@@ -108,24 +107,6 @@
             "value": { "$ref": "#/$defs/Value" }
           },
           "required": ["id", "state", "value"],
-          "additionalProperties": false
-        }
-      },
-      "required": ["kind", "head", "data"],
-      "additionalProperties": false
-    },
-    "PromiseRegisterCallbackReq": {
-      "type": "object",
-      "properties": {
-        "kind": { "const": "promise.register_callback" },
-        "head": { "$ref": "#/$defs/RequestHead" },
-        "data": {
-          "type": "object",
-          "properties": {
-            "awaited": { "type": "string", "minLength": 1 },
-            "awaiter": { "type": "string", "minLength": 1 }
-          },
-          "required": ["awaited", "awaiter"],
           "additionalProperties": false
         }
       },
@@ -253,13 +234,13 @@
           "properties": {
             "id": { "type": "string", "minLength": 1 },
             "version": { "type": "integer", "minimum": 0 },
-            "actions": {
+            "promises": {
               "type": "array",
-              "items": { "$ref": "#/$defs/PromiseRegisterCallbackReq" },
+              "items": { "type": "string", "minLength": 1 },
               "minItems": 1
             }
           },
-          "required": ["id", "version", "actions"],
+          "required": ["id", "version", "promises"],
           "additionalProperties": false
         }
       },
