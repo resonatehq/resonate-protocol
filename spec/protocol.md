@@ -99,6 +99,7 @@ type Request =
   | PromiseSettleReq
   | PromiseRegisterCallbackReq
   | PromiseRegisterListenerReq
+  | PromiseDispatchCallbackReq
   | PromiseSearchReq
   | TaskGetReq
   | TaskCreateReq
@@ -131,6 +132,7 @@ type Response =
   | PromiseSettleRes
   | PromiseRegisterCallbackRes
   | PromiseRegisterListenerRes
+  | PromiseDispatchCallbackRes
   | PromiseSearchRes
   | TaskGetRes
   | TaskCreateRes
@@ -383,7 +385,7 @@ Returns the promise in its current state. If the promise is already settled, ret
 
 ### Register Callback
 
-Registers a dependency between two promises, indicating that the awaiter is waiting for the awaited promise to settle.
+Registers a dependency between two promises, indicating that the awaiter is waiting for the awaited promise to settle. When the awaited promise settles, the server sends a [`promise.dispatch_callback`](#dispatch-callback) request to the awaiter's delivery address.
 
 **Request**
 
@@ -406,7 +408,16 @@ type PromiseRegisterCallbackReq = {
 
 **awaiter**
 
-   The identifier of the promise that is waiting.
+   Identifier of the promise that is waiting. May be either:
+
+   - **A local promise id.** The awaiter is a promise on this server; on settle, the server resumes it through the existing in-process callback path.
+   - **The awaiter's promise URL** (e.g., `https://other.example/x`) — the canonical address where the awaiter's promise lives on its own server. On settle, the server sends a `promise.dispatch_callback` request to that URL.
+
+   The two interpretations share one field; servers distinguish them by URL scheme. The `awaiter` value is echoed verbatim into the `dispatch_callback` request body so the receiving server can use it as a routing key on its own side.
+
+   The URL form is a *promise URL*, not a worker target. It is unrelated to the awaiter's `resonate:target` tag — `resonate:target` identifies a worker (where `ExecuteMsg` is pushed for invocation/resume), whereas the promise URL identifies where the awaiter's record lives. The same string can have both, but they serve different mechanisms and need not be the same.
+
+   The URL form enables cross-server callback delivery: independent Resonate servers — or per-actor mini-servers like a Cloudflare Durable Object — can register on each other's promises without sharing a canonical promise store.
 
 **awaited**
 
@@ -432,7 +443,7 @@ type PromiseRegisterCallbackRes = {
 }
 ```
 
-Returns the awaited promise. If the awaited promise is already settled, no dependency is registered.
+Returns the awaited promise. If the awaited promise is already settled, no dependency is registered (the caller is expected to act on the returned settled state directly).
 
 **Errors**
 
@@ -442,7 +453,73 @@ Returns the awaited promise. If the awaited promise is already settled, no depen
 
 **422**
 
-   Awaiter promise not found or does not have a target address.
+   `awaiter` is a local promise id (not a URL), but the awaiter promise is not found on this server, or — for the legacy in-process callback path — has no `resonate:target` worker tag.
+
+### Dispatch Callback
+
+Sent by the server that owns the awaited promise to the awaiter's *promise URL* (the URL form of `awaiter` from a previous `promise.register_callback` request), when the awaited promise settles. This is a **request**, not a fire-and-forget message: the receiver must respond, and the sender uses the response to confirm delivery.
+
+The receiving address is the awaiter's promise URL — not a worker target. `dispatch_callback` is a server-to-server hand-off; it does not invoke a worker. After receiving the dispatch, the awaiter's server is responsible for whatever local routing it wants (resuming a workflow, pushing `ExecuteMsg` to its own worker via its own `resonate:target`, etc.).
+
+**Request**
+
+```ts
+type PromiseDispatchCallbackReq = {
+  kind: "promise.dispatch_callback";
+  head: {
+    auth?: string;
+    corrId: string;
+    version: string;
+    "resonate:origin"?: string;
+    "resonate:debug_time"?: number;
+  };
+  data: {
+    awaiter: string;
+    promise: Promise;
+  };
+}
+```
+
+**awaiter**
+
+   The `awaiter` value echoed verbatim from the original `promise.register_callback` request. The receiving server interprets it however it likes — promise id, workflow handle, internal routing key — and the sending server treats it as opaque.
+
+**promise**
+
+   The settled `awaited` promise record, in its terminal state. Carrying it inline lets the receiver fold the value into local state without an extra round trip back to the sending server.
+
+**Response**
+
+```ts
+type PromiseDispatchCallbackRes = {
+  kind: "promise.dispatch_callback";
+  head: {
+    corrId: string;
+    status: 200;
+    version: string;
+  };
+  data: {};
+}
+```
+
+A 200 acknowledges delivery. The sender may then mark the dispatch successful and discard its local record of the registration.
+
+**Delivery semantics**
+
+- Each `(awaiter, awaited)` registration triggers exactly one `promise.dispatch_callback` request when `awaited` settles.
+- Late registrations on an already-settled promise return the terminal state synchronously from `promise.register_callback` (status 200 with `data.promise`); no separate dispatch is sent.
+- Delivery is at-least-once. Receivers MUST treat repeat deliveries as idempotent (e.g., by detecting that local state is already advanced past the awaited).
+- The sender SHOULD retry on non-2xx responses or transport failures, with a backoff appropriate to its environment.
+
+**Errors**
+
+**400**
+
+   Malformed request body.
+
+**500**
+
+   Receiver-internal error; the sender will retry.
 
 ### Register Listener
 

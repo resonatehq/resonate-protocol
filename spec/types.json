@@ -8,6 +8,7 @@
     { "$ref": "#/$defs/PromiseSettleReq" },
     { "$ref": "#/$defs/PromiseRegisterCallbackReq" },
     { "$ref": "#/$defs/PromiseRegisterListenerReq" },
+    { "$ref": "#/$defs/PromiseDispatchCallbackReq" },
     { "$ref": "#/$defs/PromiseSearchReq" },
     { "$ref": "#/$defs/TaskGetReq" },
     { "$ref": "#/$defs/TaskCreateReq" },
@@ -144,6 +145,24 @@
             "address": { "type": "string", "minLength": 1 }
           },
           "required": ["awaited", "address"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["kind", "head", "data"],
+      "additionalProperties": false
+    },
+    "PromiseDispatchCallbackReq": {
+      "type": "object",
+      "properties": {
+        "kind": { "const": "promise.dispatch_callback" },
+        "head": { "$ref": "#/$defs/RequestHead" },
+        "data": {
+          "type": "object",
+          "properties": {
+            "awaiter": { "type": "string", "minLength": 1 },
+            "promise": { "$ref": "#/$defs/Promise" }
+          },
+          "required": ["awaiter", "promise"],
           "additionalProperties": false
         }
       },

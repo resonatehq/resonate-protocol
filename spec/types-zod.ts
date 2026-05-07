@@ -153,7 +153,13 @@ export const PromiseRegisterCallbackReqSchema = z.object({
   data: z
     .object({
       awaited: z.string().min(1, "Awaited promise ID is required"),
-      awaiter: z.string().min(1, "Awaiter promise ID is required"),
+      // The awaiter MAY be a local promise id (legacy in-process
+      // callback path) or the awaiter's *promise URL* (cross-server
+      // dispatch via promise.dispatch_callback). The URL form is a
+      // promise URL — distinct from the awaiter's resonate:target
+      // tag, which identifies a worker. Same field, two
+      // interpretations, distinguished by URL scheme.
+      awaiter: z.string().min(1, "Awaiter is required"),
     })
     .refine((d) => d.awaited !== d.awaiter, {
       message: "Awaited and awaiter must be different promises",
@@ -172,6 +178,17 @@ export const PromiseRegisterListenerReqSchema = z.object({
 });
 
 export type PromiseRegisterListenerReq = z.infer<typeof PromiseRegisterListenerReqSchema>;
+
+export const PromiseDispatchCallbackReqSchema = z.object({
+  kind: z.literal("promise.dispatch_callback"),
+  head: RequestHeadSchema,
+  data: z.object({
+    awaiter: z.string().min(1, "Awaiter is required"),
+    promise: PromiseRecordSchema,
+  }),
+});
+
+export type PromiseDispatchCallbackReq = z.infer<typeof PromiseDispatchCallbackReqSchema>;
 
 export const PromiseSearchReqSchema = z.object({
   kind: z.literal("promise.search"),
@@ -462,6 +479,7 @@ export const RequestSchema = z.discriminatedUnion("kind", [
   PromiseSettleReqSchema,
   PromiseRegisterCallbackReqSchema,
   PromiseRegisterListenerReqSchema,
+  PromiseDispatchCallbackReqSchema,
   PromiseSearchReqSchema,
   // Task
   TaskGetReqSchema,
@@ -711,6 +729,41 @@ export const PromiseRegisterListenerResSchema = z.discriminatedUnion("kind", [
 ]);
 
 export type PromiseRegisterListenerRes = z.infer<typeof PromiseRegisterListenerResSchema>;
+
+export const PromiseDispatchCallbackResSchema = z.discriminatedUnion("kind", [
+  z.object({
+    kind: z.literal("promise.dispatch_callback"),
+    head: ResponseHeadSchema(200),
+    data: z.object({}).strict(),
+  }),
+  z.object({
+    kind: z.literal("promise.dispatch_callback"),
+    head: ResponseHeadSchema(400),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("promise.dispatch_callback"),
+    head: ResponseHeadSchema(401),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("promise.dispatch_callback"),
+    head: ResponseHeadSchema(403),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("promise.dispatch_callback"),
+    head: ResponseHeadSchema(429),
+    data: z.string(),
+  }),
+  z.object({
+    kind: z.literal("promise.dispatch_callback"),
+    head: ResponseHeadSchema(500),
+    data: z.string(),
+  }),
+]);
+
+export type PromiseDispatchCallbackRes = z.infer<typeof PromiseDispatchCallbackResSchema>;
 
 export const PromiseSearchResSchema = z.discriminatedUnion("kind", [
   z.object({
@@ -1691,6 +1744,7 @@ export const ResponseSchema = z.discriminatedUnion("kind", [
   PromiseSettleResSchema,
   PromiseRegisterCallbackResSchema,
   PromiseRegisterListenerResSchema,
+  PromiseDispatchCallbackResSchema,
   PromiseSearchResSchema,
   // Task
   TaskGetResSchema,

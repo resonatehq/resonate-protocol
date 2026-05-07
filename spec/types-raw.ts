@@ -111,6 +111,26 @@ export type PromiseRegisterCallbackReq = {
   head: RequestHead;
   data: {
     awaited: string;
+    /**
+     * Identifier of the awaiter. MAY be:
+     *   - a local promise id — the awaiter is on this server; on
+     *     settle, the existing in-process callback path resumes it
+     *     (legacy behavior), or
+     *   - the awaiter's *promise URL* — e.g.,
+     *     "https://other.example/x" — the canonical address where the
+     *     awaiter's promise lives on its own server. On settle, the
+     *     server sends a `promise.dispatch_callback` request to that
+     *     URL. The awaiter does not need to exist on this server.
+     *
+     * The URL form is a promise URL, not a worker target. It is
+     * unrelated to the awaiter's `resonate:target` tag —
+     * `resonate:target` identifies a worker; this URL identifies
+     * where the awaiter's record lives. The two address different
+     * mechanisms and may differ.
+     *
+     * Servers distinguish the two forms by URL scheme. No new field
+     * is needed; the same string-typed field carries both.
+     */
     awaiter: string;
   };
 };
@@ -121,6 +141,32 @@ export type PromiseRegisterListenerReq = {
   data: {
     awaited: string;
     address: string;
+  };
+};
+
+/**
+ * Sent by the server that owns the awaited promise to the awaiter's
+ * *promise URL* (the URL form of `awaiter` from a previous
+ * `promise.register_callback` request), when the awaited promise
+ * settles.
+ *
+ * The receiving address is the awaiter's promise URL — not a worker
+ * target. This is a server-to-server hand-off; it does not invoke a
+ * worker.
+ *
+ * This is a Request (not a fire-and-forget Message): the receiver
+ * MUST respond. A 200 ack lets the sender mark delivery successful;
+ * any other status (or transport failure) signals the sender to
+ * retry. Carries the routing-opaque `awaiter` echoed from the
+ * registration plus the settled `promise` record so the receiver
+ * can fold the value into local state without an extra round trip.
+ */
+export type PromiseDispatchCallbackReq = {
+  kind: "promise.dispatch_callback";
+  head: RequestHead;
+  data: {
+    awaiter: string;
+    promise: PromiseRecord;
   };
 };
 
@@ -319,6 +365,7 @@ export type Request =
   | PromiseSettleReq
   | PromiseRegisterCallbackReq
   | PromiseRegisterListenerReq
+  | PromiseDispatchCallbackReq
   | PromiseSearchReq
   | TaskGetReq
   | TaskCreateReq
@@ -420,6 +467,18 @@ export type PromiseRegisterListenerRes =
   | { kind: "promise.register_listener"; head: ResponseHead<429>; data: string }
   | { kind: "promise.register_listener"; head: ResponseHead<500>; data: string }
   | { kind: "promise.register_listener"; head: ResponseHead<501>; data: string };
+
+export type PromiseDispatchCallbackRes =
+  | {
+      kind: "promise.dispatch_callback";
+      head: ResponseHead<200>;
+      data: Record<string, never>;
+    }
+  | { kind: "promise.dispatch_callback"; head: ResponseHead<400>; data: string }
+  | { kind: "promise.dispatch_callback"; head: ResponseHead<401>; data: string }
+  | { kind: "promise.dispatch_callback"; head: ResponseHead<403>; data: string }
+  | { kind: "promise.dispatch_callback"; head: ResponseHead<429>; data: string }
+  | { kind: "promise.dispatch_callback"; head: ResponseHead<500>; data: string };
 
 export type PromiseSearchRes =
   | {
@@ -738,6 +797,7 @@ export type Response =
   | PromiseSettleRes
   | PromiseRegisterCallbackRes
   | PromiseRegisterListenerRes
+  | PromiseDispatchCallbackRes
   | PromiseSearchRes
   | TaskGetRes
   | TaskCreateRes
@@ -894,6 +954,15 @@ export function isPromiseRegisterListenerReq(val: unknown): val is PromiseRegist
   if (typeof v.data !== "object" || v.data === null) return false;
   const d = v.data as Record<string, unknown>;
   return typeof d.awaited === "string" && typeof d.address === "string";
+}
+
+export function isPromiseDispatchCallbackReq(val: unknown): val is PromiseDispatchCallbackReq {
+  if (typeof val !== "object" || val === null) return false;
+  const v = val as Record<string, unknown>;
+  if (v.kind !== "promise.dispatch_callback" || !isRequestHead(v.head)) return false;
+  if (typeof v.data !== "object" || v.data === null) return false;
+  const d = v.data as Record<string, unknown>;
+  return typeof d.awaiter === "string" && typeof d.promise === "object" && d.promise !== null;
 }
 
 export function isPromiseSearchReq(val: unknown): val is PromiseSearchReq {
@@ -1126,6 +1195,7 @@ export function isRequest(val: unknown): val is Request {
     isPromiseSettleReq(val) ||
     isPromiseRegisterCallbackReq(val) ||
     isPromiseRegisterListenerReq(val) ||
+    isPromiseDispatchCallbackReq(val) ||
     isPromiseSearchReq(val) ||
     isTaskGetReq(val) ||
     isTaskCreateReq(val) ||
@@ -1216,6 +1286,17 @@ export function isPromiseRegisterListenerRes(val: unknown): val is PromiseRegist
   if (status === 200) {
     if (typeof v.data !== "object" || v.data === null) return false;
     return isPromiseRecord((v.data as Record<string, unknown>).promise);
+  }
+  return typeof v.data === "string";
+}
+
+export function isPromiseDispatchCallbackRes(val: unknown): val is PromiseDispatchCallbackRes {
+  if (typeof val !== "object" || val === null) return false;
+  const v = val as Record<string, unknown>;
+  if (v.kind !== "promise.dispatch_callback" || !isResponseHead(v.head)) return false;
+  const { status } = v.head as ResponseHead<number>;
+  if (status === 200) {
+    return typeof v.data === "object" && v.data !== null;
   }
   return typeof v.data === "string";
 }
@@ -1536,6 +1617,7 @@ export function isResponse(val: unknown): val is Response {
     isPromiseSettleRes(val) ||
     isPromiseRegisterCallbackRes(val) ||
     isPromiseRegisterListenerRes(val) ||
+    isPromiseDispatchCallbackRes(val) ||
     isPromiseSearchRes(val) ||
     isTaskGetRes(val) ||
     isTaskCreateRes(val) ||
