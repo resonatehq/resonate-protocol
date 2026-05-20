@@ -701,14 +701,14 @@ export type DebugSnapRes =
       kind: "debug.snap";
       head: ResponseHead<200>;
       data: {
-        promises: PromiseRecord[];
-        promiseTimeouts: { id: string; timeout: number }[];
-        callbacks: { awaiter: string; awaited: string }[];
-        listeners?: { id: string; address: string }[];
-        tasks: TaskRecord[];
-        taskTimeouts: { id: string; type: number; timeout: number }[];
-        schedules?: ScheduleRecord[];
-        scheduleTimeouts?: { id: string; timeout: number }[];
+        promises: (PromiseRecord & { origin?: string })[];
+        promiseTimeouts: { id: string; timeout: number; origin?: string }[];
+        callbacks: { awaiter: string; awaited: string; origin?: string }[];
+        listeners?: { id: string; address: string; origin?: string }[];
+        tasks: (TaskRecord & { origin?: string })[];
+        taskTimeouts: { id: string; type: number; timeout: number; origin?: string }[];
+        schedules?: (ScheduleRecord & { origin?: string })[];
+        scheduleTimeouts?: { id: string; timeout: number; origin?: string }[];
         messages: { address: string; message: Message }[];
       };
     }
@@ -1471,6 +1471,11 @@ export function isDebugSnapRes(val: unknown): val is DebugSnapRes {
     return (
       Array.isArray(d.promises) &&
       (d.promises as unknown[]).every(isPromiseRecord) &&
+      (d.promises as unknown[]).every(
+        (p) =>
+          (p as Record<string, unknown>).origin === undefined ||
+          typeof (p as Record<string, unknown>).origin === "string",
+      ) &&
       Array.isArray(d.promiseTimeouts) &&
       (d.promiseTimeouts as unknown[]).every(
         (t) =>
@@ -1485,7 +1490,9 @@ export function isDebugSnapRes(val: unknown): val is DebugSnapRes {
           typeof c === "object" &&
           c !== null &&
           typeof (c as Record<string, unknown>).awaiter === "string" &&
-          typeof (c as Record<string, unknown>).awaited === "string",
+          typeof (c as Record<string, unknown>).awaited === "string" &&
+          ((c as Record<string, unknown>).origin === undefined ||
+            typeof (c as Record<string, unknown>).origin === "string"),
       ) &&
       (d.listeners === undefined ||
         (Array.isArray(d.listeners) &&
@@ -1494,10 +1501,17 @@ export function isDebugSnapRes(val: unknown): val is DebugSnapRes {
               typeof l === "object" &&
               l !== null &&
               typeof (l as Record<string, unknown>).id === "string" &&
-              typeof (l as Record<string, unknown>).address === "string",
+              typeof (l as Record<string, unknown>).address === "string" &&
+              ((l as Record<string, unknown>).origin === undefined ||
+                typeof (l as Record<string, unknown>).origin === "string"),
           ))) &&
       Array.isArray(d.tasks) &&
       (d.tasks as unknown[]).every(isTaskRecord) &&
+      (d.tasks as unknown[]).every(
+        (t) =>
+          (t as Record<string, unknown>).origin === undefined ||
+          typeof (t as Record<string, unknown>).origin === "string",
+      ) &&
       Array.isArray(d.taskTimeouts) &&
       (d.taskTimeouts as unknown[]).every(
         (t) =>
@@ -1507,6 +1521,25 @@ export function isDebugSnapRes(val: unknown): val is DebugSnapRes {
           typeof (t as Record<string, unknown>).type === "number" &&
           typeof (t as Record<string, unknown>).timeout === "number",
       ) &&
+      (d.schedules === undefined ||
+        (Array.isArray(d.schedules) &&
+          (d.schedules as unknown[]).every(isScheduleRecord) &&
+          (d.schedules as unknown[]).every(
+            (s) =>
+              (s as Record<string, unknown>).origin === undefined ||
+              typeof (s as Record<string, unknown>).origin === "string",
+          ))) &&
+      (d.scheduleTimeouts === undefined ||
+        (Array.isArray(d.scheduleTimeouts) &&
+          (d.scheduleTimeouts as unknown[]).every(
+            (t) =>
+              typeof t === "object" &&
+              t !== null &&
+              typeof (t as Record<string, unknown>).id === "string" &&
+              typeof (t as Record<string, unknown>).timeout === "number" &&
+              ((t as Record<string, unknown>).origin === undefined ||
+                typeof (t as Record<string, unknown>).origin === "string"),
+          ))) &&
       Array.isArray(d.messages) &&
       (d.messages as unknown[]).every(
         (m) =>

@@ -1760,20 +1760,20 @@ type DebugSnapRes = {
     version: string;
   };
   data: {
-    promises: Promise[];
-    promiseTimeouts: { id: string; timeout: number }[];
-    callbacks: { awaiter: string; awaited: string }[];
-    listeners?: { id: string; address: string }[];
-    tasks: Task[];
-    taskTimeouts: { id: string; type: number; timeout: number }[];
-    schedules?: Schedule[];
-    scheduleTimeouts?: { id: string; timeout: number }[];
+    promises: (Promise & { origin?: string })[];
+    promiseTimeouts: { id: string; timeout: number; origin?: string }[];
+    callbacks: { awaiter: string; awaited: string; origin?: string }[];
+    listeners?: { id: string; address: string; origin?: string }[];
+    tasks: (Task & { origin?: string })[];
+    taskTimeouts: { id: string; type: number; timeout: number; origin?: string }[];
+    schedules?: (Schedule & { origin?: string })[];
+    scheduleTimeouts?: { id: string; timeout: number; origin?: string }[];
     messages: { address: string; message: Message }[];
   };
 }
 ```
 
-Returns the current state of all promises, tasks, schedules, their timeouts, callbacks, listeners, and pending messages.
+Returns the current state of all promises, tasks, schedules, their timeouts, callbacks, listeners, and pending messages. Each record may include an optional `origin` field.
 
 **Errors**
 
