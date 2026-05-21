@@ -1158,6 +1158,10 @@ type TaskFenceReq = {
 
    A `PromiseCreateReq` or `PromiseSettleReq` to execute if the lease is valid.
 
+**Validation**
+
+- The action `id` must not equal the task `id`.
+
 **Response**
 
 ```ts

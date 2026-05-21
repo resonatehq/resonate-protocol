@@ -313,6 +313,9 @@ export const TaskFenceReqSchema = z
       action: z.discriminatedUnion("kind", [PromiseCreateReqSchema, PromiseSettleReqSchema]),
     }),
   })
+  .refine((r) => r.data.action.data.id !== r.data.id, {
+    message: "Action ID must not equal the task ID",
+  })
   .refine(
     (r) =>
       r.data.action.kind !== "promise.create" ||
