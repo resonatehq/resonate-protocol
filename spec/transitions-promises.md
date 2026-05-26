@@ -176,16 +176,16 @@ Tick(t)
 | 109     | PromiseRegisterCallback(p)   | ⟨p, o, ⊤, a, P, A⟩ : Exists(p) ∧ HasAddress(p) ∧ Settled(p)     | ⟨p, o, ⊤, a, P, A⟩    | 200    |                                                      |
 | 110     | PromiseRegisterCallback(p)   | ⟨r, ⊥, ⊥, ⊥, ∅, ∅⟩ : ¬Exists(p)                                  | ⟨r, ⊥, ⊥, ⊥, ∅, ∅⟩    | 422    |                                                      |
 | 111     | PromiseRegisterCallback(p)   | ⟨r, ⊥, ⊥, ⊥, ∅, ∅⟩ : Exists(p) ∧ ¬HasAddress(p)                 | ⟨r, ⊥, ⊥, ⊥, ∅, ∅⟩    | 422    |                                                      |
-| 112     | PromiseRegisterCallback(p)   | ⟨r, ⊥, ⊥, ⊥, ∅, ∅⟩ : Exists(p) ∧ HasAddress(p)                  | ⟨r, ⊥, ⊥, ⊥, ∅, ∅⟩    | 200    |                                                      |
+| 112     | PromiseRegisterCallback(p)   | ⟨r, ⊥, ⊥, ⊥, ∅, ∅⟩ : Exists(p) ∧ HasAddress(p)                  | ⟨r, ⊥, ⊥, ⊥, ∅, ∅⟩    | 200    | EnqueueResume                                        |
 | 113     | PromiseRegisterCallback(p)   | ⟨x, ⊥, ⊥, ⊥, ∅, ∅⟩ : ¬Exists(p)                                  | ⟨x, ⊥, ⊥, ⊥, ∅, ∅⟩    | 422    |                                                      |
 | 114     | PromiseRegisterCallback(p)   | ⟨x, ⊥, ⊥, ⊥, ∅, ∅⟩ : Exists(p) ∧ ¬HasAddress(p)                 | ⟨x, ⊥, ⊥, ⊥, ∅, ∅⟩    | 422    |                                                      |
-| 115     | PromiseRegisterCallback(p)   | ⟨x, ⊥, ⊥, ⊥, ∅, ∅⟩ : Exists(p) ∧ HasAddress(p)                  | ⟨x, ⊥, ⊥, ⊥, ∅, ∅⟩    | 200    |                                                      |
+| 115     | PromiseRegisterCallback(p)   | ⟨x, ⊥, ⊥, ⊥, ∅, ∅⟩ : Exists(p) ∧ HasAddress(p)                  | ⟨x, ⊥, ⊥, ⊥, ∅, ∅⟩    | 200    | EnqueueResume                                        |
 | 116     | PromiseRegisterCallback(p)   | ⟨c, ⊥, ⊥, ⊥, ∅, ∅⟩ : ¬Exists(p)                                  | ⟨c, ⊥, ⊥, ⊥, ∅, ∅⟩    | 422    |                                                      |
 | 117     | PromiseRegisterCallback(p)   | ⟨c, ⊥, ⊥, ⊥, ∅, ∅⟩ : Exists(p) ∧ ¬HasAddress(p)                 | ⟨c, ⊥, ⊥, ⊥, ∅, ∅⟩    | 422    |                                                      |
-| 118     | PromiseRegisterCallback(p)   | ⟨c, ⊥, ⊥, ⊥, ∅, ∅⟩ : Exists(p) ∧ HasAddress(p)                  | ⟨c, ⊥, ⊥, ⊥, ∅, ∅⟩    | 200    |                                                      |
+| 118     | PromiseRegisterCallback(p)   | ⟨c, ⊥, ⊥, ⊥, ∅, ∅⟩ : Exists(p) ∧ HasAddress(p)                  | ⟨c, ⊥, ⊥, ⊥, ∅, ∅⟩    | 200    | EnqueueResume                                        |
 | 119     | PromiseRegisterCallback(p)   | ⟨t, ⊥, ⊥, ⊥, ∅, ∅⟩ : ¬Exists(p)                                  | ⟨t, ⊥, ⊥, ⊥, ∅, ∅⟩    | 422    |                                                      |
 | 120     | PromiseRegisterCallback(p)   | ⟨t, ⊥, ⊥, ⊥, ∅, ∅⟩ : Exists(p) ∧ ¬HasAddress(p)                 | ⟨t, ⊥, ⊥, ⊥, ∅, ∅⟩    | 422    |                                                      |
-| 121     | PromiseRegisterCallback(p)   | ⟨t, ⊥, ⊥, ⊥, ∅, ∅⟩ : Exists(p) ∧ HasAddress(p)                  | ⟨t, ⊥, ⊥, ⊥, ∅, ∅⟩    | 200    |                                                      |
+| 121     | PromiseRegisterCallback(p)   | ⟨t, ⊥, ⊥, ⊥, ∅, ∅⟩ : Exists(p) ∧ HasAddress(p)                  | ⟨t, ⊥, ⊥, ⊥, ∅, ∅⟩    | 200    | EnqueueResume                                        |
 | 122     | PromiseRegisterListener(a)   | ⊥                                                                 | ⊥                      | 404    |                                                      |
 | 123     | PromiseRegisterListener(a)   | ⟨p, o, ⊥, ⊥, P, A⟩                                               | ⟨p, o, ⊥, ⊥, P, A::a⟩ | 200    |                                                      |
 | 124     | PromiseRegisterListener(a)   | ⟨p, o, ⊥, a, P, A⟩                                               | ⟨p, o, ⊥, a, P, A::a⟩ | 200    |                                                      |
