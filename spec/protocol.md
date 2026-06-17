@@ -94,33 +94,21 @@ Promise IDs follow a hierarchical structure using `.` as the separator. Tasks sh
 Given this tree, where `foo`, `foo.2`, `bar`, and `bar.2` have a `resonate:target` tag, and `bar` is a detached promise spawned from within `foo`'s execution:
 
 ```
-id        origin  prefix  branch  parent  target
+id        prefix  origin  branch  parent  target
 ──────────────────────────────────────────────────────────
 foo       foo     foo     foo     foo     worker-a
 foo.1     foo     foo     foo     foo
 foo.2     foo     foo     foo.2   foo     worker-b
 foo.2.1   foo     foo     foo.2   foo.2
 foo.2.2   foo     foo     foo.2   foo.2
-bar       bar     foo     bar     bar     worker-a
-bar.1     bar     foo     bar     bar
-bar.2     bar     foo     bar.2   bar     worker-b
-bar.2.1   bar     foo     bar.2   bar.2
-bar.2.2   bar     foo     bar.2   bar.2
+bar       foo     bar     bar     bar     worker-a
+bar.1     foo     bar     bar     bar
+bar.2     foo     bar     bar.2   bar     worker-b
+bar.2.1   foo     bar     bar.2   bar.2
+bar.2.2   foo     bar     bar.2   bar.2
 ```
 
 Child segments are sequential positive integers starting at 1.
-
-### Origin Derivation
-
-The origin is the token preceding the first `.` character. If no `.` is present, the entire ID is the origin.
-
-```
-id        → origin
-─────────────────
-foo       → foo
-foo.1     → foo
-foo.2.1   → foo
-```
 
 ### Validation Rules
 
@@ -332,9 +320,9 @@ type PromiseCreateReq = {
    - If a `resonate:target` tag is present, an `ExecuteMsg` is sent to the specified address on invocation and resumption.
    - If a `resonate:timer` tag is set to `true`, the promise transitions to `resolved` instead of `rejected_timedout` when the timeout is reached.
    - If a `resonate:delay` tag is present, it specifies a unix timestamp in milliseconds at which the `ExecuteMsg` is sent on invocation.
-   - If a `resonate:origin` tag is present, it identifies the root promise that initiated the execution. The promise ID must equal this value or begin with `<origin>.`. All promises in an execution tree share the same `resonate:origin` value.
    - If a `resonate:prefix` tag is present, it identifies the origin of the execution tree in which this promise was created.
-   - If a `resonate:branch` tag is present, it identifies the nearest ancestor promise with a `resonate:target` tag, or the promise's own ID if it has one. The promise ID must equal this value or begin with `<branch>.`.
+   - If a `resonate:origin` tag is present, it identifies the promise that initiated the execution tree. All promises in an execution tree share the same `resonate:origin` value.
+   - If a `resonate:branch` tag is present, it identifies the nearest ancestor promise with a `resonate:target` tag.
    - If a `resonate:parent` tag is present, it identifies the direct parent promise that created this promise in the execution tree.
    - If a `resonate:schedule` tag is present, it identifies the schedule that created this promise.
 
