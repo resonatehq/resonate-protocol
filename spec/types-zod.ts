@@ -147,6 +147,22 @@ export const PromiseCreateReqSchema = z
       return r.data.id === parent || r.data.id.startsWith(`${parent}.`);
     },
     { message: "Promise ID must be prefixed by resonate:parent" },
+  )
+  .refine(
+    (r) => {
+      const prefix = r.data.tags["resonate:prefix"];
+      if (prefix === undefined) return true;
+      return !prefix.includes(".");
+    },
+    { message: "resonate:prefix must not contain '.'" },
+  )
+  .refine(
+    (r) => {
+      const origin = r.data.tags["resonate:origin"];
+      if (origin === undefined) return true;
+      return !origin.includes(".");
+    },
+    { message: "resonate:origin must not contain '.'" },
   );
 
 export type PromiseCreateReq = z.infer<typeof PromiseCreateReqSchema>;
@@ -327,14 +343,22 @@ export const TaskFenceReqSchema = z
 
 export type TaskFenceReq = z.infer<typeof TaskFenceReqSchema>;
 
-export const TaskHeartbeatReqSchema = z.object({
-  kind: z.literal("task.heartbeat"),
-  head: RequestHeadSchema,
-  data: z.object({
-    pid: z.string().min(1, "Process ID is required"),
-    tasks: z.array(z.object({ id: z.string(), version: z.number().int() })),
-  }),
-});
+export const TaskHeartbeatReqSchema = z
+  .object({
+    kind: z.literal("task.heartbeat"),
+    head: RequestHeadSchema,
+    data: z.object({
+      pid: z.string().min(1, "Process ID is required"),
+      tasks: z.array(z.object({ id: z.string(), version: z.number().int() })).min(1, "Tasks array must not be empty"),
+    }),
+  })
+  .refine(
+    (r) => {
+      const origin = r.data.tasks[0].id.split(".")[0];
+      return r.data.tasks.every((t) => t.id.split(".")[0] === origin);
+    },
+    { message: "All tasks must belong to the same origin" },
+  );
 
 export type TaskHeartbeatReq = z.infer<typeof TaskHeartbeatReqSchema>;
 
@@ -368,7 +392,7 @@ export const ScheduleCreateReqSchema = z.object({
   kind: z.literal("schedule.create"),
   head: RequestHeadSchema,
   data: z.object({
-    id: z.string().min(1, "Schedule ID is required"),
+    id: z.string().min(1, "Schedule ID is required").refine((s) => !s.includes("."), "Schedule ID must not contain '.'"),
     cron: z
       .string()
       .min(1, "Cron expression is required")

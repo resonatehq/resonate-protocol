@@ -118,6 +118,10 @@ Child segments are sequential positive integers starting at 1.
 
 3. **Promise ID must be prefixed by `resonate:parent`.** When a `resonate:parent` tag is present, the promise ID must equal the parent value or begin with `<parent>.`.
 
+4. **`resonate:prefix` must not contain `.`.** When a `resonate:prefix` tag is present, its value must not contain `.`.
+
+5. **`resonate:origin` must not contain `.`.** When a `resonate:origin` tag is present, its value must not contain `.`.
+
 ## Requests
 
 ```ts
@@ -1235,6 +1239,11 @@ type TaskHeartbeatReq = {
 
    An array of tasks to heartbeat.
 
+**Validation**
+
+- The `tasks` array must not be empty.
+- All tasks in the `tasks` array must belong to the same origin. A task's origin is the first segment of its ID — the portion before the first `.` separator, or the full ID if no `.` is present.
+
 **Response**
 
 ```ts
@@ -1467,6 +1476,10 @@ type ScheduleCreateReq = {
 **promiseTags**
 
    Key-value metadata for created promises.
+
+**Validation**
+
+- The schedule `id` must not contain `.`.
 
 **Response**
 
