@@ -91,7 +91,6 @@ export const RequestHeadSchema = z.object({
   auth: z.string().optional(),
   corrId: z.string(),
   version: z.string(),
-  "resonate:origin": z.string().optional(),
   "resonate:debug_time": z.number().int().nonnegative().optional(),
 });
 
@@ -126,11 +125,28 @@ export const PromiseCreateReqSchema = z
     }),
   })
   .refine(
-    (r) =>
-      r.head["resonate:origin"] === undefined ||
-      r.data.tags["resonate:origin"] === undefined ||
-      r.head["resonate:origin"] === r.data.tags["resonate:origin"],
-    { message: "head resonate:origin must match data.tags resonate:origin when both are present" },
+    (r) => {
+      const origin = r.data.tags["resonate:origin"];
+      if (origin === undefined) return true;
+      return r.data.id === origin || r.data.id.startsWith(`${origin}.`);
+    },
+    { message: "Promise ID must be prefixed by resonate:origin" },
+  )
+  .refine(
+    (r) => {
+      const branch = r.data.tags["resonate:branch"];
+      if (branch === undefined) return true;
+      return r.data.id === branch || r.data.id.startsWith(`${branch}.`);
+    },
+    { message: "Promise ID must be prefixed by resonate:branch" },
+  )
+  .refine(
+    (r) => {
+      const parent = r.data.tags["resonate:parent"];
+      if (parent === undefined) return true;
+      return r.data.id === parent || r.data.id.startsWith(`${parent}.`);
+    },
+    { message: "Promise ID must be prefixed by resonate:parent" },
   );
 
 export type PromiseCreateReq = z.infer<typeof PromiseCreateReqSchema>;
@@ -200,27 +216,19 @@ export const TaskGetReqSchema = z.object({
 
 export type TaskGetReq = z.infer<typeof TaskGetReqSchema>;
 
-export const TaskCreateReqSchema = z
-  .object({
-    kind: z.literal("task.create"),
-    head: RequestHeadSchema,
-    data: z
-      .object({
-        pid: z.string().min(1, "Process ID is required"),
-        ttl: z.number().int().positive("TTL must be a positive integer"),
-        action: PromiseCreateReqSchema,
-      })
-      .refine((r) => "resonate:target" in r.action.data.tags, {
-        message: "Action must have a resonate:target tag",
-      }),
-  })
-  .refine(
-    (r) =>
-      r.head["resonate:origin"] === undefined ||
-      r.data.action.data.tags["resonate:origin"] === undefined ||
-      r.head["resonate:origin"] === r.data.action.data.tags["resonate:origin"],
-    { message: "head resonate:origin must match data.action.data.tags resonate:origin when both are present" },
-  );
+export const TaskCreateReqSchema = z.object({
+  kind: z.literal("task.create"),
+  head: RequestHeadSchema,
+  data: z
+    .object({
+      pid: z.string().min(1, "Process ID is required"),
+      ttl: z.number().int().positive("TTL must be a positive integer"),
+      action: PromiseCreateReqSchema,
+    })
+    .refine((r) => "resonate:target" in r.action.data.tags, {
+      message: "Action must have a resonate:target tag",
+    }),
+});
 
 export type TaskCreateReq = z.infer<typeof TaskCreateReqSchema>;
 
@@ -315,15 +323,7 @@ export const TaskFenceReqSchema = z
   })
   .refine((r) => r.data.action.data.id !== r.data.id, {
     message: "Action ID must not equal the task ID",
-  })
-  .refine(
-    (r) =>
-      r.data.action.kind !== "promise.create" ||
-      r.data.action.head["resonate:origin"] === undefined ||
-      r.data.action.data.tags["resonate:origin"] === undefined ||
-      r.data.action.head["resonate:origin"] === r.data.action.data.tags["resonate:origin"],
-    { message: "action head resonate:origin must match action data.tags resonate:origin when both are present" },
-  );
+  });
 
 export type TaskFenceReq = z.infer<typeof TaskFenceReqSchema>;
 
