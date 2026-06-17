@@ -700,14 +700,14 @@ export type DebugSnapRes =
       kind: "debug.snap";
       head: ResponseHead<200>;
       data: {
-        promises: (PromiseRecord & { origin?: string })[];
-        promiseTimeouts: { id: string; timeout: number; origin?: string }[];
-        callbacks: { awaiter: string; awaited: string; origin?: string }[];
-        listeners?: { id: string; address: string; origin?: string }[];
-        tasks: (TaskRecord & { origin?: string })[];
-        taskTimeouts: { id: string; type: number; timeout: number; origin?: string }[];
-        schedules?: (ScheduleRecord & { origin?: string })[];
-        scheduleTimeouts?: { id: string; timeout: number; origin?: string }[];
+        promises: PromiseRecord[];
+        promiseTimeouts: { id: string; timeout: number }[];
+        callbacks: { awaiter: string; awaited: string }[];
+        listeners?: { id: string; address: string }[];
+        tasks: TaskRecord[];
+        taskTimeouts: { id: string; type: number; timeout: number }[];
+        schedules?: ScheduleRecord[];
+        scheduleTimeouts?: { id: string; timeout: number }[];
         messages: { address: string; message: Message }[];
       };
     }

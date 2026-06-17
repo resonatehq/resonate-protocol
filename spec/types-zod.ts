@@ -392,7 +392,10 @@ export const ScheduleCreateReqSchema = z.object({
   kind: z.literal("schedule.create"),
   head: RequestHeadSchema,
   data: z.object({
-    id: z.string().min(1, "Schedule ID is required").refine((s) => !s.includes("."), "Schedule ID must not contain '.'"),
+    id: z
+      .string()
+      .min(1, "Schedule ID is required")
+      .refine((s) => !s.includes("."), "Schedule ID must not contain '.'"),
     cron: z
       .string()
       .min(1, "Cron expression is required")
@@ -1622,18 +1625,14 @@ export const DebugSnapResSchema = z.discriminatedUnion("kind", [
     kind: z.literal("debug.snap"),
     head: ResponseHeadSchema(200),
     data: z.object({
-      promises: z.array(PromiseRecordSchema.and(z.object({ origin: z.string().optional() }))),
-      promiseTimeouts: z.array(z.object({ id: z.string(), timeout: z.number(), origin: z.string().optional() })),
-      callbacks: z.array(z.object({ awaiter: z.string(), awaited: z.string(), origin: z.string().optional() })),
-      listeners: z.array(z.object({ id: z.string(), address: z.string(), origin: z.string().optional() })).optional(),
-      tasks: z.array(TaskRecordSchema.and(z.object({ origin: z.string().optional() }))),
-      taskTimeouts: z.array(
-        z.object({ id: z.string(), type: z.number(), timeout: z.number(), origin: z.string().optional() }),
-      ),
-      schedules: z.array(ScheduleRecordSchema.and(z.object({ origin: z.string().optional() }))).optional(),
-      scheduleTimeouts: z
-        .array(z.object({ id: z.string(), timeout: z.number(), origin: z.string().optional() }))
-        .optional(),
+      promises: z.array(PromiseRecordSchema),
+      promiseTimeouts: z.array(z.object({ id: z.string(), timeout: z.number() })),
+      callbacks: z.array(z.object({ awaiter: z.string(), awaited: z.string() })),
+      listeners: z.array(z.object({ id: z.string(), address: z.string() })).optional(),
+      tasks: z.array(TaskRecordSchema),
+      taskTimeouts: z.array(z.object({ id: z.string(), type: z.number(), timeout: z.number() })),
+      schedules: z.array(ScheduleRecordSchema).optional(),
+      scheduleTimeouts: z.array(z.object({ id: z.string(), timeout: z.number() })).optional(),
       messages: z.array(z.object({ address: z.string(), message: MessageSchema })),
     }),
   }),
