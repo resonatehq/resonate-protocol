@@ -189,7 +189,14 @@ export const PromiseRegisterCallbackReqSchema = z.object({
     })
     .refine((d) => d.awaited !== d.awaiter, {
       message: "Awaited and awaiter must be different promises",
-    }),
+    })
+    .refine(
+      (d) => {
+        const origin = (id: string) => id.split(".")[0];
+        return origin(d.awaited) === origin(d.awaiter);
+      },
+      { message: "Awaited and awaiter must belong to the same origin" },
+    ),
 });
 
 export type PromiseRegisterCallbackReq = z.infer<typeof PromiseRegisterCallbackReqSchema>;
@@ -286,7 +293,14 @@ export const TaskSuspendReqSchema = z.object({
     })
     .refine((r) => r.actions.every((a) => a.data.awaited !== r.id), {
       message: "Action awaited promise must not equal the task ID",
-    }),
+    })
+    .refine(
+      (r) => {
+        const origin = (id: string) => id.split(".")[0];
+        return r.actions.every((a) => origin(a.data.awaited) === origin(r.id));
+      },
+      { message: "All action awaited promises must belong to the same origin as the task" },
+    ),
 });
 
 export type TaskSuspendReq = z.infer<typeof TaskSuspendReqSchema>;

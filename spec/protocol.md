@@ -444,6 +444,7 @@ type PromiseRegisterCallbackReq = {
 **Validation**
 
 - The `awaiter` and `awaited` must be different promises. A promise cannot register a dependency on itself.
+- The `awaiter` and `awaited` must belong to the same origin.
 
 **Response**
 
@@ -929,6 +930,7 @@ type TaskSuspendReq = {
 - The `actions` array must not be empty.
 - All actions must have their `awaiter` equal to the task `id`.
 - No action's `awaited` promise may equal the task `id`.
+- All action `awaited` promises must belong to the same origin as the task `id`.
 
 **Response**
 
