@@ -321,7 +321,7 @@ type PromiseCreateReq = {
 **tags**
 
    Key-value metadata for the promise.
-   - If a `resonate:target` tag is present, an `ExecuteMsg` is sent to the specified address on invocation and resumption.
+   - If a `resonate:target` tag is present, an `ExecuteMsg` is sent to the specified address on invocation and resumption. Only promises with this tag are actively timed out by the tick operation.
    - If a `resonate:timer` tag is set to `true`, the promise transitions to `resolved` instead of `rejected_timedout` when the timeout is reached.
    - If a `resonate:delay` tag is present, it specifies a unix timestamp in milliseconds at which the `ExecuteMsg` is sent on invocation.
    - If a `resonate:prefix` tag is present, it identifies the origin of the execution tree in which this promise was created.
@@ -1700,7 +1700,7 @@ type DebugResetRes = {
 
 ### Tick
 
-Times out promises and tasks that have exceeded the specified timestamp.
+Times out promises and tasks that have exceeded the specified timestamp. Only promises with a `resonate:target` tag are settled by tick.
 
 **Request**
 

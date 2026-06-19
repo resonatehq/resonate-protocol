@@ -197,11 +197,11 @@ Tick(t)
 | 130     | PromiseRegisterListener(a)   | ⟨t, ⊥, ⊥, ⊥, ∅, ∅⟩                                               | ⟨t, ⊥, ⊥, ⊥, ∅, ∅⟩    | 200    |                                                      |
 | ~~131~~ | ~~Tick(t)~~                  | ~~⊥~~                                                             | ~~⊥~~                  |        |                                                      |
 | 132     | Tick(t)                      | ⟨p, o, ⊥, ⊥, P, A⟩ : t < o                                       | ⟨p, o, ⊥, ⊥, P, A⟩    |        |                                                      |
-| 133     | Tick(t)                      | ⟨p, o, ⊥, ⊥, P, A⟩ : t ≥ o                                       | ⟨t, ⊥, ⊥, ⊥, ∅, ∅⟩    |        | EnqueueResume ∀p∈P, Send(Unblock) ∀a∈A                |
+| 133     | Tick(t)                      | ⟨p, o, ⊥, ⊥, P, A⟩ : t ≥ o                                       | ⟨p, o, ⊥, ⊥, P, A⟩    |        |                                                        |
 | 134     | Tick(t)                      | ⟨p, o, ⊥, a, P, A⟩ : t < o                                       | ⟨p, o, ⊥, a, P, A⟩    |        |                                                      |
 | 135     | Tick(t)                      | ⟨p, o, ⊥, a, P, A⟩ : t ≥ o                                       | ⟨t, ⊥, ⊥, ⊥, ∅, ∅⟩    |        | EnqueueSettle, EnqueueResume ∀p∈P, Send(Unblock) ∀a∈A |
 | 136     | Tick(t)                      | ⟨p, o, ⊤, ⊥, P, A⟩ : t < o                                       | ⟨p, o, ⊤, ⊥, P, A⟩    |        |                                                      |
-| 137     | Tick(t)                      | ⟨p, o, ⊤, ⊥, P, A⟩ : t ≥ o                                       | ⟨r, ⊥, ⊥, ⊥, ∅, ∅⟩    |        | EnqueueResume ∀p∈P, Send(Unblock) ∀a∈A                |
+| 137     | Tick(t)                      | ⟨p, o, ⊤, ⊥, P, A⟩ : t ≥ o                                       | ⟨p, o, ⊤, ⊥, P, A⟩    |        |                                                        |
 | 138     | Tick(t)                      | ⟨p, o, ⊤, a, P, A⟩ : t < o                                       | ⟨p, o, ⊤, a, P, A⟩    |        |                                                      |
 | 139     | Tick(t)                      | ⟨p, o, ⊤, a, P, A⟩ : t ≥ o                                       | ⟨r, ⊥, ⊥, ⊥, ∅, ∅⟩    |        | EnqueueSettle, EnqueueResume ∀p∈P, Send(Unblock) ∀a∈A |
 | 140     | Tick(t)                      | ⟨r, ⊥, ⊥, ⊥, ∅, ∅⟩                                               | ⟨r, ⊥, ⊥, ⊥, ∅, ∅⟩    |        |                                                      |
