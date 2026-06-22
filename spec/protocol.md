@@ -1244,7 +1244,7 @@ type TaskHeartbeatReq = {
 **Validation**
 
 - The `tasks` array must not be empty.
-- All tasks in the `tasks` array must belong to the same origin. A task's origin is the first segment of its ID — the portion before the first `.` separator, or the full ID if no `.` is present.
+- All tasks in the `tasks` array must belong to the same origin.
 
 **Response**
 
