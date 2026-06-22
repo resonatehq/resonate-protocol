@@ -1482,6 +1482,7 @@ type ScheduleCreateReq = {
 **Validation**
 
 - The schedule `id` must not contain `.`.
+- The `promiseTags` must include a `resonate:target` tag.
 
 **Response**
 
