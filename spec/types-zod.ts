@@ -91,7 +91,6 @@ export const RequestHeadSchema = z.object({
   auth: z.string().optional(),
   corrId: z.string(),
   version: z.string(),
-  "resonate:origin": z.string().optional(),
   "resonate:debug_time": z.number().int().nonnegative().optional(),
 });
 
@@ -126,11 +125,44 @@ export const PromiseCreateReqSchema = z
     }),
   })
   .refine(
-    (r) =>
-      r.head["resonate:origin"] === undefined ||
-      r.data.tags["resonate:origin"] === undefined ||
-      r.head["resonate:origin"] === r.data.tags["resonate:origin"],
-    { message: "head resonate:origin must match data.tags resonate:origin when both are present" },
+    (r) => {
+      const origin = r.data.tags["resonate:origin"];
+      if (origin === undefined) return true;
+      return r.data.id === origin || r.data.id.startsWith(`${origin}.`);
+    },
+    { message: "Promise ID must be prefixed by resonate:origin" },
+  )
+  .refine(
+    (r) => {
+      const branch = r.data.tags["resonate:branch"];
+      if (branch === undefined) return true;
+      return r.data.id === branch || r.data.id.startsWith(`${branch}.`);
+    },
+    { message: "Promise ID must be prefixed by resonate:branch" },
+  )
+  .refine(
+    (r) => {
+      const parent = r.data.tags["resonate:parent"];
+      if (parent === undefined) return true;
+      return r.data.id === parent || r.data.id.startsWith(`${parent}.`);
+    },
+    { message: "Promise ID must be prefixed by resonate:parent" },
+  )
+  .refine(
+    (r) => {
+      const prefix = r.data.tags["resonate:prefix"];
+      if (prefix === undefined) return true;
+      return !prefix.includes(".");
+    },
+    { message: "resonate:prefix must not contain '.'" },
+  )
+  .refine(
+    (r) => {
+      const origin = r.data.tags["resonate:origin"];
+      if (origin === undefined) return true;
+      return !origin.includes(".");
+    },
+    { message: "resonate:origin must not contain '.'" },
   );
 
 export type PromiseCreateReq = z.infer<typeof PromiseCreateReqSchema>;
@@ -200,27 +232,19 @@ export const TaskGetReqSchema = z.object({
 
 export type TaskGetReq = z.infer<typeof TaskGetReqSchema>;
 
-export const TaskCreateReqSchema = z
-  .object({
-    kind: z.literal("task.create"),
-    head: RequestHeadSchema,
-    data: z
-      .object({
-        pid: z.string().min(1, "Process ID is required"),
-        ttl: z.number().int().positive("TTL must be a positive integer"),
-        action: PromiseCreateReqSchema,
-      })
-      .refine((r) => "resonate:target" in r.action.data.tags, {
-        message: "Action must have a resonate:target tag",
-      }),
-  })
-  .refine(
-    (r) =>
-      r.head["resonate:origin"] === undefined ||
-      r.data.action.data.tags["resonate:origin"] === undefined ||
-      r.head["resonate:origin"] === r.data.action.data.tags["resonate:origin"],
-    { message: "head resonate:origin must match data.action.data.tags resonate:origin when both are present" },
-  );
+export const TaskCreateReqSchema = z.object({
+  kind: z.literal("task.create"),
+  head: RequestHeadSchema,
+  data: z
+    .object({
+      pid: z.string().min(1, "Process ID is required"),
+      ttl: z.number().int().positive("TTL must be a positive integer"),
+      action: PromiseCreateReqSchema,
+    })
+    .refine((r) => "resonate:target" in r.action.data.tags, {
+      message: "Action must have a resonate:target tag",
+    }),
+});
 
 export type TaskCreateReq = z.infer<typeof TaskCreateReqSchema>;
 
@@ -315,26 +339,26 @@ export const TaskFenceReqSchema = z
   })
   .refine((r) => r.data.action.data.id !== r.data.id, {
     message: "Action ID must not equal the task ID",
-  })
-  .refine(
-    (r) =>
-      r.data.action.kind !== "promise.create" ||
-      r.data.action.head["resonate:origin"] === undefined ||
-      r.data.action.data.tags["resonate:origin"] === undefined ||
-      r.data.action.head["resonate:origin"] === r.data.action.data.tags["resonate:origin"],
-    { message: "action head resonate:origin must match action data.tags resonate:origin when both are present" },
-  );
+  });
 
 export type TaskFenceReq = z.infer<typeof TaskFenceReqSchema>;
 
-export const TaskHeartbeatReqSchema = z.object({
-  kind: z.literal("task.heartbeat"),
-  head: RequestHeadSchema,
-  data: z.object({
-    pid: z.string().min(1, "Process ID is required"),
-    tasks: z.array(z.object({ id: z.string(), version: z.number().int() })),
-  }),
-});
+export const TaskHeartbeatReqSchema = z
+  .object({
+    kind: z.literal("task.heartbeat"),
+    head: RequestHeadSchema,
+    data: z.object({
+      pid: z.string().min(1, "Process ID is required"),
+      tasks: z.array(z.object({ id: z.string(), version: z.number().int() })).min(1, "Tasks array must not be empty"),
+    }),
+  })
+  .refine(
+    (r) => {
+      const origin = r.data.tasks[0].id.split(".")[0];
+      return r.data.tasks.every((t) => t.id.split(".")[0] === origin);
+    },
+    { message: "All tasks must belong to the same origin" },
+  );
 
 export type TaskHeartbeatReq = z.infer<typeof TaskHeartbeatReqSchema>;
 
@@ -368,7 +392,10 @@ export const ScheduleCreateReqSchema = z.object({
   kind: z.literal("schedule.create"),
   head: RequestHeadSchema,
   data: z.object({
-    id: z.string().min(1, "Schedule ID is required"),
+    id: z
+      .string()
+      .min(1, "Schedule ID is required")
+      .refine((s) => !s.includes("."), "Schedule ID must not contain '.'"),
     cron: z
       .string()
       .min(1, "Cron expression is required")
@@ -1598,18 +1625,14 @@ export const DebugSnapResSchema = z.discriminatedUnion("kind", [
     kind: z.literal("debug.snap"),
     head: ResponseHeadSchema(200),
     data: z.object({
-      promises: z.array(PromiseRecordSchema.and(z.object({ origin: z.string().optional() }))),
-      promiseTimeouts: z.array(z.object({ id: z.string(), timeout: z.number(), origin: z.string().optional() })),
-      callbacks: z.array(z.object({ awaiter: z.string(), awaited: z.string(), origin: z.string().optional() })),
-      listeners: z.array(z.object({ id: z.string(), address: z.string(), origin: z.string().optional() })).optional(),
-      tasks: z.array(TaskRecordSchema.and(z.object({ origin: z.string().optional() }))),
-      taskTimeouts: z.array(
-        z.object({ id: z.string(), type: z.number(), timeout: z.number(), origin: z.string().optional() }),
-      ),
-      schedules: z.array(ScheduleRecordSchema.and(z.object({ origin: z.string().optional() }))).optional(),
-      scheduleTimeouts: z
-        .array(z.object({ id: z.string(), timeout: z.number(), origin: z.string().optional() }))
-        .optional(),
+      promises: z.array(PromiseRecordSchema),
+      promiseTimeouts: z.array(z.object({ id: z.string(), timeout: z.number() })),
+      callbacks: z.array(z.object({ awaiter: z.string(), awaited: z.string() })),
+      listeners: z.array(z.object({ id: z.string(), address: z.string() })).optional(),
+      tasks: z.array(TaskRecordSchema),
+      taskTimeouts: z.array(z.object({ id: z.string(), type: z.number(), timeout: z.number() })),
+      schedules: z.array(ScheduleRecordSchema).optional(),
+      scheduleTimeouts: z.array(z.object({ id: z.string(), timeout: z.number() })).optional(),
       messages: z.array(z.object({ address: z.string(), message: MessageSchema })),
     }),
   }),

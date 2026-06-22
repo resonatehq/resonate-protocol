@@ -11,7 +11,6 @@ type Request<T> = {
     auth?: string;
     corrId: string;
     version: string;
-    "resonate:origin"?: string;
     "resonate:debug_time"?: number;
   };
   data: T;
@@ -29,10 +28,6 @@ type Request<T> = {
 **version**
 
    The protocol version supported by the client. Uses date-based versioning (e.g., `"2025-01-15"`).
-
-**resonate:origin**
-
-   Optional identifier for the root promise of an execution tree. If present in both the request head and the promise tags (`data.tags` or `data.promiseTags`), the values must match.
 
 **resonate:debug_time**
 
@@ -89,6 +84,43 @@ The following errors may be returned by any operation.
 **500**
 
    Internal server error. An unexpected error occurred on the server. The `data` field may contain additional details.
+
+## Promise ID Convention
+
+Promise IDs follow a hierarchical structure using `.` as the separator. Tasks share the same ID space as promises — a task's ID is always identical to its associated promise ID.
+
+### Structure
+
+Given this tree, where `foo`, `foo.2`, `bar`, and `bar.2` have a `resonate:target` tag, and `bar` is a detached promise spawned from within `foo`'s execution:
+
+```
+id        prefix  origin  branch  parent  target
+──────────────────────────────────────────────────────────
+foo       foo     foo     foo     foo     worker-a
+foo.1     foo     foo     foo     foo
+foo.2     foo     foo     foo.2   foo     worker-b
+foo.2.1   foo     foo     foo.2   foo.2
+foo.2.2   foo     foo     foo.2   foo.2
+bar       foo     bar     bar     bar     worker-a
+bar.1     foo     bar     bar     bar
+bar.2     foo     bar     bar.2   bar     worker-b
+bar.2.1   foo     bar     bar.2   bar.2
+bar.2.2   foo     bar     bar.2   bar.2
+```
+
+Child segments are sequential positive integers starting at 1.
+
+### Validation Rules
+
+1. **Promise ID must be prefixed by `resonate:origin`.** When a `resonate:origin` tag is present, the promise ID must equal the origin value or begin with `<origin>.`.
+
+2. **Promise ID must be prefixed by `resonate:branch`.** When a `resonate:branch` tag is present, the promise ID must equal the branch value or begin with `<branch>.`.
+
+3. **Promise ID must be prefixed by `resonate:parent`.** When a `resonate:parent` tag is present, the promise ID must equal the parent value or begin with `<parent>.`.
+
+4. **`resonate:prefix` must not contain `.`.** When a `resonate:prefix` tag is present, its value must not contain `.`.
+
+5. **`resonate:origin` must not contain `.`.** When a `resonate:origin` tag is present, its value must not contain `.`.
 
 ## Requests
 
@@ -218,7 +250,6 @@ type PromiseGetReq = {
     auth?: string;
     corrId: string;
     version: string;
-    "resonate:origin"?: string;
     "resonate:debug_time"?: number;
   };
   data: {
@@ -268,7 +299,6 @@ type PromiseCreateReq = {
     auth?: string;
     corrId: string;
     version: string;
-    "resonate:origin"?: string;
     "resonate:debug_time"?: number;
   };
   data: {
@@ -294,8 +324,9 @@ type PromiseCreateReq = {
    - If a `resonate:target` tag is present, an `ExecuteMsg` is sent to the specified address on invocation and resumption.
    - If a `resonate:timer` tag is set to `true`, the promise transitions to `resolved` instead of `rejected_timedout` when the timeout is reached.
    - If a `resonate:delay` tag is present, it specifies a unix timestamp in milliseconds at which the `ExecuteMsg` is sent on invocation.
-   - If a `resonate:origin` tag is present, it identifies the root promise that initiated the execution. All promises in an execution tree share the same `resonate:origin` value.
-   - If a `resonate:branch` tag is present, it identifies the current execution branch. Set when a promise in an execution tree has a `resonate:target` tag.
+   - If a `resonate:prefix` tag is present, it identifies the origin of the execution tree in which this promise was created.
+   - If a `resonate:origin` tag is present, it identifies the promise that initiated the execution tree. All promises in an execution tree share the same `resonate:origin` value.
+   - If a `resonate:branch` tag is present, it identifies the nearest ancestor promise with a `resonate:target` tag.
    - If a `resonate:parent` tag is present, it identifies the direct parent promise that created this promise in the execution tree.
    - If a `resonate:schedule` tag is present, it identifies the schedule that created this promise.
 
@@ -334,7 +365,6 @@ type PromiseSettleReq = {
     auth?: string;
     corrId: string;
     version: string;
-    "resonate:origin"?: string;
     "resonate:debug_time"?: number;
   };
   data: {
@@ -394,7 +424,6 @@ type PromiseRegisterCallbackReq = {
     auth?: string;
     corrId: string;
     version: string;
-    "resonate:origin"?: string;
     "resonate:debug_time"?: number;
   };
   data: {
@@ -457,7 +486,6 @@ type PromiseRegisterListenerReq = {
     auth?: string;
     corrId: string;
     version: string;
-    "resonate:origin"?: string;
     "resonate:debug_time"?: number;
   };
   data: {
@@ -516,7 +544,6 @@ type PromiseSearchReq = {
     auth?: string;
     corrId: string;
     version: string;
-    "resonate:origin"?: string;
     "resonate:debug_time"?: number;
   };
   data: {
@@ -629,7 +656,6 @@ type TaskGetReq = {
     auth?: string;
     corrId: string;
     version: string;
-    "resonate:origin"?: string;
     "resonate:debug_time"?: number;
   };
   data: {
@@ -679,7 +705,6 @@ type TaskCreateReq = {
     auth?: string;
     corrId: string;
     version: string;
-    "resonate:origin"?: string;
     "resonate:debug_time"?: number;
   };
   data: {
@@ -753,7 +778,6 @@ type TaskAcquireReq = {
     auth?: string;
     corrId: string;
     version: string;
-    "resonate:origin"?: string;
     "resonate:debug_time"?: number;
   };
   data: {
@@ -824,7 +848,6 @@ type TaskReleaseReq = {
     auth?: string;
     corrId: string;
     version: string;
-    "resonate:origin"?: string;
     "resonate:debug_time"?: number;
   };
   data: {
@@ -879,7 +902,6 @@ type TaskSuspendReq = {
     auth?: string;
     corrId: string;
     version: string;
-    "resonate:origin"?: string;
     "resonate:debug_time"?: number;
   };
   data: {
@@ -967,7 +989,6 @@ type TaskHaltReq = {
     auth?: string;
     corrId: string;
     version: string;
-    "resonate:origin"?: string;
     "resonate:debug_time"?: number;
   };
   data: {
@@ -1017,7 +1038,6 @@ type TaskContinueReq = {
     auth?: string;
     corrId: string;
     version: string;
-    "resonate:origin"?: string;
     "resonate:debug_time"?: number;
   };
   data: {
@@ -1067,7 +1087,6 @@ type TaskFulfillReq = {
     auth?: string;
     corrId: string;
     version: string;
-    "resonate:origin"?: string;
     "resonate:debug_time"?: number;
   };
   data: {
@@ -1135,7 +1154,6 @@ type TaskFenceReq = {
     auth?: string;
     corrId: string;
     version: string;
-    "resonate:origin"?: string;
     "resonate:debug_time"?: number;
   };
   data: {
@@ -1204,7 +1222,6 @@ type TaskHeartbeatReq = {
     auth?: string;
     corrId: string;
     version: string;
-    "resonate:origin"?: string;
     "resonate:debug_time"?: number;
   };
   data: {
@@ -1221,6 +1238,11 @@ type TaskHeartbeatReq = {
 **tasks**
 
    An array of tasks to heartbeat.
+
+**Validation**
+
+- The `tasks` array must not be empty.
+- All tasks in the `tasks` array must belong to the same origin. A task's origin is the first segment of its ID — the portion before the first `.` separator, or the full ID if no `.` is present.
 
 **Response**
 
@@ -1249,7 +1271,6 @@ type TaskSearchReq = {
     auth?: string;
     corrId: string;
     version: string;
-    "resonate:origin"?: string;
     "resonate:debug_time"?: number;
   };
   data: {
@@ -1366,7 +1387,6 @@ type ScheduleGetReq = {
     auth?: string;
     corrId: string;
     version: string;
-    "resonate:origin"?: string;
     "resonate:debug_time"?: number;
   };
   data: {
@@ -1420,7 +1440,6 @@ type ScheduleCreateReq = {
     auth?: string;
     corrId: string;
     version: string;
-    "resonate:origin"?: string;
     "resonate:debug_time"?: number;
   };
   data: {
@@ -1457,6 +1476,10 @@ type ScheduleCreateReq = {
 **promiseTags**
 
    Key-value metadata for created promises.
+
+**Validation**
+
+- The schedule `id` must not contain `.`.
 
 **Response**
 
@@ -1495,7 +1518,6 @@ type ScheduleDeleteReq = {
     auth?: string;
     corrId: string;
     version: string;
-    "resonate:origin"?: string;
     "resonate:debug_time"?: number;
   };
   data: {
@@ -1545,7 +1567,6 @@ type ScheduleSearchReq = {
     auth?: string;
     corrId: string;
     version: string;
-    "resonate:origin"?: string;
     "resonate:debug_time"?: number;
   };
   data: {
@@ -1610,7 +1631,6 @@ type DebugStartReq = {
     auth?: string;
     corrId: string;
     version: string;
-    "resonate:origin"?: string;
     "resonate:debug_time"?: number;
   };
   data: {};
@@ -1650,7 +1670,6 @@ type DebugResetReq = {
     auth?: string;
     corrId: string;
     version: string;
-    "resonate:origin"?: string;
     "resonate:debug_time"?: number;
   };
   data: {};
@@ -1690,7 +1709,6 @@ type DebugTickReq = {
     auth?: string;
     corrId: string;
     version: string;
-    "resonate:origin"?: string;
     "resonate:debug_time"?: number;
   };
   data: {
@@ -1746,7 +1764,6 @@ type DebugSnapReq = {
     auth?: string;
     corrId: string;
     version: string;
-    "resonate:origin"?: string;
     "resonate:debug_time"?: number;
   };
   data: {};
@@ -1764,20 +1781,20 @@ type DebugSnapRes = {
     version: string;
   };
   data: {
-    promises: (Promise & { origin?: string })[];
-    promiseTimeouts: { id: string; timeout: number; origin?: string }[];
-    callbacks: { awaiter: string; awaited: string; origin?: string }[];
-    listeners?: { id: string; address: string; origin?: string }[];
-    tasks: (Task & { origin?: string })[];
-    taskTimeouts: { id: string; type: number; timeout: number; origin?: string }[];
-    schedules?: (Schedule & { origin?: string })[];
-    scheduleTimeouts?: { id: string; timeout: number; origin?: string }[];
+    promises: Promise[];
+    promiseTimeouts: { id: string; timeout: number }[];
+    callbacks: { awaiter: string; awaited: string }[];
+    listeners?: { id: string; address: string }[];
+    tasks: Task[];
+    taskTimeouts: { id: string; type: number; timeout: number }[];
+    schedules?: Schedule[];
+    scheduleTimeouts?: { id: string; timeout: number }[];
     messages: { address: string; message: Message }[];
   };
 }
 ```
 
-Returns the current state of all promises, tasks, schedules, their timeouts, callbacks, listeners, and pending messages. Each record may include an optional `origin` field.
+Returns the current state of all promises, tasks, schedules, their timeouts, callbacks, listeners, and pending messages.
 
 **Errors**
 
@@ -1798,7 +1815,6 @@ type DebugStopReq = {
     auth?: string;
     corrId: string;
     version: string;
-    "resonate:origin"?: string;
     "resonate:debug_time"?: number;
   };
   data: {};
