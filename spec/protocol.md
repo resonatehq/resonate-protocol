@@ -321,7 +321,7 @@ type PromiseCreateReq = {
 **tags**
 
    Key-value metadata for the promise.
-   - If a `resonate:target` tag is present, an `ExecuteMsg` is sent to the specified address on invocation and resumption.
+   - If a `resonate:target` tag is present, an `ExecuteMsg` is sent to the specified address on invocation and resumption. Only promises with this tag are actively timed out by the tick operation.
    - If a `resonate:timer` tag is set to `true`, the promise transitions to `resolved` instead of `rejected_timedout` when the timeout is reached.
    - If a `resonate:delay` tag is present, it specifies a unix timestamp in milliseconds at which the `ExecuteMsg` is sent on invocation.
    - If a `resonate:prefix` tag is present, it identifies the origin of the execution tree in which this promise was created.
@@ -444,6 +444,7 @@ type PromiseRegisterCallbackReq = {
 **Validation**
 
 - The `awaiter` and `awaited` must be different promises. A promise cannot register a dependency on itself.
+- The `awaiter` and `awaited` must belong to the same origin.
 
 **Response**
 
@@ -929,6 +930,7 @@ type TaskSuspendReq = {
 - The `actions` array must not be empty.
 - All actions must have their `awaiter` equal to the task `id`.
 - No action's `awaited` promise may equal the task `id`.
+- All action `awaited` promises must belong to the same origin as the task `id`.
 
 **Response**
 
@@ -1242,7 +1244,7 @@ type TaskHeartbeatReq = {
 **Validation**
 
 - The `tasks` array must not be empty.
-- All tasks in the `tasks` array must belong to the same origin. A task's origin is the first segment of its ID — the portion before the first `.` separator, or the full ID if no `.` is present.
+- All tasks in the `tasks` array must belong to the same origin.
 
 **Response**
 
@@ -1480,6 +1482,7 @@ type ScheduleCreateReq = {
 **Validation**
 
 - The schedule `id` must not contain `.`.
+- The `promiseTags` must include a `resonate:target` tag.
 
 **Response**
 
@@ -1698,7 +1701,7 @@ type DebugResetRes = {
 
 ### Tick
 
-Times out promises and tasks that have exceeded the specified timestamp.
+Times out promises and tasks that have exceeded the specified timestamp. Only promises with a `resonate:target` tag are settled by tick.
 
 **Request**
 

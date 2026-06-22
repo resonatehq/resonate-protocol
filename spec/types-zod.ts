@@ -189,7 +189,14 @@ export const PromiseRegisterCallbackReqSchema = z.object({
     })
     .refine((d) => d.awaited !== d.awaiter, {
       message: "Awaited and awaiter must be different promises",
-    }),
+    })
+    .refine(
+      (d) => {
+        const origin = (id: string) => id.split(".")[0];
+        return origin(d.awaited) === origin(d.awaiter);
+      },
+      { message: "Awaited and awaiter must belong to the same origin" },
+    ),
 });
 
 export type PromiseRegisterCallbackReq = z.infer<typeof PromiseRegisterCallbackReqSchema>;
@@ -286,7 +293,14 @@ export const TaskSuspendReqSchema = z.object({
     })
     .refine((r) => r.actions.every((a) => a.data.awaited !== r.id), {
       message: "Action awaited promise must not equal the task ID",
-    }),
+    })
+    .refine(
+      (r) => {
+        const origin = (id: string) => id.split(".")[0];
+        return r.actions.every((a) => origin(a.data.awaited) === origin(r.id));
+      },
+      { message: "All action awaited promises must belong to the same origin as the task" },
+    ),
 });
 
 export type TaskSuspendReq = z.infer<typeof TaskSuspendReqSchema>;
@@ -391,20 +405,24 @@ export type ScheduleGetReq = z.infer<typeof ScheduleGetReqSchema>;
 export const ScheduleCreateReqSchema = z.object({
   kind: z.literal("schedule.create"),
   head: RequestHeadSchema,
-  data: z.object({
-    id: z
-      .string()
-      .min(1, "Schedule ID is required")
-      .refine((s) => !s.includes("."), "Schedule ID must not contain '.'"),
-    cron: z
-      .string()
-      .min(1, "Cron expression is required")
-      .refine((v) => v.trim().split(/\s+/).length >= 5, "Cron expression must have at least 5 fields"),
-    promiseId: z.string().min(1, "Promise ID template is required"),
-    promiseTimeout: z.number().int().nonnegative("Promise timeout must be a non-negative integer"),
-    promiseParam: ValueSchema,
-    promiseTags: z.record(z.string(), z.string()),
-  }),
+  data: z
+    .object({
+      id: z
+        .string()
+        .min(1, "Schedule ID is required")
+        .refine((s) => !s.includes("."), "Schedule ID must not contain '.'"),
+      cron: z
+        .string()
+        .min(1, "Cron expression is required")
+        .refine((v) => v.trim().split(/\s+/).length >= 5, "Cron expression must have at least 5 fields"),
+      promiseId: z.string().min(1, "Promise ID template is required"),
+      promiseTimeout: z.number().int().nonnegative("Promise timeout must be a non-negative integer"),
+      promiseParam: ValueSchema,
+      promiseTags: z.record(z.string(), z.string()),
+    })
+    .refine((d) => "resonate:target" in d.promiseTags, {
+      message: "Promise tags must include a resonate:target tag",
+    }),
 });
 
 export type ScheduleCreateReq = z.infer<typeof ScheduleCreateReqSchema>;
