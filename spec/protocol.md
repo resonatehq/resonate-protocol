@@ -962,7 +962,7 @@ type TaskSuspendRes = {
 }
 ```
 
-Returns status `300` if an action promise has already settled or if a previously awaited promise has already settled, indicating the worker can continue execution immediately with the current lease. The task remains in the acquired state with its `resumes` field cleared. The `preload` field contains all promises that share the same `resonate:branch` value as the task's promise.
+Returns status `300` if any promise in the request has already settled, indicating the worker can continue execution immediately with the current lease. The task remains in the acquired state with its `resumes` field cleared. The `preload` field contains all promises that share the same `resonate:branch` value as the task's promise.
 
 **Errors**
 
