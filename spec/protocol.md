@@ -334,6 +334,12 @@ type PromiseCreateReq = {
 
    Unix timestamp in milliseconds when the promise will timeout.
 
+**Validation**
+
+- If a `resonate:delay` tag is present, its value must be a non-negative integer.
+- If a `resonate:delay` tag is present, its value must be less than `timeoutAt`.
+- If a `resonate:delay` tag is present, a `resonate:target` tag must also be present.
+
 **Response**
 
 ```ts
@@ -731,6 +737,7 @@ type TaskCreateReq = {
 **Validation**
 
 - The action must have a `resonate:target` tag.
+- The action must not have a `resonate:delay` tag.
 
 **Response**
 

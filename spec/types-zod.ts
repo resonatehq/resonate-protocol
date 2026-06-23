@@ -163,6 +163,33 @@ export const PromiseCreateReqSchema = z
       return !origin.includes(".");
     },
     { message: "resonate:origin must not contain '.'" },
+  )
+  .refine(
+    (r) => {
+      const delay = r.data.tags["resonate:delay"];
+      if (delay === undefined) return true;
+      const n = Number(delay);
+      return Number.isInteger(n) && n >= 0;
+    },
+    { message: "resonate:delay must be a non-negative integer" },
+  )
+  .refine(
+    (r) => {
+      const delay = r.data.tags["resonate:delay"];
+      if (delay === undefined) return true;
+      const n = Number(delay);
+      if (!Number.isInteger(n) || n < 0) return true;
+      return n < r.data.timeoutAt;
+    },
+    { message: "resonate:delay must be less than timeoutAt" },
+  )
+  .refine(
+    (r) => {
+      const delay = r.data.tags["resonate:delay"];
+      if (delay === undefined) return true;
+      return "resonate:target" in r.data.tags;
+    },
+    { message: "resonate:delay requires resonate:target" },
   );
 
 export type PromiseCreateReq = z.infer<typeof PromiseCreateReqSchema>;
@@ -250,6 +277,9 @@ export const TaskCreateReqSchema = z.object({
     })
     .refine((r) => "resonate:target" in r.action.data.tags, {
       message: "Action must have a resonate:target tag",
+    })
+    .refine((r) => !("resonate:delay" in r.action.data.tags), {
+      message: "Action must not have a resonate:delay tag",
     }),
 });
 
