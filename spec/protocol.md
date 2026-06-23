@@ -472,7 +472,7 @@ Returns the awaited promise. If the awaited promise is already settled, no depen
 
 **422**
 
-   Awaiter promise not found or does not have a target address.
+   Awaiter promise not found or does not have a `resonate:target` tag.
 
 ### Register Listener
 
@@ -756,11 +756,11 @@ Returns the task and its associated promise. If the task is pending, acquires th
 
 **409**
 
-   The task already exists and is acquired, suspended, or halted, or the promise already exists without an associated task.
+   The task already exists and is acquired, suspended, or halted.
 
 **422**
 
-   The promise does not have a target address.
+   The promise does not have a `resonate:target` tag.
 
 **501**
 
