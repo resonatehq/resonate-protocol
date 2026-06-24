@@ -387,22 +387,24 @@ export const TaskFenceReqSchema = z
 
 export type TaskFenceReq = z.infer<typeof TaskFenceReqSchema>;
 
-export const TaskHeartbeatReqSchema = z
-  .object({
-    kind: z.literal("task.heartbeat"),
-    head: RequestHeadSchema,
-    data: z.object({
-      pid: z.string().min(1, "Process ID is required"),
-      tasks: z.array(z.object({ id: z.string(), version: z.number().int() })).min(1, "Tasks array must not be empty"),
-    }),
-  })
-  .refine(
-    (r) => {
-      const origin = r.data.tasks[0].id.split(".")[0];
-      return r.data.tasks.every((t) => t.id.split(".")[0] === origin);
-    },
-    { message: "All tasks must belong to the same origin" },
-  );
+export const TaskHeartbeatReqSchema = z.object({
+  kind: z.literal("task.heartbeat"),
+  head: RequestHeadSchema,
+  data: z.object({
+    pid: z.string().min(1, "Process ID is required"),
+    tasks: z
+      .array(z.object({ id: z.string(), version: z.number().int() }))
+      .min(1, "Tasks array must not be empty")
+      .refine(
+        (tasks) => {
+          if (tasks.length === 0) return true;
+          const origin = tasks[0].id.split(".")[0];
+          return tasks.every((t) => t.id.split(".")[0] === origin);
+        },
+        { message: "All tasks must belong to the same origin" },
+      ),
+  }),
+});
 
 export type TaskHeartbeatReq = z.infer<typeof TaskHeartbeatReqSchema>;
 
