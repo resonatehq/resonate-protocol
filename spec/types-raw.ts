@@ -1469,11 +1469,6 @@ export function isDebugSnapRes(val: unknown): val is DebugSnapRes {
     return (
       Array.isArray(d.promises) &&
       (d.promises as unknown[]).every(isPromiseRecord) &&
-      (d.promises as unknown[]).every(
-        (p) =>
-          (p as Record<string, unknown>).origin === undefined ||
-          typeof (p as Record<string, unknown>).origin === "string",
-      ) &&
       Array.isArray(d.promiseTimeouts) &&
       (d.promiseTimeouts as unknown[]).every(
         (t) =>
@@ -1488,9 +1483,7 @@ export function isDebugSnapRes(val: unknown): val is DebugSnapRes {
           typeof c === "object" &&
           c !== null &&
           typeof (c as Record<string, unknown>).awaiter === "string" &&
-          typeof (c as Record<string, unknown>).awaited === "string" &&
-          ((c as Record<string, unknown>).origin === undefined ||
-            typeof (c as Record<string, unknown>).origin === "string"),
+          typeof (c as Record<string, unknown>).awaited === "string",
       ) &&
       (d.listeners === undefined ||
         (Array.isArray(d.listeners) &&
@@ -1499,17 +1492,10 @@ export function isDebugSnapRes(val: unknown): val is DebugSnapRes {
               typeof l === "object" &&
               l !== null &&
               typeof (l as Record<string, unknown>).id === "string" &&
-              typeof (l as Record<string, unknown>).address === "string" &&
-              ((l as Record<string, unknown>).origin === undefined ||
-                typeof (l as Record<string, unknown>).origin === "string"),
+              typeof (l as Record<string, unknown>).address === "string",
           ))) &&
       Array.isArray(d.tasks) &&
       (d.tasks as unknown[]).every(isTaskRecord) &&
-      (d.tasks as unknown[]).every(
-        (t) =>
-          (t as Record<string, unknown>).origin === undefined ||
-          typeof (t as Record<string, unknown>).origin === "string",
-      ) &&
       Array.isArray(d.taskTimeouts) &&
       (d.taskTimeouts as unknown[]).every(
         (t) =>
@@ -1521,12 +1507,7 @@ export function isDebugSnapRes(val: unknown): val is DebugSnapRes {
       ) &&
       (d.schedules === undefined ||
         (Array.isArray(d.schedules) &&
-          (d.schedules as unknown[]).every(isScheduleRecord) &&
-          (d.schedules as unknown[]).every(
-            (s) =>
-              (s as Record<string, unknown>).origin === undefined ||
-              typeof (s as Record<string, unknown>).origin === "string",
-          ))) &&
+          (d.schedules as unknown[]).every(isScheduleRecord))) &&
       (d.scheduleTimeouts === undefined ||
         (Array.isArray(d.scheduleTimeouts) &&
           (d.scheduleTimeouts as unknown[]).every(
@@ -1534,9 +1515,7 @@ export function isDebugSnapRes(val: unknown): val is DebugSnapRes {
               typeof t === "object" &&
               t !== null &&
               typeof (t as Record<string, unknown>).id === "string" &&
-              typeof (t as Record<string, unknown>).timeout === "number" &&
-              ((t as Record<string, unknown>).origin === undefined ||
-                typeof (t as Record<string, unknown>).origin === "string"),
+              typeof (t as Record<string, unknown>).timeout === "number",
           ))) &&
       Array.isArray(d.messages) &&
       (d.messages as unknown[]).every(
