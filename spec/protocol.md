@@ -336,6 +336,7 @@ type PromiseCreateReq = {
 
 **Validation**
 
+- `timeoutAt` must be a non-negative integer.
 - If a `resonate:delay` tag is present, its value must be a non-negative integer.
 - If a `resonate:delay` tag is present, its value must be less than `timeoutAt`.
 - If a `resonate:delay` tag is present, a `resonate:target` tag must also be present.
@@ -1490,6 +1491,7 @@ type ScheduleCreateReq = {
 
 - The schedule `id` must not contain `.`.
 - The `promiseTags` must include a `resonate:target` tag.
+- `promiseTimeout` must be a non-negative integer.
 
 **Response**
 
