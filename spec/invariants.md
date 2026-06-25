@@ -104,41 +104,37 @@ The primed variants (Promises', Tasks', etc.) denote the corresponding component
 | P28  | ∀ p ∈ Promises : ∀ c ∈ callbacks(p) : origin(c) = origin(p)                                                     | Callbacks share the same origin as the promise.                                             |
 | P29  | ∀ p ∈ Promises : "resonate:origin" ∈ p.tags → prefix(p.tags["resonate:origin"], p.id)                           | The resonate:origin tag is a segment-prefix of the promise id.                              |
 | P30  | ∀ p ∈ Promises : "resonate:origin" ∈ p.tags → "." ∉ p.tags["resonate:origin"]                                   | The resonate:origin tag contains no dot.                                                    |
-| P31  | ∀ p ∈ Promises : "resonate:origin" ∈ p.tags → ∃ q ∈ Promises : q.id = p.tags["resonate:origin"]                 | The resonate:origin tag references an existing promise.                                     |
-| P32  | ∀ p ∈ Promises : "resonate:branch" ∈ p.tags → prefix(p.tags["resonate:branch"], p.id)                           | The resonate:branch tag is a segment-prefix of the promise id.                              |
-| P33  | ∀ p ∈ Promises : "resonate:branch" ∈ p.tags → origin(p.tags["resonate:branch"]) = origin(p)                     | The resonate:branch origin matches the promise origin.                                      |
-| P34  | ∀ p ∈ Promises : "resonate:branch" ∈ p.tags → ∃ q ∈ Promises : q.id = p.tags["resonate:branch"] ∧ HasTarget(q)  | The resonate:branch tag references an existing promise with a resonate:target tag.          |
-| P35  | ∀ p ∈ Promises : "resonate:parent" ∈ p.tags → prefix(p.tags["resonate:parent"], p.id)                           | The resonate:parent tag is a segment-prefix of the promise id.                              |
-| P36  | ∀ p ∈ Promises : "resonate:parent" ∈ p.tags → origin(p.tags["resonate:parent"]) = origin(p)                     | The resonate:parent origin matches the promise origin.                                      |
-| P37  | ∀ p ∈ Promises : "resonate:parent" ∈ p.tags → ∃ q ∈ Promises : q.id = p.tags["resonate:parent"]                 | The resonate:parent tag references an existing promise.                                     |
-| P38  | ∀ p ∈ Promises : "resonate:prefix" ∈ p.tags → "." ∉ p.tags["resonate:prefix"]                                   | The resonate:prefix tag contains no dot.                                                    |
-| P39  | ∀ p ∈ Promises : "resonate:prefix" ∈ p.tags → ∃ q ∈ Promises : q.id = p.tags["resonate:prefix"]                 | The resonate:prefix tag references an existing promise.                                     |
-| P40  | ∀ p ∈ Promises : HasSchedule(p) → HasTarget(p)                                                                   | Promises with a resonate:schedule tag have a resonate:target tag.                           |
-| P41  | ∀ p ∈ Promises : HasSchedule(p) → "resonate:origin" ∈ p.tags ∧ p.tags["resonate:origin"] = p.id                 | Promises with a resonate:schedule tag have resonate:origin equal to their id.               |
-| P42  | ∀ p ∈ Promises : HasSchedule(p) → "resonate:prefix" ∈ p.tags ∧ p.tags["resonate:prefix"] = p.id                 | Promises with a resonate:schedule tag have resonate:prefix equal to their id.               |
-| P43  | ∀ p ∈ Promises : HasSchedule(p) → "resonate:branch" ∈ p.tags ∧ p.tags["resonate:branch"] = p.id                 | Promises with a resonate:schedule tag have resonate:branch equal to their id.               |
-| P44  | ∀ p ∈ Promises : HasSchedule(p) → "resonate:parent" ∈ p.tags ∧ p.tags["resonate:parent"] = p.id                 | Promises with a resonate:schedule tag have resonate:parent equal to their id.               |
+| P31  | ∀ p ∈ Promises : "resonate:branch" ∈ p.tags → prefix(p.tags["resonate:branch"], p.id)                           | The resonate:branch tag is a segment-prefix of the promise id.                              |
+| P32  | ∀ p ∈ Promises : "resonate:branch" ∈ p.tags → origin(p.tags["resonate:branch"]) = origin(p)                     | The resonate:branch origin matches the promise origin.                                      |
+| P33  | ∀ p ∈ Promises : "resonate:parent" ∈ p.tags → prefix(p.tags["resonate:parent"], p.id)                           | The resonate:parent tag is a segment-prefix of the promise id.                              |
+| P34  | ∀ p ∈ Promises : "resonate:parent" ∈ p.tags → origin(p.tags["resonate:parent"]) = origin(p)                     | The resonate:parent origin matches the promise origin.                                      |
+| P35  | ∀ p ∈ Promises : "resonate:prefix" ∈ p.tags → "." ∉ p.tags["resonate:prefix"]                                   | The resonate:prefix tag contains no dot.                                                    |
+| P36  | ∀ p ∈ Promises : HasSchedule(p) → HasTarget(p)                                                                   | Promises with a resonate:schedule tag have a resonate:target tag.                           |
+| P37  | ∀ p ∈ Promises : HasSchedule(p) → "resonate:origin" ∈ p.tags ∧ p.tags["resonate:origin"] = p.id                 | Promises with a resonate:schedule tag have resonate:origin equal to their id.               |
+| P38  | ∀ p ∈ Promises : HasSchedule(p) → "resonate:prefix" ∈ p.tags ∧ p.tags["resonate:prefix"] = p.id                 | Promises with a resonate:schedule tag have resonate:prefix equal to their id.               |
+| P39  | ∀ p ∈ Promises : HasSchedule(p) → "resonate:branch" ∈ p.tags ∧ p.tags["resonate:branch"] = p.id                 | Promises with a resonate:schedule tag have resonate:branch equal to their id.               |
+| P40  | ∀ p ∈ Promises : HasSchedule(p) → "resonate:parent" ∈ p.tags ∧ p.tags["resonate:parent"] = p.id                 | Promises with a resonate:schedule tag have resonate:parent equal to their id.               |
 
 ### Temporal
 
 | #    | Invariant                                                                                | Description                                                              |
 | ---- | ---------------------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
-| P45  | ∀ p ∈ Promises' : p ∈ Promises                                                           | Promises are never removed.                                              |
-| P46  | ∀ p ∈ Promises ∩ Promises' : p.createdAt = prev(p).createdAt                             | A promise's creation time is immutable.                                  |
-| P47  | ∀ p ∈ Promises ∩ Promises' : p.param = prev(p).param                                     | A promise's param is immutable.                                          |
-| P48  | ∀ p ∈ Promises ∩ Promises' : p.tags = prev(p).tags                                       | A promise's tags are immutable.                                          |
-| P49  | ∀ p ∈ Promises ∩ Promises' : p.timeoutAt = prev(p).timeoutAt                             | A promise's timeout is immutable.                                        |
-| P50  | ∀ p ∈ Promises ∩ Promises' : Settled(prev(p)) → p = prev(p)                              | Settled promises are fully immutable.                                    |
-| P51  | ∀ p ∈ Promises ∩ Promises' : Pending(prev(p)) ∧ Timedout(p) → p.settledAt = p.timeoutAt  | A promise timed out this transition settles exactly at its timeout time. |
+| P41  | ∀ p ∈ Promises' : p ∈ Promises                                                           | Promises are never removed.                                              |
+| P42  | ∀ p ∈ Promises ∩ Promises' : p.createdAt = prev(p).createdAt                             | A promise's creation time is immutable.                                  |
+| P43  | ∀ p ∈ Promises ∩ Promises' : p.param = prev(p).param                                     | A promise's param is immutable.                                          |
+| P44  | ∀ p ∈ Promises ∩ Promises' : p.tags = prev(p).tags                                       | A promise's tags are immutable.                                          |
+| P45  | ∀ p ∈ Promises ∩ Promises' : p.timeoutAt = prev(p).timeoutAt                             | A promise's timeout is immutable.                                        |
+| P46  | ∀ p ∈ Promises ∩ Promises' : Settled(prev(p)) → p = prev(p)                              | Settled promises are fully immutable.                                    |
+| P47  | ∀ p ∈ Promises ∩ Promises' : Pending(prev(p)) ∧ Timedout(p) → p.settledAt = p.timeoutAt  | A promise timed out this transition settles exactly at its timeout time. |
 
 ### Timeout
 
 | #    | Invariant                                                                           | Description                                                                          |
 | ---- | ----------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
-| P52  | ∀ pt, pt' ∈ PromiseTimeouts : pt.id = pt'.id → pt = pt'                             | Promise timeout entries have unique ids.                                             |
-| P53  | ∀ pt ∈ PromiseTimeouts : ∃ p ∈ Promises : p.id = pt.id ∧ Pending(p) ∧ HasTarget(p)  | Every promise timeout entry references a pending promise with a resonate:target tag. |
-| P54  | ∀ pt ∈ PromiseTimeouts : ∃ p ∈ Promises : p.id = pt.id ∧ pt.timeout = p.timeoutAt   | The timeout entry value matches the promise's timeout time.                          |
-| P55  | ∀ pt ∈ PromiseTimeouts' \ PromiseTimeouts : Settled(promise(pt.id))                  | When a promise timeout is removed, the corresponding promise is settled.             |
+| P48  | ∀ pt, pt' ∈ PromiseTimeouts : pt.id = pt'.id → pt = pt'                             | Promise timeout entries have unique ids.                                             |
+| P49  | ∀ pt ∈ PromiseTimeouts : ∃ p ∈ Promises : p.id = pt.id ∧ Pending(p) ∧ HasTarget(p)  | Every promise timeout entry references a pending promise with a resonate:target tag. |
+| P50  | ∀ pt ∈ PromiseTimeouts : ∃ p ∈ Promises : p.id = pt.id ∧ pt.timeout = p.timeoutAt   | The timeout entry value matches the promise's timeout time.                          |
+| P51  | ∀ pt ∈ PromiseTimeouts' \ PromiseTimeouts : Settled(promise(pt.id))                  | When a promise timeout is removed, the corresponding promise is settled.             |
 
 ## Task Invariants
 
