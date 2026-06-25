@@ -1506,8 +1506,7 @@ export function isDebugSnapRes(val: unknown): val is DebugSnapRes {
           typeof (t as Record<string, unknown>).timeout === "number",
       ) &&
       (d.schedules === undefined ||
-        (Array.isArray(d.schedules) &&
-          (d.schedules as unknown[]).every(isScheduleRecord))) &&
+        (Array.isArray(d.schedules) && (d.schedules as unknown[]).every(isScheduleRecord))) &&
       (d.scheduleTimeouts === undefined ||
         (Array.isArray(d.scheduleTimeouts) &&
           (d.scheduleTimeouts as unknown[]).every(

@@ -31,7 +31,7 @@ type Request<T> = {
 
 **resonate:debug_time**
 
-   Optional override for the current time, used in debug mode. When set, the server will use this value as the current time instead of the system clock.
+   Optional override for the current time, used in debug mode. When set, the server will use this value as the current time instead of the system clock. Must be a non-negative integer.
 
 ## Response Structure
 
@@ -336,6 +336,7 @@ type PromiseCreateReq = {
 
 **Validation**
 
+- The promise `id` must not contain null bytes.
 - `timeoutAt` must be a non-negative integer.
 - If a `resonate:delay` tag is present, its value must be a non-negative integer.
 - If a `resonate:delay` tag is present, its value must be less than `timeoutAt`.
@@ -573,7 +574,7 @@ type PromiseSearchReq = {
 
 **limit**
 
-   Number of results per page.
+   Number of results per page. Must be a positive integer when provided.
 
 **cursor**
 
@@ -804,7 +805,7 @@ type TaskAcquireReq = {
 
 **version**
 
-   The expected task version for optimistic concurrency control.
+   The expected task version for optimistic concurrency control. Must be a non-negative integer.
 
 **pid**
 
@@ -872,7 +873,7 @@ type TaskReleaseReq = {
 
 **version**
 
-   The expected task version for optimistic concurrency control.
+   The expected task version for optimistic concurrency control. Must be a non-negative integer.
 
 **Response**
 
@@ -935,6 +936,7 @@ type TaskSuspendReq = {
 
 **Validation**
 
+- `version` must be a non-negative integer.
 - The `actions` array must not be empty.
 - All actions must have their `awaiter` equal to the task `id`.
 - No action's `awaited` promise may equal the task `id`.
@@ -1121,6 +1123,7 @@ type TaskFulfillReq = {
 
 **Validation**
 
+- `version` must be a non-negative integer.
 - The action `id` must equal the task `id`.
 
 **Response**
@@ -1188,6 +1191,7 @@ type TaskFenceReq = {
 
 **Validation**
 
+- `version` must be a non-negative integer.
 - The action `id` must not equal the task `id`.
 
 **Response**
@@ -1297,7 +1301,7 @@ type TaskSearchReq = {
 
 **limit**
 
-   Number of results per page.
+   Number of results per page. Must be a positive integer when provided.
 
 **cursor**
 
@@ -1489,7 +1493,10 @@ type ScheduleCreateReq = {
 
 **Validation**
 
+- The schedule `id` must not contain null bytes.
 - The schedule `id` must not contain `.`.
+- The `promiseId` must not contain null bytes.
+- The `promiseId` must not contain `.` outside of `{{...}}` substitution blocks.
 - The `promiseTags` must include a `resonate:target` tag.
 - `promiseTimeout` must be a non-negative integer.
 
@@ -1595,7 +1602,7 @@ type ScheduleSearchReq = {
 
 **limit**
 
-   Number of results per page.
+   Number of results per page. Must be a positive integer when provided.
 
 **cursor**
 
