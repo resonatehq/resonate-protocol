@@ -635,12 +635,12 @@ type Task = {
 **ttl**
 
    Time-to-live in milliseconds. The interval within which the task must be heartbeated to maintain its lease.
-   Absent when the task is in the `suspended`, `halted`, or `fulfilled` state.
+   Absent when the task is in the `pending`, `suspended`, `halted`, or `fulfilled` state.
 
 **pid**
 
    The process identifier of the worker that created or acquired the task.
-   Absent when the task is in the `suspended`, `halted`, or `fulfilled` state.
+   Absent when the task is in the `pending`, `suspended`, `halted`, or `fulfilled` state.
 
 **resumes**
 
