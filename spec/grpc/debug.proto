@@ -1,0 +1,208 @@
+// Debug operations for the Resonate protocol.
+//
+// Optional debug operations for testing and development. See protocol.md for
+// the full protocol specification.
+
+syntax = "proto3";
+
+package resonate.v1;
+
+import "messages.proto";
+import "types.proto";
+
+service DebugService {
+  // Starts the debug session.
+  rpc Start(DebugStartReq) returns (DebugStartRes);
+
+  // Resets the debug session.
+  rpc Reset(DebugResetReq) returns (DebugResetRes);
+
+  // Times out promises and tasks that have exceeded the specified timestamp.
+  // Only promises with a resonate:target tag are settled by tick.
+  rpc Tick(DebugTickReq) returns (DebugTickRes);
+
+  // Takes a snapshot of the current debug session state.
+  rpc Snap(DebugSnapReq) returns (DebugSnapRes);
+
+  // Stops the debug session.
+  rpc Stop(DebugStopReq) returns (DebugStopRes);
+}
+
+// kind: "debug.start"
+message DebugStartReq {
+  message Data {}
+
+  RequestHead head = 1;
+  Data data = 2;
+}
+
+message DebugStartRes {
+  message Data {}
+
+  ResponseHead head = 1;
+
+  oneof data {
+    // Status 200.
+    Data ok = 2;
+
+    // Error statuses: 400, 401, 403, 429, 500, 501.
+    string error = 3;
+  }
+}
+
+// kind: "debug.reset"
+message DebugResetReq {
+  message Data {}
+
+  RequestHead head = 1;
+  Data data = 2;
+}
+
+message DebugResetRes {
+  message Data {}
+
+  ResponseHead head = 1;
+
+  oneof data {
+    // Status 200.
+    Data ok = 2;
+
+    // Error statuses: 400, 401, 403, 429, 500, 501.
+    string error = 3;
+  }
+}
+
+// kind: "debug.tick"
+message DebugTickReq {
+  message Data {
+    // Unix timestamp in milliseconds to advance to. If debug_time is present
+    // in the request head, it must equal this value.
+    int64 time = 1;
+  }
+
+  RequestHead head = 1;
+  Data data = 2;
+}
+
+// An action taken during a tick.
+message DebugTickAction {
+  // kind: "promise.settle"
+  message PromiseSettle {
+    string id = 1;
+
+    // Either rejected_timedout or resolved.
+    PromiseState state = 2;
+  }
+
+  oneof action {
+    PromiseSettle promise_settle = 1;
+
+    // kind: "task.release"
+    TaskRef task_release = 2;
+
+    // kind: "task.retry"
+    TaskRef task_retry = 3;
+  }
+}
+
+message DebugTickRes {
+  message Data {
+    repeated DebugTickAction actions = 1;
+  }
+
+  ResponseHead head = 1;
+
+  oneof data {
+    // Status 200. Returns an array of actions taken during the tick.
+    Data ok = 2;
+
+    // Error statuses: 400, 401, 403, 429, 500, 501.
+    string error = 3;
+  }
+}
+
+// kind: "debug.snap"
+message DebugSnapReq {
+  message Data {}
+
+  RequestHead head = 1;
+  Data data = 2;
+}
+
+message DebugSnapRes {
+  message Data {
+    message PromiseTimeout {
+      string id = 1;
+      int64 timeout = 2;
+    }
+
+    message Callback {
+      string awaiter = 1;
+      string awaited = 2;
+    }
+
+    message Listener {
+      string id = 1;
+      string address = 2;
+    }
+
+    message TaskTimeout {
+      string id = 1;
+      int32 type = 2;
+      int64 timeout = 3;
+    }
+
+    message ScheduleTimeout {
+      string id = 1;
+      int64 timeout = 2;
+    }
+
+    message AddressedMessage {
+      string address = 1;
+      Message message = 2;
+    }
+
+    repeated Promise promises = 1;
+    repeated PromiseTimeout promise_timeouts = 2;
+    repeated Callback callbacks = 3;
+    repeated Listener listeners = 4;
+    repeated Task tasks = 5;
+    repeated TaskTimeout task_timeouts = 6;
+    repeated Schedule schedules = 7;
+    repeated ScheduleTimeout schedule_timeouts = 8;
+    repeated AddressedMessage messages = 9;
+  }
+
+  ResponseHead head = 1;
+
+  oneof data {
+    // Status 200. Returns the current state of all promises, tasks,
+    // schedules, their timeouts, callbacks, listeners, and pending messages.
+    Data ok = 2;
+
+    // Error statuses: 400, 401, 403, 429, 500, 501.
+    string error = 3;
+  }
+}
+
+// kind: "debug.stop"
+message DebugStopReq {
+  message Data {}
+
+  RequestHead head = 1;
+  Data data = 2;
+}
+
+message DebugStopRes {
+  message Data {}
+
+  ResponseHead head = 1;
+
+  oneof data {
+    // Status 200.
+    Data ok = 2;
+
+    // Error statuses: 400, 401, 403, 429, 500, 501.
+    string error = 3;
+  }
+}

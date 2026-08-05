@@ -1,0 +1,47 @@
+// Messages for the Resonate protocol.
+//
+// Messages are sent by the server to worker addresses; they are not RPCs
+// served by the server. See protocol.md for the full protocol specification.
+
+syntax = "proto3";
+
+package resonate.v1;
+
+import "types.proto";
+
+message MessageHead {
+  optional string server_url = 1;
+}
+
+// kind: "execute"
+//
+// Sent to the address specified in the resonate:target tag on invocation and
+// resumption.
+message ExecuteMsg {
+  message Data {
+    TaskRef task = 1;
+  }
+
+  MessageHead head = 1;
+  Data data = 2;
+}
+
+// kind: "unblock"
+//
+// Sent to the address specified in a promise.register_listener request when
+// the promise settles.
+message UnblockMsg {
+  message Data {
+    Promise promise = 1;
+  }
+
+  MessageHead head = 1;
+  Data data = 2;
+}
+
+message Message {
+  oneof message {
+    ExecuteMsg execute = 1;
+    UnblockMsg unblock = 2;
+  }
+}

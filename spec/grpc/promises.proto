@@ -1,0 +1,256 @@
+// Promise operations for the Resonate protocol.
+//
+// See protocol.md for the full protocol specification.
+
+syntax = "proto3";
+
+package resonate.v1;
+
+import "types.proto";
+
+service PromiseService {
+  // Retrieves a promise by its identifier.
+  rpc Get(PromiseGetReq) returns (PromiseGetRes);
+
+  // Creates a new promise with the specified identifier.
+  rpc Create(PromiseCreateReq) returns (PromiseCreateRes);
+
+  // Settles a pending promise with a terminal state.
+  rpc Settle(PromiseSettleReq) returns (PromiseSettleRes);
+
+  // Registers a dependency between two promises, indicating that the awaiter
+  // is waiting for the awaited promise to settle.
+  rpc RegisterCallback(PromiseRegisterCallbackReq) returns (PromiseRegisterCallbackRes);
+
+  // Registers a listener for a promise, receiving a notification when it
+  // settles.
+  rpc RegisterListener(PromiseRegisterListenerReq) returns (PromiseRegisterListenerRes);
+
+  // Searches for promises matching the specified criteria.
+  rpc Search(PromiseSearchReq) returns (PromiseSearchRes);
+}
+
+// kind: "promise.get"
+message PromiseGetReq {
+  message Data {
+    // The unique identifier of the promise to retrieve.
+    string id = 1;
+  }
+
+  RequestHead head = 1;
+  Data data = 2;
+}
+
+message PromiseGetRes {
+  message Data {
+    Promise promise = 1;
+  }
+
+  ResponseHead head = 1;
+
+  oneof data {
+    // Status 200. Returns the promise if found.
+    Data ok = 2;
+
+    // Error statuses: 400, 401, 403, 404 (promise not found), 429, 500.
+    string error = 3;
+  }
+}
+
+// kind: "promise.create"
+message PromiseCreateReq {
+  message Data {
+    // The unique identifier for the promise.
+    string id = 1;
+
+    // The promise parameters.
+    Value param = 2;
+
+    // Key-value metadata for the promise.
+    //   - If a resonate:target tag is present, an ExecuteMsg is sent to the
+    //     specified address on invocation and resumption. Only promises with
+    //     this tag are actively timed out by the tick operation.
+    //   - If a resonate:timer tag is set to "true", the promise transitions
+    //     to resolved instead of rejected_timedout when the timeout is
+    //     reached.
+    //   - If a resonate:delay tag is present, it specifies a unix timestamp
+    //     in milliseconds at which the ExecuteMsg is sent on invocation. Its
+    //     value must be a non-negative integer less than timeout_at, and a
+    //     resonate:target tag must also be present.
+    //   - If a resonate:prefix tag is present, it identifies the origin of
+    //     the execution tree in which this promise was created.
+    //   - If a resonate:origin tag is present, it identifies the promise
+    //     that initiated the execution tree.
+    //   - If a resonate:branch tag is present, it identifies the nearest
+    //     ancestor promise with a resonate:target tag.
+    //   - If a resonate:parent tag is present, it identifies the direct
+    //     parent promise that created this promise in the execution tree.
+    //   - If a resonate:schedule tag is present, it identifies the schedule
+    //     that created this promise.
+    map<string, string> tags = 3;
+
+    // Unix timestamp in milliseconds when the promise will timeout.
+    int64 timeout_at = 4;
+  }
+
+  RequestHead head = 1;
+  Data data = 2;
+}
+
+message PromiseCreateRes {
+  message Data {
+    Promise promise = 1;
+  }
+
+  ResponseHead head = 1;
+
+  oneof data {
+    // Status 200. Returns the promise. If a promise with the same identifier
+    // already exists, returns the existing promise (idempotent).
+    Data ok = 2;
+
+    // Error statuses: 400, 401, 403, 429, 500.
+    string error = 3;
+  }
+}
+
+// kind: "promise.settle"
+message PromiseSettleReq {
+  message Data {
+    // The unique identifier of the promise to settle.
+    string id = 1;
+
+    // The terminal state for the promise. Must be one of resolved (for
+    // successful completion), rejected (for failure), or rejected_canceled
+    // (for cancellation).
+    PromiseState state = 2;
+
+    // The promise result value.
+    Value value = 3;
+  }
+
+  RequestHead head = 1;
+  Data data = 2;
+}
+
+message PromiseSettleRes {
+  message Data {
+    Promise promise = 1;
+  }
+
+  ResponseHead head = 1;
+
+  oneof data {
+    // Status 200. Returns the promise in its current state. If the promise
+    // is already settled, returns the existing state (idempotent).
+    Data ok = 2;
+
+    // Error statuses: 400, 401, 403, 404 (promise not found), 429, 500.
+    string error = 3;
+  }
+}
+
+// kind: "promise.register_callback"
+message PromiseRegisterCallbackReq {
+  message Data {
+    // The identifier of the promise that is waiting. Must differ from
+    // awaited and belong to the same origin.
+    string awaiter = 1;
+
+    // The identifier of the promise being waited on.
+    string awaited = 2;
+  }
+
+  RequestHead head = 1;
+  Data data = 2;
+}
+
+message PromiseRegisterCallbackRes {
+  message Data {
+    Promise promise = 1;
+  }
+
+  ResponseHead head = 1;
+
+  oneof data {
+    // Status 200. Returns the awaited promise. If the awaited promise is
+    // already settled, no dependency is registered.
+    Data ok = 2;
+
+    // Error statuses: 400, 401, 403, 404 (awaited promise not found), 422
+    // (awaiter promise not found or does not have a resonate:target tag),
+    // 429, 500.
+    string error = 3;
+  }
+}
+
+// kind: "promise.register_listener"
+message PromiseRegisterListenerReq {
+  message Data {
+    // The identifier of the promise to subscribe to.
+    string awaited = 1;
+
+    // The destination address where an UnblockMsg will be sent when the
+    // promise settles.
+    string address = 2;
+  }
+
+  RequestHead head = 1;
+  Data data = 2;
+}
+
+message PromiseRegisterListenerRes {
+  message Data {
+    Promise promise = 1;
+  }
+
+  ResponseHead head = 1;
+
+  oneof data {
+    // Status 200. Returns the awaited promise. If the awaited promise is
+    // already settled, no subscription is registered.
+    Data ok = 2;
+
+    // Error statuses: 400, 401, 403, 404 (promise not found), 429, 500, 501.
+    string error = 3;
+  }
+}
+
+// kind: "promise.search"
+message PromiseSearchReq {
+  message Data {
+    // Optional filter by promise state.
+    optional PromiseState state = 1;
+
+    // Optional filter by tag key-value pairs.
+    map<string, string> tags = 2;
+
+    // Number of results per page.
+    optional int32 limit = 3;
+
+    // Cursor for pagination, obtained from a previous search response.
+    optional string cursor = 4;
+  }
+
+  RequestHead head = 1;
+  Data data = 2;
+}
+
+message PromiseSearchRes {
+  message Data {
+    repeated Promise promises = 1;
+
+    // Cursor for the next page of results.
+    optional string cursor = 2;
+  }
+
+  ResponseHead head = 1;
+
+  oneof data {
+    // Status 200. Returns a list of matching promises.
+    Data ok = 2;
+
+    // Error statuses: 400, 401, 403, 429, 500, 501.
+    string error = 3;
+  }
+}

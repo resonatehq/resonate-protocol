@@ -1,0 +1,161 @@
+// Schedule operations for the Resonate protocol.
+//
+// See protocol.md for the full protocol specification.
+
+syntax = "proto3";
+
+package resonate.v1;
+
+import "types.proto";
+
+service ScheduleService {
+  // Retrieves a schedule by its identifier.
+  rpc Get(ScheduleGetReq) returns (ScheduleGetRes);
+
+  // Creates a new schedule that creates promises on a recurring basis.
+  rpc Create(ScheduleCreateReq) returns (ScheduleCreateRes);
+
+  // Deletes a schedule.
+  rpc Delete(ScheduleDeleteReq) returns (ScheduleDeleteRes);
+
+  // Searches for schedules matching the specified criteria.
+  rpc Search(ScheduleSearchReq) returns (ScheduleSearchRes);
+}
+
+// kind: "schedule.get"
+message ScheduleGetReq {
+  message Data {
+    // The unique identifier of the schedule to retrieve.
+    string id = 1;
+  }
+
+  RequestHead head = 1;
+  Data data = 2;
+}
+
+message ScheduleGetRes {
+  message Data {
+    Schedule schedule = 1;
+  }
+
+  ResponseHead head = 1;
+
+  oneof data {
+    // Status 200. Returns the schedule if found.
+    Data ok = 2;
+
+    // Error statuses: 400, 401, 403, 404 (schedule not found), 429, 500,
+    // 501.
+    string error = 3;
+  }
+}
+
+// kind: "schedule.create"
+message ScheduleCreateReq {
+  message Data {
+    // The unique identifier for the schedule. Must not contain ".".
+    string id = 1;
+
+    // A cron expression with at least 5 fields specifying when to create
+    // promises. Implementations must support at minimum the standard 5-field
+    // format (minute hour day-of-month month day-of-week), but may support
+    // additional fields (e.g. seconds, year).
+    string cron = 2;
+
+    // A template for the promise identifier. Supports {{.id}} and
+    // {{.timestamp}} substitutions.
+    string promise_id = 3;
+
+    // The timeout in milliseconds for created promises.
+    int64 promise_timeout = 4;
+
+    // The parameters for created promises.
+    Value promise_param = 5;
+
+    // Key-value metadata for created promises. Must include a
+    // resonate:target tag.
+    map<string, string> promise_tags = 6;
+  }
+
+  RequestHead head = 1;
+  Data data = 2;
+}
+
+message ScheduleCreateRes {
+  message Data {
+    Schedule schedule = 1;
+  }
+
+  ResponseHead head = 1;
+
+  oneof data {
+    // Status 200. Returns the schedule. If a schedule with the same
+    // identifier already exists, returns the existing schedule (idempotent).
+    Data ok = 2;
+
+    // Error statuses: 400, 401, 403, 429, 500, 501.
+    string error = 3;
+  }
+}
+
+// kind: "schedule.delete"
+message ScheduleDeleteReq {
+  message Data {
+    // The unique identifier of the schedule to delete.
+    string id = 1;
+  }
+
+  RequestHead head = 1;
+  Data data = 2;
+}
+
+message ScheduleDeleteRes {
+  message Data {}
+
+  ResponseHead head = 1;
+
+  oneof data {
+    // Status 200.
+    Data ok = 2;
+
+    // Error statuses: 400, 401, 403, 404 (schedule not found), 429, 500,
+    // 501.
+    string error = 3;
+  }
+}
+
+// kind: "schedule.search"
+message ScheduleSearchReq {
+  message Data {
+    // Optional filter by tag key-value pairs.
+    map<string, string> tags = 1;
+
+    // Number of results per page.
+    optional int32 limit = 2;
+
+    // Cursor for pagination, obtained from a previous search response.
+    optional string cursor = 3;
+  }
+
+  RequestHead head = 1;
+  Data data = 2;
+}
+
+message ScheduleSearchRes {
+  message Data {
+    repeated Schedule schedules = 1;
+
+    // Cursor for the next page of results.
+    optional string cursor = 2;
+  }
+
+  ResponseHead head = 1;
+
+  oneof data {
+    // Status 200. Returns a list of matching schedules.
+    Data ok = 2;
+
+    // Error statuses: 400, 401, 403, 429, 500, 501.
+    string error = 3;
+  }
+}

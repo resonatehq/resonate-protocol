@@ -22,3 +22,14 @@ A transport-agnostic durable execution protocol.
 | [spec/types-zod.ts](spec/types-zod.ts) | Zod schemas for runtime validation |
 | [spec/types-raw.ts](spec/types-raw.ts) | Raw TypeScript types (no dependencies) |
 | [spec/types.json](spec/types.json) | JSON Schema for all request, response, and message types |
+
+## gRPC
+
+| File | Description |
+|------|-------------|
+| [spec/grpc/types.proto](spec/grpc/types.proto) | Shared types (promises, tasks, schedules, request/response heads) |
+| [spec/grpc/promises.proto](spec/grpc/promises.proto) | PromiseService and promise request/response types |
+| [spec/grpc/tasks.proto](spec/grpc/tasks.proto) | TaskService and task request/response types |
+| [spec/grpc/schedules.proto](spec/grpc/schedules.proto) | ScheduleService and schedule request/response types |
+| [spec/grpc/debug.proto](spec/grpc/debug.proto) | DebugService and debug request/response types |
+| [spec/grpc/messages.proto](spec/grpc/messages.proto) | Messages sent by the server to worker addresses |

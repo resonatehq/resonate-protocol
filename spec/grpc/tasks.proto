@@ -1,0 +1,442 @@
+// Task operations for the Resonate protocol.
+//
+// See protocol.md for the full protocol specification.
+
+syntax = "proto3";
+
+package resonate.v1;
+
+import "promises.proto";
+import "types.proto";
+
+service TaskService {
+  // Retrieves a task by its identifier.
+  rpc Get(TaskGetReq) returns (TaskGetRes);
+
+  // Creates a new task and its associated promise.
+  rpc Create(TaskCreateReq) returns (TaskCreateRes);
+
+  // Acquires a lease on a pending task.
+  rpc Acquire(TaskAcquireReq) returns (TaskAcquireRes);
+
+  // Releases a task's lease without completing it, allowing the task to be
+  // re-acquired.
+  rpc Release(TaskReleaseReq) returns (TaskReleaseRes);
+
+  // Suspends a task while waiting for one or more promises to settle.
+  rpc Suspend(TaskSuspendReq) returns (TaskSuspendRes);
+
+  // Halts a pending, acquired, or suspended task, preventing it from being
+  // acquired or making further progress.
+  rpc Halt(TaskHaltReq) returns (TaskHaltRes);
+
+  // Resumes a halted task, transitioning it back to pending.
+  rpc Continue(TaskContinueReq) returns (TaskContinueRes);
+
+  // Completes a task and settles its associated promise.
+  rpc Fulfill(TaskFulfillReq) returns (TaskFulfillRes);
+
+  // Executes a promise operation only if the task's lease is still valid.
+  rpc Fence(TaskFenceReq) returns (TaskFenceRes);
+
+  // Extends the lease for one or more tasks.
+  rpc Heartbeat(TaskHeartbeatReq) returns (TaskHeartbeatRes);
+
+  // Searches for tasks matching the specified criteria.
+  rpc Search(TaskSearchReq) returns (TaskSearchRes);
+}
+
+// kind: "task.get"
+message TaskGetReq {
+  message Data {
+    // The unique identifier of the task to retrieve.
+    string id = 1;
+  }
+
+  RequestHead head = 1;
+  Data data = 2;
+}
+
+message TaskGetRes {
+  message Data {
+    Task task = 1;
+  }
+
+  ResponseHead head = 1;
+
+  oneof data {
+    // Status 200. Returns the task if found.
+    Data ok = 2;
+
+    // Error statuses: 400, 401, 403, 404 (task not found), 429, 500.
+    string error = 3;
+  }
+}
+
+// kind: "task.create"
+message TaskCreateReq {
+  message Data {
+    // The process identifier of the worker creating the task.
+    string pid = 1;
+
+    // Time-to-live in milliseconds. Must be a positive integer. The task
+    // must be heartbeated within this interval to maintain its lease.
+    int64 ttl = 2;
+
+    // A PromiseCreateReq specifying the promise to create for this task.
+    // The action must have a resonate:target tag and must not have a
+    // resonate:delay tag.
+    PromiseCreateReq action = 3;
+  }
+
+  RequestHead head = 1;
+  Data data = 2;
+}
+
+message TaskCreateRes {
+  message Data {
+    Task task = 1;
+
+    Promise promise = 2;
+
+    // All promises that share the same resonate:branch value as the task's
+    // promise.
+    repeated Promise preload = 3;
+  }
+
+  ResponseHead head = 1;
+
+  oneof data {
+    // Status 200. Returns the task and its associated promise. If the task
+    // is pending, acquires the task and returns it in the acquired state. If
+    // the promise is already settled, the task transitions to the fulfilled
+    // state and is returned. When a task transitions to the acquired state,
+    // its resumes field is always cleared.
+    Data ok = 2;
+
+    // Error statuses: 400, 401, 403, 409 (the task already exists and is
+    // acquired, suspended, or halted), 422 (the promise does not have a
+    // resonate:target tag), 429, 500, 501.
+    string error = 3;
+  }
+}
+
+// kind: "task.acquire"
+message TaskAcquireReq {
+  message Data {
+    // The unique identifier of the task to acquire.
+    string id = 1;
+
+    // The expected task version for optimistic concurrency control.
+    int32 version = 2;
+
+    // The process identifier of the worker acquiring the task.
+    string pid = 3;
+
+    // Time-to-live in milliseconds for the lease. Must be a positive
+    // integer.
+    int64 ttl = 4;
+  }
+
+  RequestHead head = 1;
+  Data data = 2;
+}
+
+message TaskAcquireRes {
+  message Data {
+    Task task = 1;
+
+    Promise promise = 2;
+
+    // All promises that share the same resonate:branch value as the task's
+    // promise.
+    repeated Promise preload = 3;
+  }
+
+  ResponseHead head = 1;
+
+  oneof data {
+    // Status 200. Returns the task and its associated promise. When a task
+    // transitions to the acquired state, its resumes field is always
+    // cleared.
+    Data ok = 2;
+
+    // Error statuses: 400, 401, 403, 404 (task not found), 409 (the task is
+    // not pending or the version does not match), 429, 500.
+    string error = 3;
+  }
+}
+
+// kind: "task.release"
+message TaskReleaseReq {
+  message Data {
+    // The unique identifier of the task to release.
+    string id = 1;
+
+    // The expected task version for optimistic concurrency control.
+    int32 version = 2;
+  }
+
+  RequestHead head = 1;
+  Data data = 2;
+}
+
+message TaskReleaseRes {
+  message Data {}
+
+  ResponseHead head = 1;
+
+  oneof data {
+    // Status 200.
+    Data ok = 2;
+
+    // Error statuses: 400, 401, 403, 404 (task not found), 409 (the task is
+    // not acquired or the version does not match), 429, 500.
+    string error = 3;
+  }
+}
+
+// kind: "task.suspend"
+message TaskSuspendReq {
+  message Data {
+    // The unique identifier of the task to suspend.
+    string id = 1;
+
+    // The expected task version for optimistic concurrency control.
+    int32 version = 2;
+
+    // An array of PromiseRegisterCallbackReq specifying the promises to
+    // await. Must not be empty. All actions must have their awaiter equal to
+    // the task id, no action's awaited promise may equal the task id, and
+    // all awaited promises must belong to the same origin as the task id.
+    repeated PromiseRegisterCallbackReq actions = 3;
+  }
+
+  RequestHead head = 1;
+  Data data = 2;
+}
+
+message TaskSuspendRes {
+  message Data {}
+
+  message Settled {
+    // All promises that share the same resonate:branch value as the task's
+    // promise.
+    repeated Promise preload = 1;
+  }
+
+  ResponseHead head = 1;
+
+  oneof data {
+    // Status 200. The task was suspended.
+    Data ok = 2;
+
+    // Status 300. Any promise in the request has already settled, indicating
+    // the worker can continue execution immediately with the current lease.
+    // The task remains in the acquired state with its resumes field cleared.
+    Settled settled = 3;
+
+    // Error statuses: 400, 401, 403, 404 (task not found), 409 (the task is
+    // not acquired or the version does not match), 422 (awaited promise not
+    // found), 429, 500.
+    string error = 4;
+  }
+}
+
+// kind: "task.halt"
+message TaskHaltReq {
+  message Data {
+    // The unique identifier of the task to halt.
+    string id = 1;
+  }
+
+  RequestHead head = 1;
+  Data data = 2;
+}
+
+message TaskHaltRes {
+  message Data {}
+
+  ResponseHead head = 1;
+
+  oneof data {
+    // Status 200.
+    Data ok = 2;
+
+    // Error statuses: 400, 401, 403, 404 (task not found), 409 (task is not
+    // in a haltable state, i.e. already fulfilled), 429, 500.
+    string error = 3;
+  }
+}
+
+// kind: "task.continue"
+message TaskContinueReq {
+  message Data {
+    // The unique identifier of the task to continue.
+    string id = 1;
+  }
+
+  RequestHead head = 1;
+  Data data = 2;
+}
+
+message TaskContinueRes {
+  message Data {}
+
+  ResponseHead head = 1;
+
+  oneof data {
+    // Status 200.
+    Data ok = 2;
+
+    // Error statuses: 400, 401, 403, 404 (task not found), 409 (task is not
+    // halted), 429, 500.
+    string error = 3;
+  }
+}
+
+// kind: "task.fulfill"
+message TaskFulfillReq {
+  message Data {
+    // The unique identifier of the task to fulfill.
+    string id = 1;
+
+    // The expected task version for optimistic concurrency control.
+    int32 version = 2;
+
+    // A PromiseSettleReq specifying how to settle the task's promise. The
+    // action id must equal the task id.
+    PromiseSettleReq action = 3;
+  }
+
+  RequestHead head = 1;
+  Data data = 2;
+}
+
+message TaskFulfillRes {
+  message Data {
+    Promise promise = 1;
+  }
+
+  ResponseHead head = 1;
+
+  oneof data {
+    // Status 200. Returns the promise in its settled state.
+    Data ok = 2;
+
+    // Error statuses: 400, 401, 403, 404 (task not found), 409 (the task is
+    // not acquired or the version does not match), 429, 500.
+    string error = 3;
+  }
+}
+
+// kind: "task.fence"
+message TaskFenceReq {
+  message Data {
+    // The unique identifier of the task.
+    string id = 1;
+
+    // The expected task version for optimistic concurrency control.
+    int32 version = 2;
+
+    // A PromiseCreateReq or PromiseSettleReq to execute if the lease is
+    // valid. The action id must not equal the task id.
+    oneof action {
+      PromiseCreateReq create = 3;
+      PromiseSettleReq settle = 4;
+    }
+  }
+
+  RequestHead head = 1;
+  Data data = 2;
+}
+
+message TaskFenceRes {
+  message Data {
+    // The result of the fenced operation.
+    oneof action {
+      PromiseCreateRes create = 1;
+      PromiseSettleRes settle = 2;
+    }
+
+    // All promises that share the same resonate:branch value as the task's
+    // promise.
+    repeated Promise preload = 3;
+  }
+
+  ResponseHead head = 1;
+
+  oneof data {
+    // Status 200. Returns the result of the fenced operation.
+    Data ok = 2;
+
+    // Error statuses: 400, 401, 403, 404 (task not found), 409 (the task is
+    // not acquired or the version does not match), 429, 500.
+    string error = 3;
+  }
+}
+
+// kind: "task.heartbeat"
+message TaskHeartbeatReq {
+  message Data {
+    // The process identifier of the worker.
+    string pid = 1;
+
+    // An array of tasks to heartbeat. Must not be empty. All tasks must
+    // belong to the same origin.
+    repeated TaskRef tasks = 2;
+  }
+
+  RequestHead head = 1;
+  Data data = 2;
+}
+
+message TaskHeartbeatRes {
+  message Data {}
+
+  ResponseHead head = 1;
+
+  oneof data {
+    // Status 200.
+    Data ok = 2;
+
+    // Error statuses: 400, 401, 403, 429, 500.
+    string error = 3;
+  }
+}
+
+// kind: "task.search"
+message TaskSearchReq {
+  message Data {
+    // Optional filter by task state.
+    optional TaskState state = 1;
+
+    // Number of results per page.
+    optional int32 limit = 2;
+
+    // Cursor for pagination, obtained from a previous search response.
+    optional string cursor = 3;
+  }
+
+  RequestHead head = 1;
+  Data data = 2;
+}
+
+message TaskSearchRes {
+  message Data {
+    repeated Task tasks = 1;
+
+    // Cursor for the next page of results.
+    optional string cursor = 2;
+  }
+
+  ResponseHead head = 1;
+
+  oneof data {
+    // Status 200. Returns a list of matching tasks.
+    Data ok = 2;
+
+    // Error statuses: 400, 401, 403, 429, 500, 501.
+    string error = 3;
+  }
+}

@@ -1,0 +1,174 @@
+// Shared types for the Resonate protocol.
+//
+// See protocol.md for the full protocol specification. The `kind` field of
+// the JSON transport is omitted; it is implied by the gRPC method. Error
+// statuses (400, 401, 403, 404, 409, 422, 429, 500, 501) are carried in
+// ResponseHead.status with a description in the response's `error` field.
+
+syntax = "proto3";
+
+package resonate.v1;
+
+// A value with optional headers and data. The data field is base64 encoded
+// in the JSON transport; in protobuf it is raw bytes.
+message Value {
+  map<string, string> headers = 1;
+  optional bytes data = 2;
+}
+
+enum PromiseState {
+  PROMISE_STATE_UNSPECIFIED = 0;
+  PROMISE_STATE_PENDING = 1;
+  PROMISE_STATE_RESOLVED = 2;
+  PROMISE_STATE_REJECTED = 3;
+  PROMISE_STATE_REJECTED_CANCELED = 4;
+  PROMISE_STATE_REJECTED_TIMEDOUT = 5;
+}
+
+message Promise {
+  // The identifier of the promise.
+  string id = 1;
+
+  // The current state of the promise.
+  PromiseState state = 2;
+
+  // The promise parameters.
+  Value param = 3;
+
+  // The promise result value.
+  Value value = 4;
+
+  // Key-value metadata for the promise.
+  map<string, string> tags = 5;
+
+  // Unix timestamp in milliseconds when the promise will be automatically
+  // rejected with state rejected_timedout.
+  int64 timeout_at = 6;
+
+  // Unix timestamp in milliseconds when the promise was created.
+  int64 created_at = 7;
+
+  // Unix timestamp in milliseconds when the promise was settled. Only
+  // present for promises in a terminal state.
+  optional int64 settled_at = 8;
+}
+
+enum TaskState {
+  TASK_STATE_UNSPECIFIED = 0;
+  TASK_STATE_PENDING = 1;
+  TASK_STATE_ACQUIRED = 2;
+  TASK_STATE_SUSPENDED = 3;
+  TASK_STATE_HALTED = 4;
+  TASK_STATE_FULFILLED = 5;
+}
+
+// The resume messages queued for a task to process. Servers may return the
+// full list of identifiers, a count, or a boolean.
+message TaskResumes {
+  message Ids {
+    repeated string ids = 1;
+  }
+
+  oneof resumes {
+    // The full list of queued resume message identifiers.
+    Ids ids = 1;
+
+    // The count of queued resume messages.
+    int64 count = 2;
+
+    // Whether any resume messages are queued.
+    bool any = 3;
+  }
+}
+
+message Task {
+  // The identifier of the task.
+  string id = 1;
+
+  // The current state of the task.
+  TaskState state = 2;
+
+  // The task version for optimistic concurrency control.
+  int32 version = 3;
+
+  // The resume messages queued for the task to process.
+  TaskResumes resumes = 4;
+
+  // Time-to-live in milliseconds. The interval within which the task must be
+  // heartbeated to maintain its lease. Absent when the task is in the
+  // pending, suspended, halted, or fulfilled state.
+  optional int64 ttl = 5;
+
+  // The process identifier of the worker that created or acquired the task.
+  // Absent when the task is in the pending, suspended, halted, or fulfilled
+  // state.
+  optional string pid = 6;
+}
+
+// A reference to a task by identifier and version.
+message TaskRef {
+  string id = 1;
+  int32 version = 2;
+}
+
+message Schedule {
+  // The identifier of the schedule.
+  string id = 1;
+
+  // A cron expression with at least 5 fields specifying when to create
+  // promises.
+  string cron = 2;
+
+  // A template for the promise identifier. Supports {{.id}} and
+  // {{.timestamp}} substitutions.
+  string promise_id = 3;
+
+  // The timeout in milliseconds for created promises.
+  int64 promise_timeout = 4;
+
+  // The parameters for created promises.
+  Value promise_param = 5;
+
+  // Key-value metadata for created promises.
+  map<string, string> promise_tags = 6;
+
+  // Unix timestamp in milliseconds when the schedule was created.
+  int64 created_at = 7;
+
+  // Unix timestamp in milliseconds for the next scheduled run.
+  int64 next_run_at = 8;
+
+  // Unix timestamp in milliseconds of the last run. Only present if the
+  // schedule has run at least once.
+  optional int64 last_run_at = 9;
+}
+
+message RequestHead {
+  // Optional bearer token for authentication.
+  optional string auth = 1;
+
+  // Correlation identifier for request/response matching. The same value
+  // will be included in the response.
+  string corr_id = 2;
+
+  // The protocol version supported by the client. Uses date-based versioning
+  // (e.g., "2025-01-15").
+  string version = 3;
+
+  // Optional override for the current time, used in debug mode. When set,
+  // the server will use this value as the current time instead of the system
+  // clock.
+  optional int64 debug_time = 4 [json_name = "resonate:debug_time"];
+}
+
+message ResponseHead {
+  // Correlation identifier matching the request.
+  string corr_id = 1;
+
+  // The response status code.
+  int32 status = 2;
+
+  // The protocol version used by the server. Uses date-based versioning
+  // (e.g., "2025-01-15").
+  string version = 3;
+}
