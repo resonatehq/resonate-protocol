@@ -133,8 +133,6 @@ Child segments are sequential positive integers starting at 1.
 
 5. **`resonate:origin` must not contain `:`.** When a `resonate:origin` tag is present, its value must not contain `:`.
 
-6. **Promise ID must conform to the grammar.** The origin must be non-empty (the promise ID must not begin with `:`), and lineage segments must be positive integers.
-
 ## Requests
 
 ```ts
