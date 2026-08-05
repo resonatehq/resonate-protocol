@@ -87,40 +87,49 @@ The following errors may be returned by any operation.
 
 ## Promise ID Convention
 
-Promise IDs follow a hierarchical structure using `.` as the separator. Tasks share the same ID space as promises — a task's ID is always identical to its associated promise ID.
+Promise IDs follow a hierarchical structure: a user-defined origin, followed optionally by `:` and a `.`-separated lineage. Tasks share the same ID space as promises — a task's ID is always identical to its associated promise ID.
+
+```
+promise-id  = origin [ ":" lineage ]
+origin      = 1*<any character except ":" and NUL>
+lineage     = segment *( "." segment )
+segment     = positive integer
+```
+
+The `:` separator appears at most once in a promise ID. The origin must not contain `:`, but may contain `.` — the origin of an ID is everything before the first `:`, or the whole ID if it contains no `:`, and the lineage is the list of `.`-separated segments after the `:` (empty if there is none). An ID `a` is a prefix of an ID `b` when they have the same origin and the lineage of `a` is a list-prefix of the lineage of `b`.
 
 ### Structure
 
-Given this tree, where `foo`, `foo.2`, `bar`, and `bar.2` have a `resonate:target` tag, and `bar` is a detached promise spawned from within `foo`'s execution:
+Given this tree, where `foo`, `foo:2`, `bar`, and `bar:2` have a `resonate:target` tag, and `bar` is a detached promise spawned from within `foo`'s execution:
 
 ```
 id        prefix  origin  branch  parent  target
 ──────────────────────────────────────────────────────────
 foo       foo     foo     foo     foo     worker-a
-foo.1     foo     foo     foo     foo
-foo.2     foo     foo     foo.2   foo     worker-b
-foo.2.1   foo     foo     foo.2   foo.2
-foo.2.2   foo     foo     foo.2   foo.2
+foo:1     foo     foo     foo     foo
+foo:2     foo     foo     foo:2   foo     worker-b
+foo:2.1   foo     foo     foo:2   foo:2
+foo:2.2   foo     foo     foo:2   foo:2
 bar       foo     bar     bar     bar     worker-a
-bar.1     foo     bar     bar     bar
-bar.2     foo     bar     bar.2   bar     worker-b
-bar.2.1   foo     bar     bar.2   bar.2
-bar.2.2   foo     bar     bar.2   bar.2
+bar:1     foo     bar     bar     bar
+bar:2     foo     bar     bar:2   bar     worker-b
+bar:2.1   foo     bar     bar:2   bar:2
+bar:2.2   foo     bar     bar:2   bar:2
 ```
 
 Child segments are sequential positive integers starting at 1.
 
 ### Validation Rules
 
-1. **Promise ID must be prefixed by `resonate:origin`.** When a `resonate:origin` tag is present, the promise ID must equal the origin value or begin with `<origin>.`.
+1. **Promise ID must be prefixed by `resonate:origin`.** When a `resonate:origin` tag is present, the origin value must be a prefix of the promise ID per the definition above.
 
-2. **Promise ID must be prefixed by `resonate:branch`.** When a `resonate:branch` tag is present, the promise ID must equal the branch value or begin with `<branch>.`.
+2. **Promise ID must be prefixed by `resonate:branch`.** When a `resonate:branch` tag is present, the branch value must be a prefix of the promise ID per the definition above.
 
-3. **Promise ID must be prefixed by `resonate:parent`.** When a `resonate:parent` tag is present, the promise ID must equal the parent value or begin with `<parent>.`.
+3. **Promise ID must be prefixed by `resonate:parent`.** When a `resonate:parent` tag is present, the parent value must be a prefix of the promise ID per the definition above.
 
-4. **`resonate:prefix` must not contain `.`.** When a `resonate:prefix` tag is present, its value must not contain `.`.
+4. **`resonate:prefix` must not contain `:`.** When a `resonate:prefix` tag is present, its value must not contain `:`.
 
-5. **`resonate:origin` must not contain `.`.** When a `resonate:origin` tag is present, its value must not contain `.`.
+5. **`resonate:origin` must not contain `:`.** When a `resonate:origin` tag is present, its value must not contain `:`.
 
 ## Requests
 
@@ -1494,9 +1503,9 @@ type ScheduleCreateReq = {
 **Validation**
 
 - The schedule `id` must not contain null bytes.
-- The schedule `id` must not contain `.`.
+- The schedule `id` must not contain `:`.
 - The `promiseId` must not contain null bytes.
-- The `promiseId` must not contain `.` outside of `{{...}}` substitution blocks.
+- The `promiseId` must not contain `:` outside of `{{...}}` substitution blocks.
 - The `promiseTags` must include a `resonate:target` tag.
 - `promiseTimeout` must be a non-negative integer.
 

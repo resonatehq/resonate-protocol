@@ -1,6 +1,30 @@
 import { z } from "zod";
 
 // =============================================================================
+// SHARED HELPERS
+// =============================================================================
+
+// A promise ID is origin [ ":" lineage ]: the origin is everything before the
+// first ":" (the whole ID if there is none), the lineage is the list of
+// "."-separated segments after it.
+const parseId = (id: string) => {
+  const i = id.indexOf(":");
+  return i === -1
+    ? { origin: id, lineage: [] as string[] }
+    : { origin: id.slice(0, i), lineage: id.slice(i + 1).split(".") };
+};
+
+const originOf = (id: string) => parseId(id).origin;
+
+// a is a prefix of b when they share an origin and a's lineage is a
+// list-prefix of b's lineage.
+const isPrefix = (a: string, b: string) => {
+  const pa = parseId(a);
+  const pb = parseId(b);
+  return pa.origin === pb.origin && pa.lineage.every((s, i) => pb.lineage[i] === s);
+};
+
+// =============================================================================
 // SHARED SCHEMAS
 // =============================================================================
 
@@ -128,7 +152,7 @@ export const PromiseCreateReqSchema = z
     (r) => {
       const origin = r.data.tags["resonate:origin"];
       if (origin === undefined) return true;
-      return r.data.id === origin || r.data.id.startsWith(`${origin}.`);
+      return isPrefix(origin, r.data.id);
     },
     { message: "Promise ID must be prefixed by resonate:origin" },
   )
@@ -136,7 +160,7 @@ export const PromiseCreateReqSchema = z
     (r) => {
       const branch = r.data.tags["resonate:branch"];
       if (branch === undefined) return true;
-      return r.data.id === branch || r.data.id.startsWith(`${branch}.`);
+      return isPrefix(branch, r.data.id);
     },
     { message: "Promise ID must be prefixed by resonate:branch" },
   )
@@ -144,7 +168,7 @@ export const PromiseCreateReqSchema = z
     (r) => {
       const parent = r.data.tags["resonate:parent"];
       if (parent === undefined) return true;
-      return r.data.id === parent || r.data.id.startsWith(`${parent}.`);
+      return isPrefix(parent, r.data.id);
     },
     { message: "Promise ID must be prefixed by resonate:parent" },
   )
@@ -152,17 +176,17 @@ export const PromiseCreateReqSchema = z
     (r) => {
       const prefix = r.data.tags["resonate:prefix"];
       if (prefix === undefined) return true;
-      return !prefix.includes(".");
+      return !prefix.includes(":");
     },
-    { message: "resonate:prefix must not contain '.'" },
+    { message: "resonate:prefix must not contain ':'" },
   )
   .refine(
     (r) => {
       const origin = r.data.tags["resonate:origin"];
       if (origin === undefined) return true;
-      return !origin.includes(".");
+      return !origin.includes(":");
     },
-    { message: "resonate:origin must not contain '.'" },
+    { message: "resonate:origin must not contain ':'" },
   )
   .refine(
     (r) => {
@@ -217,13 +241,9 @@ export const PromiseRegisterCallbackReqSchema = z.object({
     .refine((d) => d.awaited !== d.awaiter, {
       message: "Awaited and awaiter must be different promises",
     })
-    .refine(
-      (d) => {
-        const origin = (id: string) => id.split(".")[0];
-        return origin(d.awaited) === origin(d.awaiter);
-      },
-      { message: "Awaited and awaiter must belong to the same origin" },
-    ),
+    .refine((d) => originOf(d.awaited) === originOf(d.awaiter), {
+      message: "Awaited and awaiter must belong to the same origin",
+    }),
 });
 
 export type PromiseRegisterCallbackReq = z.infer<typeof PromiseRegisterCallbackReqSchema>;
@@ -324,13 +344,9 @@ export const TaskSuspendReqSchema = z.object({
     .refine((r) => r.actions.every((a) => a.data.awaited !== r.id), {
       message: "Action awaited promise must not equal the task ID",
     })
-    .refine(
-      (r) => {
-        const origin = (id: string) => id.split(".")[0];
-        return r.actions.every((a) => origin(a.data.awaited) === origin(r.id));
-      },
-      { message: "All action awaited promises must belong to the same origin as the task" },
-    ),
+    .refine((r) => r.actions.every((a) => originOf(a.data.awaited) === originOf(r.id)), {
+      message: "All action awaited promises must belong to the same origin as the task",
+    }),
 });
 
 export type TaskSuspendReq = z.infer<typeof TaskSuspendReqSchema>;
@@ -398,8 +414,8 @@ export const TaskHeartbeatReqSchema = z.object({
       .refine(
         (tasks) => {
           if (tasks.length === 0) return true;
-          const origin = tasks[0].id.split(".")[0];
-          return tasks.every((t) => t.id.split(".")[0] === origin);
+          const origin = originOf(tasks[0].id);
+          return tasks.every((t) => originOf(t.id) === origin);
         },
         { message: "All tasks must belong to the same origin" },
       ),
@@ -443,7 +459,7 @@ export const ScheduleCreateReqSchema = z.object({
         .string()
         .min(1, "Schedule ID is required")
         .refine((s) => !s.includes("\x00"), "Schedule ID must not contain null bytes")
-        .refine((s) => !s.includes("."), "Schedule ID must not contain '.'"),
+        .refine((s) => !s.includes(":"), "Schedule ID must not contain ':'"),
       cron: z
         .string()
         .min(1, "Cron expression is required")
@@ -453,8 +469,8 @@ export const ScheduleCreateReqSchema = z.object({
         .min(1, "Promise ID template is required")
         .refine((s) => !s.includes("\x00"), "Promise ID template must not contain null bytes")
         .refine(
-          (s) => /^([^.{]|\{\{[^}]*\}\})*$/.test(s),
-          "Promise ID template must not contain '.' outside of substitution blocks",
+          (s) => /^([^:{]|\{\{[^}]*\}\})*$/.test(s),
+          "Promise ID template must not contain ':' outside of substitution blocks",
         ),
       promiseTimeout: z.number().int().nonnegative("Promise timeout must be a non-negative integer"),
       promiseParam: ValueSchema,

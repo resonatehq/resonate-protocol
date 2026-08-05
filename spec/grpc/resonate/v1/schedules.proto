@@ -40,7 +40,7 @@ message ScheduleGetRes {
 // kind: "schedule.create"
 message ScheduleCreateReq {
   message Data {
-    // The unique identifier for the schedule. Must not contain ".".
+    // The unique identifier for the schedule. Must not contain ":".
     string id = 1;
 
     // A cron expression with at least 5 fields specifying when to create

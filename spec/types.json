@@ -906,7 +906,7 @@
             "id": {
               "type": "string",
               "minLength": 1,
-              "pattern": "^[^.]+$",
+              "pattern": "^[^:]+$",
               "not": {
                 "pattern": "\u0000"
               }
@@ -918,7 +918,7 @@
             "promiseId": {
               "type": "string",
               "minLength": 1,
-              "pattern": "^([^.{]|\\{\\{[^}]*\\}\\})*$",
+              "pattern": "^([^:{]|\\{\\{[^}]*\\}\\})*$",
               "not": {
                 "pattern": "\u0000"
               }
