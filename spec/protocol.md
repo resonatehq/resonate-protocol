@@ -98,8 +98,6 @@ segment     = positive integer
 
 The `:` separator appears at most once in a promise ID. The origin must not contain `:`, but may contain `.` — the origin of an ID is everything before the first `:`, or the whole ID if it contains no `:`, and the lineage is the list of `.`-separated segments after the `:` (empty if there is none). An ID `a` is a prefix of an ID `b` when they have the same origin and the lineage of `a` is a list-prefix of the lineage of `b`.
 
-Note that tag keys such as `resonate:origin` also use `:`, as a namespace separator; this is unrelated to the promise ID separator — tag keys are not promise IDs.
-
 ### Structure
 
 Given this tree, where `foo`, `foo:2`, `bar`, and `bar:2` have a `resonate:target` tag, and `bar` is a detached promise spawned from within `foo`'s execution:
