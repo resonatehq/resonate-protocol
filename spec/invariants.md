@@ -12,8 +12,9 @@
 | task(p)            | The task with id = p.id                                              |
 | callbacks(p)       | The set of callback ids on promise p                                 |
 | listeners(p)       | The set of listeners registered on promise p                         |
-| origin(p)          | The origin of promise p's id                                         |
-| prefix(a, b)       | a is a segment-prefix of b: b = a ∨ b starts with a ++ "."          |
+| origin(p)          | The portion of p's id before the first ":", or the whole id if it contains no ":" |
+| lineage(p)         | The list of "."-separated segments after the first ":" in p's id, empty if there is none |
+| prefix(a, b)       | origin(a) = origin(b) ∧ lineage(a) is a list-prefix of lineage(b)    |
 | cron(expr, t)      | The next time strictly after t according to cron expression expr     |
 | plain(t)           | t with all `{{...}}` substitution blocks removed                     |
 | expand(t, id, ts)  | t with `{{.id}}` replaced by id and `{{.timestamp}}` replaced by ts  |
@@ -103,12 +104,12 @@ The primed variants (Promises', Tasks', etc.) denote the corresponding component
 | P27  | ∀ p ∈ Promises : ∀ c ∈ callbacks(p) : Pending(promise(c))                                                       | All callbacks are pending.                                                                  |
 | P28  | ∀ p ∈ Promises : ∀ c ∈ callbacks(p) : origin(c) = origin(p)                                                     | Callbacks share the same origin as the promise.                                             |
 | P29  | ∀ p ∈ Promises : "resonate:origin" ∈ p.tags → prefix(p.tags["resonate:origin"], p.id)                           | The resonate:origin tag is a segment-prefix of the promise id.                              |
-| P30  | ∀ p ∈ Promises : "resonate:origin" ∈ p.tags → "." ∉ p.tags["resonate:origin"]                                   | The resonate:origin tag contains no dot.                                                    |
+| P30  | ∀ p ∈ Promises : "resonate:origin" ∈ p.tags → ":" ∉ p.tags["resonate:origin"]                                   | The resonate:origin tag contains no colon.                                                  |
 | P31  | ∀ p ∈ Promises : "resonate:branch" ∈ p.tags → prefix(p.tags["resonate:branch"], p.id)                           | The resonate:branch tag is a segment-prefix of the promise id.                              |
 | P32  | ∀ p ∈ Promises : "resonate:branch" ∈ p.tags → origin(p.tags["resonate:branch"]) = origin(p)                     | The resonate:branch origin matches the promise origin.                                      |
 | P33  | ∀ p ∈ Promises : "resonate:parent" ∈ p.tags → prefix(p.tags["resonate:parent"], p.id)                           | The resonate:parent tag is a segment-prefix of the promise id.                              |
 | P34  | ∀ p ∈ Promises : "resonate:parent" ∈ p.tags → origin(p.tags["resonate:parent"]) = origin(p)                     | The resonate:parent origin matches the promise origin.                                      |
-| P35  | ∀ p ∈ Promises : "resonate:prefix" ∈ p.tags → "." ∉ p.tags["resonate:prefix"]                                   | The resonate:prefix tag contains no dot.                                                    |
+| P35  | ∀ p ∈ Promises : "resonate:prefix" ∈ p.tags → ":" ∉ p.tags["resonate:prefix"]                                   | The resonate:prefix tag contains no colon.                                                  |
 | P36  | ∀ p ∈ Promises : HasSchedule(p) → HasTarget(p)                                                                   | Promises with a resonate:schedule tag have a resonate:target tag.                           |
 | P37  | ∀ p ∈ Promises : HasSchedule(p) → "resonate:origin" ∈ p.tags ∧ p.tags["resonate:origin"] = p.id                 | Promises with a resonate:schedule tag have resonate:origin equal to their id.               |
 | P38  | ∀ p ∈ Promises : HasSchedule(p) → "resonate:prefix" ∈ p.tags ∧ p.tags["resonate:prefix"] = p.id                 | Promises with a resonate:schedule tag have resonate:prefix equal to their id.               |
@@ -189,7 +190,7 @@ The primed variants (Promises', Tasks', etc.) denote the corresponding component
 | #    | Invariant                                                                                                            | Description                                                                                  |
 | ---- | -------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
 | S01  | ∀ s, s' ∈ Schedules : s.id = s'.id → s = s'                                                                          | Schedule ids are unique.                                                                     |
-| S02  | ∀ s ∈ Schedules : "." ∉ s.id                                                                                         | Schedule ids contain no dot.                                                                 |
+| S02  | ∀ s ∈ Schedules : ":" ∉ s.id                                                                                         | Schedule ids contain no colon.                                                               |
 | S03  | ∀ s ∈ Schedules : "resonate:target" ∈ s.promiseTags                                                                  | Every schedule includes a resonate:target tag in its promise tags.                           |
 | S04  | ∀ s ∈ Schedules : s.promiseTimeout ≥ 0                                                                               | Schedule promise timeout is non-negative.                                                    |
 | S05  | ∀ s ∈ Schedules : s.lastRunAt ≠ ⊥ → s.lastRunAt < s.nextRunAt                                                        | The last run time precedes the next scheduled run time.                                      |
@@ -197,7 +198,7 @@ The primed variants (Promises', Tasks', etc.) denote the corresponding component
 | S07  | ∀ s ∈ Schedules : s.lastRunAt = ⊥ → s.nextRunAt = cron(s.cron, s.createdAt)                                          | If the schedule has never run, the next run time is the first cron tick after creation.      |
 | S08  | ∀ s ∈ Schedules : s.lastRunAt ≠ ⊥ → s.nextRunAt = cron(s.cron, s.lastRunAt)                                          | If the schedule has run before, the next run time is the first cron tick after the last run. |
 | S09  | ∀ s ∈ Schedules : "\0" ∉ s.promiseId                                                                                  | Schedule promise ID template contains no null bytes.                                         |
-| S10  | ∀ s ∈ Schedules : "." ∉ plain(s.promiseId)                                                                            | Dots in the schedule promise ID template appear only within substitution blocks.             |
+| S10  | ∀ s ∈ Schedules : ":" ∉ plain(s.promiseId)                                                                            | Colons in the schedule promise ID template appear only within substitution blocks.           |
 
 ### Temporal
 
