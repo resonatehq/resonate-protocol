@@ -29,9 +29,10 @@ Published to the Buf Schema Registry as [buf.build/resonatehq/resonate](https://
 
 | File | Description |
 |------|-------------|
+| [spec/grpc/resonate/v1/resonate.proto](spec/grpc/resonate/v1/resonate.proto) | ResonateService exposing all promise, task, schedule, and debug operations |
 | [spec/grpc/resonate/v1/types.proto](spec/grpc/resonate/v1/types.proto) | Shared types (promises, tasks, schedules, request/response heads) |
-| [spec/grpc/resonate/v1/promises.proto](spec/grpc/resonate/v1/promises.proto) | PromiseService and promise request/response types |
-| [spec/grpc/resonate/v1/tasks.proto](spec/grpc/resonate/v1/tasks.proto) | TaskService and task request/response types |
-| [spec/grpc/resonate/v1/schedules.proto](spec/grpc/resonate/v1/schedules.proto) | ScheduleService and schedule request/response types |
-| [spec/grpc/resonate/v1/debug.proto](spec/grpc/resonate/v1/debug.proto) | DebugService and debug request/response types |
+| [spec/grpc/resonate/v1/promises.proto](spec/grpc/resonate/v1/promises.proto) | Promise request/response types |
+| [spec/grpc/resonate/v1/tasks.proto](spec/grpc/resonate/v1/tasks.proto) | Task request/response types |
+| [spec/grpc/resonate/v1/schedules.proto](spec/grpc/resonate/v1/schedules.proto) | Schedule request/response types |
+| [spec/grpc/resonate/v1/debug.proto](spec/grpc/resonate/v1/debug.proto) | Debug request/response types |
 | [spec/grpc/resonate/v1/messages.proto](spec/grpc/resonate/v1/messages.proto) | Messages sent by the server to worker addresses |

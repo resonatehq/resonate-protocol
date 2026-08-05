@@ -1,0 +1,108 @@
+// The Resonate protocol service.
+//
+// A single service exposing all promise, task, schedule, and debug
+// operations. See protocol.md for the full protocol specification. Debug
+// operations are optional and intended for testing and development only;
+// servers may respond with status 501 (not implemented).
+
+syntax = "proto3";
+
+package resonate.v1;
+
+import "resonate/v1/debug.proto";
+import "resonate/v1/promises.proto";
+import "resonate/v1/schedules.proto";
+import "resonate/v1/tasks.proto";
+
+service ResonateService {
+  // Promises
+
+  // Retrieves a promise by its identifier.
+  rpc PromiseGet(PromiseGetReq) returns (PromiseGetRes);
+
+  // Creates a new promise with the specified identifier.
+  rpc PromiseCreate(PromiseCreateReq) returns (PromiseCreateRes);
+
+  // Settles a pending promise with a terminal state.
+  rpc PromiseSettle(PromiseSettleReq) returns (PromiseSettleRes);
+
+  // Registers a dependency between two promises, indicating that the awaiter
+  // is waiting for the awaited promise to settle.
+  rpc PromiseRegisterCallback(PromiseRegisterCallbackReq) returns (PromiseRegisterCallbackRes);
+
+  // Registers a listener for a promise, receiving a notification when it
+  // settles.
+  rpc PromiseRegisterListener(PromiseRegisterListenerReq) returns (PromiseRegisterListenerRes);
+
+  // Searches for promises matching the specified criteria.
+  rpc PromiseSearch(PromiseSearchReq) returns (PromiseSearchRes);
+
+  // Tasks
+
+  // Retrieves a task by its identifier.
+  rpc TaskGet(TaskGetReq) returns (TaskGetRes);
+
+  // Creates a new task and its associated promise.
+  rpc TaskCreate(TaskCreateReq) returns (TaskCreateRes);
+
+  // Acquires a lease on a pending task.
+  rpc TaskAcquire(TaskAcquireReq) returns (TaskAcquireRes);
+
+  // Releases a task's lease without completing it, allowing the task to be
+  // re-acquired.
+  rpc TaskRelease(TaskReleaseReq) returns (TaskReleaseRes);
+
+  // Suspends a task while waiting for one or more promises to settle.
+  rpc TaskSuspend(TaskSuspendReq) returns (TaskSuspendRes);
+
+  // Halts a pending, acquired, or suspended task, preventing it from being
+  // acquired or making further progress.
+  rpc TaskHalt(TaskHaltReq) returns (TaskHaltRes);
+
+  // Resumes a halted task, transitioning it back to pending.
+  rpc TaskContinue(TaskContinueReq) returns (TaskContinueRes);
+
+  // Completes a task and settles its associated promise.
+  rpc TaskFulfill(TaskFulfillReq) returns (TaskFulfillRes);
+
+  // Executes a promise operation only if the task's lease is still valid.
+  rpc TaskFence(TaskFenceReq) returns (TaskFenceRes);
+
+  // Extends the lease for one or more tasks.
+  rpc TaskHeartbeat(TaskHeartbeatReq) returns (TaskHeartbeatRes);
+
+  // Searches for tasks matching the specified criteria.
+  rpc TaskSearch(TaskSearchReq) returns (TaskSearchRes);
+
+  // Schedules
+
+  // Retrieves a schedule by its identifier.
+  rpc ScheduleGet(ScheduleGetReq) returns (ScheduleGetRes);
+
+  // Creates a new schedule that creates promises on a recurring basis.
+  rpc ScheduleCreate(ScheduleCreateReq) returns (ScheduleCreateRes);
+
+  // Deletes a schedule.
+  rpc ScheduleDelete(ScheduleDeleteReq) returns (ScheduleDeleteRes);
+
+  // Searches for schedules matching the specified criteria.
+  rpc ScheduleSearch(ScheduleSearchReq) returns (ScheduleSearchRes);
+
+  // Debug (optional, for testing and development only)
+
+  // Starts the debug session.
+  rpc DebugStart(DebugStartReq) returns (DebugStartRes);
+
+  // Resets the debug session.
+  rpc DebugReset(DebugResetReq) returns (DebugResetRes);
+
+  // Times out promises and tasks that have exceeded the specified timestamp.
+  // Only promises with a resonate:target tag are settled by tick.
+  rpc DebugTick(DebugTickReq) returns (DebugTickRes);
+
+  // Takes a snapshot of the current debug session state.
+  rpc DebugSnap(DebugSnapReq) returns (DebugSnapRes);
+
+  // Stops the debug session.
+  rpc DebugStop(DebugStopReq) returns (DebugStopRes);
+}

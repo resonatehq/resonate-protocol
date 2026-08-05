@@ -1,26 +1,13 @@
-// Schedule operations for the Resonate protocol.
+// Schedule request and response types for the Resonate protocol.
 //
-// See protocol.md for the full protocol specification.
+// Schedule operations are exposed by ResonateService in resonate.proto. See
+// protocol.md for the full protocol specification.
 
 syntax = "proto3";
 
 package resonate.v1;
 
 import "resonate/v1/types.proto";
-
-service ScheduleService {
-  // Retrieves a schedule by its identifier.
-  rpc Get(ScheduleGetReq) returns (ScheduleGetRes);
-
-  // Creates a new schedule that creates promises on a recurring basis.
-  rpc Create(ScheduleCreateReq) returns (ScheduleCreateRes);
-
-  // Deletes a schedule.
-  rpc Delete(ScheduleDeleteReq) returns (ScheduleDeleteRes);
-
-  // Searches for schedules matching the specified criteria.
-  rpc Search(ScheduleSearchReq) returns (ScheduleSearchRes);
-}
 
 // kind: "schedule.get"
 message ScheduleGetReq {
