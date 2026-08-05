@@ -1,7 +1,8 @@
-// Debug operations for the Resonate protocol.
+// Debug request and response types for the Resonate protocol.
 //
-// Optional debug operations for testing and development. See protocol.md for
-// the full protocol specification.
+// Debug operations are optional, intended for testing and development, and
+// are exposed by ResonateService in resonate.proto. See protocol.md for the
+// full protocol specification.
 
 syntax = "proto3";
 
@@ -9,24 +10,6 @@ package resonate.v1;
 
 import "resonate/v1/messages.proto";
 import "resonate/v1/types.proto";
-
-service DebugService {
-  // Starts the debug session.
-  rpc Start(DebugStartReq) returns (DebugStartRes);
-
-  // Resets the debug session.
-  rpc Reset(DebugResetReq) returns (DebugResetRes);
-
-  // Times out promises and tasks that have exceeded the specified timestamp.
-  // Only promises with a resonate:target tag are settled by tick.
-  rpc Tick(DebugTickReq) returns (DebugTickRes);
-
-  // Takes a snapshot of the current debug session state.
-  rpc Snap(DebugSnapReq) returns (DebugSnapRes);
-
-  // Stops the debug session.
-  rpc Stop(DebugStopReq) returns (DebugStopRes);
-}
 
 // kind: "debug.start"
 message DebugStartReq {

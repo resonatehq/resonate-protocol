@@ -1,34 +1,13 @@
-// Promise operations for the Resonate protocol.
+// Promise request and response types for the Resonate protocol.
 //
-// See protocol.md for the full protocol specification.
+// Promise operations are exposed by ResonateService in resonate.proto. See
+// protocol.md for the full protocol specification.
 
 syntax = "proto3";
 
 package resonate.v1;
 
 import "resonate/v1/types.proto";
-
-service PromiseService {
-  // Retrieves a promise by its identifier.
-  rpc Get(PromiseGetReq) returns (PromiseGetRes);
-
-  // Creates a new promise with the specified identifier.
-  rpc Create(PromiseCreateReq) returns (PromiseCreateRes);
-
-  // Settles a pending promise with a terminal state.
-  rpc Settle(PromiseSettleReq) returns (PromiseSettleRes);
-
-  // Registers a dependency between two promises, indicating that the awaiter
-  // is waiting for the awaited promise to settle.
-  rpc RegisterCallback(PromiseRegisterCallbackReq) returns (PromiseRegisterCallbackRes);
-
-  // Registers a listener for a promise, receiving a notification when it
-  // settles.
-  rpc RegisterListener(PromiseRegisterListenerReq) returns (PromiseRegisterListenerRes);
-
-  // Searches for promises matching the specified criteria.
-  rpc Search(PromiseSearchReq) returns (PromiseSearchRes);
-}
 
 // kind: "promise.get"
 message PromiseGetReq {

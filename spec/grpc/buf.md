@@ -7,8 +7,5 @@ transport-agnostic durable execution protocol.
 
 | Package | Description |
 |---------|-------------|
-| `resonate.v1` PromiseService | Durable promise operations |
-| `resonate.v1` TaskService | Task operations |
-| `resonate.v1` ScheduleService | Schedule operations |
-| `resonate.v1` DebugService | Optional debug operations for testing and development |
+| `resonate.v1` ResonateService | Durable promise, task, and schedule operations, plus optional debug operations for testing and development |
 | `resonate.v1` messages | Messages sent by the server to worker addresses (not RPCs) |
