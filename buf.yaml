@@ -1,0 +1,15 @@
+version: v2
+modules:
+  - path: spec/grpc
+    name: buf.build/resonatehq/resonate
+lint:
+  use:
+    - STANDARD
+  except:
+    # Req/Res naming intentionally mirrors the protocol spec (types.json,
+    # types-zod.ts) rather than buf's Request/Response convention.
+    - RPC_REQUEST_STANDARD_NAME
+    - RPC_RESPONSE_STANDARD_NAME
+breaking:
+  use:
+    - FILE

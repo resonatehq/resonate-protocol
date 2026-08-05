@@ -25,11 +25,13 @@ A transport-agnostic durable execution protocol.
 
 ## gRPC
 
+Published to the Buf Schema Registry as [buf.build/resonatehq/resonate](https://buf.build/resonatehq/resonate).
+
 | File | Description |
 |------|-------------|
-| [spec/grpc/types.proto](spec/grpc/types.proto) | Shared types (promises, tasks, schedules, request/response heads) |
-| [spec/grpc/promises.proto](spec/grpc/promises.proto) | PromiseService and promise request/response types |
-| [spec/grpc/tasks.proto](spec/grpc/tasks.proto) | TaskService and task request/response types |
-| [spec/grpc/schedules.proto](spec/grpc/schedules.proto) | ScheduleService and schedule request/response types |
-| [spec/grpc/debug.proto](spec/grpc/debug.proto) | DebugService and debug request/response types |
-| [spec/grpc/messages.proto](spec/grpc/messages.proto) | Messages sent by the server to worker addresses |
+| [spec/grpc/resonate/v1/types.proto](spec/grpc/resonate/v1/types.proto) | Shared types (promises, tasks, schedules, request/response heads) |
+| [spec/grpc/resonate/v1/promises.proto](spec/grpc/resonate/v1/promises.proto) | PromiseService and promise request/response types |
+| [spec/grpc/resonate/v1/tasks.proto](spec/grpc/resonate/v1/tasks.proto) | TaskService and task request/response types |
+| [spec/grpc/resonate/v1/schedules.proto](spec/grpc/resonate/v1/schedules.proto) | ScheduleService and schedule request/response types |
+| [spec/grpc/resonate/v1/debug.proto](spec/grpc/resonate/v1/debug.proto) | DebugService and debug request/response types |
+| [spec/grpc/resonate/v1/messages.proto](spec/grpc/resonate/v1/messages.proto) | Messages sent by the server to worker addresses |

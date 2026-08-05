@@ -7,7 +7,7 @@ syntax = "proto3";
 
 package resonate.v1;
 
-import "types.proto";
+import "resonate/v1/types.proto";
 
 message MessageHead {
   optional string server_url = 1;

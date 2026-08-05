@@ -6,8 +6,8 @@ syntax = "proto3";
 
 package resonate.v1;
 
-import "promises.proto";
-import "types.proto";
+import "resonate/v1/promises.proto";
+import "resonate/v1/types.proto";
 
 service TaskService {
   // Retrieves a task by its identifier.
