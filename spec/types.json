@@ -52,10 +52,7 @@
           "minimum": 0
         }
       },
-      "required": [
-        "corrId",
-        "version"
-      ],
+      "required": ["corrId", "version"],
       "additionalProperties": false
     },
     "ResponseHead": {
@@ -71,11 +68,7 @@
           "type": "string"
         }
       },
-      "required": [
-        "corrId",
-        "status",
-        "version"
-      ],
+      "required": ["corrId", "status", "version"],
       "additionalProperties": false
     },
     "PromiseRecord": {
@@ -85,13 +78,7 @@
           "type": "string"
         },
         "state": {
-          "enum": [
-            "pending",
-            "resolved",
-            "rejected",
-            "rejected_canceled",
-            "rejected_timedout"
-          ]
+          "enum": ["pending", "resolved", "rejected", "rejected_canceled", "rejected_timedout"]
         },
         "param": {
           "$ref": "#/$defs/Value"
@@ -112,15 +99,7 @@
           "type": "number"
         }
       },
-      "required": [
-        "id",
-        "state",
-        "param",
-        "value",
-        "tags",
-        "timeoutAt",
-        "createdAt"
-      ],
+      "required": ["id", "state", "param", "value", "tags", "timeoutAt", "createdAt"],
       "additionalProperties": false
     },
     "TaskRecord": {
@@ -130,13 +109,7 @@
           "type": "string"
         },
         "state": {
-          "enum": [
-            "pending",
-            "acquired",
-            "suspended",
-            "halted",
-            "fulfilled"
-          ]
+          "enum": ["pending", "acquired", "suspended", "halted", "fulfilled"]
         },
         "version": {
           "type": "integer"
@@ -164,12 +137,7 @@
           "type": "string"
         }
       },
-      "required": [
-        "id",
-        "state",
-        "version",
-        "resumes"
-      ],
+      "required": ["id", "state", "version", "resumes"],
       "additionalProperties": false
     },
     "ScheduleRecord": {
@@ -246,24 +214,15 @@
                   "type": "integer"
                 }
               },
-              "required": [
-                "id",
-                "version"
-              ],
+              "required": ["id", "version"],
               "additionalProperties": false
             }
           },
-          "required": [
-            "task"
-          ],
+          "required": ["task"],
           "additionalProperties": false
         }
       },
-      "required": [
-        "kind",
-        "head",
-        "data"
-      ],
+      "required": ["kind", "head", "data"],
       "additionalProperties": false
     },
     "UnblockMsg": {
@@ -282,17 +241,11 @@
               "$ref": "#/$defs/PromiseRecord"
             }
           },
-          "required": [
-            "promise"
-          ],
+          "required": ["promise"],
           "additionalProperties": false
         }
       },
-      "required": [
-        "kind",
-        "head",
-        "data"
-      ],
+      "required": ["kind", "head", "data"],
       "additionalProperties": false
     },
     "Message": {
@@ -320,23 +273,14 @@
                   "type": "string"
                 },
                 "state": {
-                  "enum": [
-                    "rejected_timedout",
-                    "resolved"
-                  ]
+                  "enum": ["rejected_timedout", "resolved"]
                 }
               },
-              "required": [
-                "id",
-                "state"
-              ],
+              "required": ["id", "state"],
               "additionalProperties": false
             }
           },
-          "required": [
-            "kind",
-            "data"
-          ],
+          "required": ["kind", "data"],
           "additionalProperties": false
         },
         {
@@ -355,17 +299,11 @@
                   "type": "integer"
                 }
               },
-              "required": [
-                "id",
-                "version"
-              ],
+              "required": ["id", "version"],
               "additionalProperties": false
             }
           },
-          "required": [
-            "kind",
-            "data"
-          ],
+          "required": ["kind", "data"],
           "additionalProperties": false
         },
         {
@@ -384,17 +322,11 @@
                   "type": "integer"
                 }
               },
-              "required": [
-                "id",
-                "version"
-              ],
+              "required": ["id", "version"],
               "additionalProperties": false
             }
           },
-          "required": [
-            "kind",
-            "data"
-          ],
+          "required": ["kind", "data"],
           "additionalProperties": false
         }
       ]
@@ -416,17 +348,11 @@
               "minLength": 1
             }
           },
-          "required": [
-            "id"
-          ],
+          "required": ["id"],
           "additionalProperties": false
         }
       },
-      "required": [
-        "kind",
-        "head",
-        "data"
-      ],
+      "required": ["kind", "head", "data"],
       "additionalProperties": false
     },
     "PromiseCreateReq": {
@@ -459,20 +385,11 @@
               "$ref": "#/$defs/Tags"
             }
           },
-          "required": [
-            "id",
-            "timeoutAt",
-            "param",
-            "tags"
-          ],
+          "required": ["id", "timeoutAt", "param", "tags"],
           "additionalProperties": false
         }
       },
-      "required": [
-        "kind",
-        "head",
-        "data"
-      ],
+      "required": ["kind", "head", "data"],
       "additionalProperties": false
     },
     "PromiseSettleReq": {
@@ -492,29 +409,17 @@
               "minLength": 1
             },
             "state": {
-              "enum": [
-                "resolved",
-                "rejected",
-                "rejected_canceled"
-              ]
+              "enum": ["resolved", "rejected", "rejected_canceled"]
             },
             "value": {
               "$ref": "#/$defs/Value"
             }
           },
-          "required": [
-            "id",
-            "state",
-            "value"
-          ],
+          "required": ["id", "state", "value"],
           "additionalProperties": false
         }
       },
-      "required": [
-        "kind",
-        "head",
-        "data"
-      ],
+      "required": ["kind", "head", "data"],
       "additionalProperties": false
     },
     "PromiseRegisterCallbackReq": {
@@ -538,18 +443,11 @@
               "minLength": 1
             }
           },
-          "required": [
-            "awaited",
-            "awaiter"
-          ],
+          "required": ["awaited", "awaiter"],
           "additionalProperties": false
         }
       },
-      "required": [
-        "kind",
-        "head",
-        "data"
-      ],
+      "required": ["kind", "head", "data"],
       "additionalProperties": false
     },
     "PromiseRegisterListenerReq": {
@@ -573,18 +471,11 @@
               "minLength": 1
             }
           },
-          "required": [
-            "awaited",
-            "address"
-          ],
+          "required": ["awaited", "address"],
           "additionalProperties": false
         }
       },
-      "required": [
-        "kind",
-        "head",
-        "data"
-      ],
+      "required": ["kind", "head", "data"],
       "additionalProperties": false
     },
     "PromiseSearchReq": {
@@ -600,13 +491,7 @@
           "type": "object",
           "properties": {
             "state": {
-              "enum": [
-                "pending",
-                "resolved",
-                "rejected",
-                "rejected_canceled",
-                "rejected_timedout"
-              ]
+              "enum": ["pending", "resolved", "rejected", "rejected_canceled", "rejected_timedout"]
             },
             "tags": {
               "$ref": "#/$defs/Tags"
@@ -622,11 +507,7 @@
           "additionalProperties": false
         }
       },
-      "required": [
-        "kind",
-        "head",
-        "data"
-      ],
+      "required": ["kind", "head", "data"],
       "additionalProperties": false
     },
     "TaskGetReq": {
@@ -646,17 +527,11 @@
               "minLength": 1
             }
           },
-          "required": [
-            "id"
-          ],
+          "required": ["id"],
           "additionalProperties": false
         }
       },
-      "required": [
-        "kind",
-        "head",
-        "data"
-      ],
+      "required": ["kind", "head", "data"],
       "additionalProperties": false
     },
     "TaskCreateReq": {
@@ -680,22 +555,30 @@
               "minimum": 1
             },
             "action": {
-              "$ref": "#/$defs/PromiseCreateReq"
+              "allOf": [
+                { "$ref": "#/$defs/PromiseCreateReq" },
+                {
+                  "properties": {
+                    "data": {
+                      "properties": {
+                        "tags": {
+                          "required": ["resonate:target"],
+                          "properties": {
+                            "resonate:delay": false
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              ]
             }
           },
-          "required": [
-            "pid",
-            "ttl",
-            "action"
-          ],
+          "required": ["pid", "ttl", "action"],
           "additionalProperties": false
         }
       },
-      "required": [
-        "kind",
-        "head",
-        "data"
-      ],
+      "required": ["kind", "head", "data"],
       "additionalProperties": false
     },
     "TaskAcquireReq": {
@@ -727,20 +610,11 @@
               "minimum": 1
             }
           },
-          "required": [
-            "id",
-            "version",
-            "pid",
-            "ttl"
-          ],
+          "required": ["id", "version", "pid", "ttl"],
           "additionalProperties": false
         }
       },
-      "required": [
-        "kind",
-        "head",
-        "data"
-      ],
+      "required": ["kind", "head", "data"],
       "additionalProperties": false
     },
     "TaskReleaseReq": {
@@ -764,18 +638,11 @@
               "minimum": 0
             }
           },
-          "required": [
-            "id",
-            "version"
-          ],
+          "required": ["id", "version"],
           "additionalProperties": false
         }
       },
-      "required": [
-        "kind",
-        "head",
-        "data"
-      ],
+      "required": ["kind", "head", "data"],
       "additionalProperties": false
     },
     "TaskSuspendReq": {
@@ -806,19 +673,11 @@
               "minItems": 1
             }
           },
-          "required": [
-            "id",
-            "version",
-            "actions"
-          ],
+          "required": ["id", "version", "actions"],
           "additionalProperties": false
         }
       },
-      "required": [
-        "kind",
-        "head",
-        "data"
-      ],
+      "required": ["kind", "head", "data"],
       "additionalProperties": false
     },
     "TaskHaltReq": {
@@ -838,17 +697,11 @@
               "minLength": 1
             }
           },
-          "required": [
-            "id"
-          ],
+          "required": ["id"],
           "additionalProperties": false
         }
       },
-      "required": [
-        "kind",
-        "head",
-        "data"
-      ],
+      "required": ["kind", "head", "data"],
       "additionalProperties": false
     },
     "TaskContinueReq": {
@@ -868,17 +721,11 @@
               "minLength": 1
             }
           },
-          "required": [
-            "id"
-          ],
+          "required": ["id"],
           "additionalProperties": false
         }
       },
-      "required": [
-        "kind",
-        "head",
-        "data"
-      ],
+      "required": ["kind", "head", "data"],
       "additionalProperties": false
     },
     "TaskFulfillReq": {
@@ -905,19 +752,11 @@
               "$ref": "#/$defs/PromiseSettleReq"
             }
           },
-          "required": [
-            "id",
-            "version",
-            "action"
-          ],
+          "required": ["id", "version", "action"],
           "additionalProperties": false
         }
       },
-      "required": [
-        "kind",
-        "head",
-        "data"
-      ],
+      "required": ["kind", "head", "data"],
       "additionalProperties": false
     },
     "TaskFenceReq": {
@@ -951,19 +790,11 @@
               ]
             }
           },
-          "required": [
-            "id",
-            "version",
-            "action"
-          ],
+          "required": ["id", "version", "action"],
           "additionalProperties": false
         }
       },
-      "required": [
-        "kind",
-        "head",
-        "data"
-      ],
+      "required": ["kind", "head", "data"],
       "additionalProperties": false
     },
     "TaskHeartbeatReq": {
@@ -995,26 +826,16 @@
                     "type": "integer"
                   }
                 },
-                "required": [
-                  "id",
-                  "version"
-                ],
+                "required": ["id", "version"],
                 "additionalProperties": false
               }
             }
           },
-          "required": [
-            "pid",
-            "tasks"
-          ],
+          "required": ["pid", "tasks"],
           "additionalProperties": false
         }
       },
-      "required": [
-        "kind",
-        "head",
-        "data"
-      ],
+      "required": ["kind", "head", "data"],
       "additionalProperties": false
     },
     "TaskSearchReq": {
@@ -1030,13 +851,7 @@
           "type": "object",
           "properties": {
             "state": {
-              "enum": [
-                "pending",
-                "acquired",
-                "suspended",
-                "halted",
-                "fulfilled"
-              ]
+              "enum": ["pending", "acquired", "suspended", "halted", "fulfilled"]
             },
             "limit": {
               "type": "integer",
@@ -1049,11 +864,7 @@
           "additionalProperties": false
         }
       },
-      "required": [
-        "kind",
-        "head",
-        "data"
-      ],
+      "required": ["kind", "head", "data"],
       "additionalProperties": false
     },
     "ScheduleGetReq": {
@@ -1073,17 +884,11 @@
               "minLength": 1
             }
           },
-          "required": [
-            "id"
-          ],
+          "required": ["id"],
           "additionalProperties": false
         }
       },
-      "required": [
-        "kind",
-        "head",
-        "data"
-      ],
+      "required": ["kind", "head", "data"],
       "additionalProperties": false
     },
     "ScheduleCreateReq": {
@@ -1101,7 +906,10 @@
             "id": {
               "type": "string",
               "minLength": 1,
-              "pattern": "^[^.]+$"
+              "pattern": "^[^.]+$",
+              "not": {
+                "pattern": "\u0000"
+              }
             },
             "cron": {
               "type": "string",
@@ -1109,7 +917,11 @@
             },
             "promiseId": {
               "type": "string",
-              "minLength": 1
+              "minLength": 1,
+              "pattern": "^([^.{]|\\{\\{[^}]*\\}\\})*$",
+              "not": {
+                "pattern": "\u0000"
+              }
             },
             "promiseTimeout": {
               "type": "integer",
@@ -1119,25 +931,14 @@
               "$ref": "#/$defs/Value"
             },
             "promiseTags": {
-              "$ref": "#/$defs/Tags"
+              "allOf": [{ "$ref": "#/$defs/Tags" }, { "required": ["resonate:target"] }]
             }
           },
-          "required": [
-            "id",
-            "cron",
-            "promiseId",
-            "promiseTimeout",
-            "promiseParam",
-            "promiseTags"
-          ],
+          "required": ["id", "cron", "promiseId", "promiseTimeout", "promiseParam", "promiseTags"],
           "additionalProperties": false
         }
       },
-      "required": [
-        "kind",
-        "head",
-        "data"
-      ],
+      "required": ["kind", "head", "data"],
       "additionalProperties": false
     },
     "ScheduleDeleteReq": {
@@ -1157,17 +958,11 @@
               "minLength": 1
             }
           },
-          "required": [
-            "id"
-          ],
+          "required": ["id"],
           "additionalProperties": false
         }
       },
-      "required": [
-        "kind",
-        "head",
-        "data"
-      ],
+      "required": ["kind", "head", "data"],
       "additionalProperties": false
     },
     "ScheduleSearchReq": {
@@ -1196,11 +991,7 @@
           "additionalProperties": false
         }
       },
-      "required": [
-        "kind",
-        "head",
-        "data"
-      ],
+      "required": ["kind", "head", "data"],
       "additionalProperties": false
     },
     "DebugStartReq": {
@@ -1217,11 +1008,7 @@
           "additionalProperties": false
         }
       },
-      "required": [
-        "kind",
-        "head",
-        "data"
-      ],
+      "required": ["kind", "head", "data"],
       "additionalProperties": false
     },
     "DebugResetReq": {
@@ -1238,11 +1025,7 @@
           "additionalProperties": false
         }
       },
-      "required": [
-        "kind",
-        "head",
-        "data"
-      ],
+      "required": ["kind", "head", "data"],
       "additionalProperties": false
     },
     "DebugTickReq": {
@@ -1262,17 +1045,11 @@
               "minimum": 0
             }
           },
-          "required": [
-            "time"
-          ],
+          "required": ["time"],
           "additionalProperties": false
         }
       },
-      "required": [
-        "kind",
-        "head",
-        "data"
-      ],
+      "required": ["kind", "head", "data"],
       "additionalProperties": false
     },
     "DebugSnapReq": {
@@ -1289,11 +1066,7 @@
           "additionalProperties": false
         }
       },
-      "required": [
-        "kind",
-        "head",
-        "data"
-      ],
+      "required": ["kind", "head", "data"],
       "additionalProperties": false
     },
     "DebugStopReq": {
@@ -1310,11 +1083,7 @@
           "additionalProperties": false
         }
       },
-      "required": [
-        "kind",
-        "head",
-        "data"
-      ],
+      "required": ["kind", "head", "data"],
       "additionalProperties": false
     },
     "PromiseGetRes": {
@@ -1346,17 +1115,11 @@
                   "$ref": "#/$defs/PromiseRecord"
                 }
               },
-              "required": [
-                "promise"
-              ],
+              "required": ["promise"],
               "additionalProperties": false
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -1383,11 +1146,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -1414,11 +1173,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -1445,11 +1200,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -1476,11 +1227,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -1507,11 +1254,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -1538,11 +1281,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         }
       ]
@@ -1576,17 +1315,11 @@
                   "$ref": "#/$defs/PromiseRecord"
                 }
               },
-              "required": [
-                "promise"
-              ],
+              "required": ["promise"],
               "additionalProperties": false
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -1613,11 +1346,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -1644,11 +1373,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -1675,11 +1400,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -1706,11 +1427,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -1737,11 +1454,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         }
       ]
@@ -1775,17 +1488,11 @@
                   "$ref": "#/$defs/PromiseRecord"
                 }
               },
-              "required": [
-                "promise"
-              ],
+              "required": ["promise"],
               "additionalProperties": false
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -1812,11 +1519,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -1843,11 +1546,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -1874,11 +1573,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -1905,11 +1600,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -1936,11 +1627,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -1967,11 +1654,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         }
       ]
@@ -2005,17 +1688,11 @@
                   "$ref": "#/$defs/PromiseRecord"
                 }
               },
-              "required": [
-                "promise"
-              ],
+              "required": ["promise"],
               "additionalProperties": false
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -2042,11 +1719,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -2073,11 +1746,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -2104,11 +1773,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -2135,11 +1800,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -2166,11 +1827,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -2197,11 +1854,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -2228,11 +1881,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         }
       ]
@@ -2266,17 +1915,11 @@
                   "$ref": "#/$defs/PromiseRecord"
                 }
               },
-              "required": [
-                "promise"
-              ],
+              "required": ["promise"],
               "additionalProperties": false
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -2303,11 +1946,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -2334,11 +1973,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -2365,11 +2000,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -2396,11 +2027,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -2427,11 +2054,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -2458,11 +2081,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -2489,11 +2108,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         }
       ]
@@ -2533,17 +2148,11 @@
                   "type": "string"
                 }
               },
-              "required": [
-                "promises"
-              ],
+              "required": ["promises"],
               "additionalProperties": false
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -2570,11 +2179,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -2601,11 +2206,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -2632,11 +2233,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -2663,11 +2260,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -2694,11 +2287,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -2725,11 +2314,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         }
       ]
@@ -2763,17 +2348,11 @@
                   "$ref": "#/$defs/TaskRecord"
                 }
               },
-              "required": [
-                "task"
-              ],
+              "required": ["task"],
               "additionalProperties": false
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -2800,11 +2379,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -2831,11 +2406,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -2862,11 +2433,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -2893,11 +2460,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -2924,11 +2487,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -2955,11 +2514,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         }
       ]
@@ -3002,19 +2557,11 @@
                   }
                 }
               },
-              "required": [
-                "task",
-                "promise",
-                "preload"
-              ],
+              "required": ["task", "promise", "preload"],
               "additionalProperties": false
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -3041,11 +2588,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -3072,11 +2615,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -3103,11 +2642,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -3134,11 +2669,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -3165,11 +2696,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -3196,11 +2723,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -3227,11 +2750,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -3258,11 +2777,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         }
       ]
@@ -3305,19 +2820,11 @@
                   }
                 }
               },
-              "required": [
-                "task",
-                "promise",
-                "preload"
-              ],
+              "required": ["task", "promise", "preload"],
               "additionalProperties": false
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -3344,11 +2851,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -3375,11 +2878,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -3406,11 +2905,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -3437,11 +2932,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -3468,11 +2959,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -3499,11 +2986,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -3530,11 +3013,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         }
       ]
@@ -3566,11 +3045,7 @@
               "additionalProperties": false
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -3597,11 +3072,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -3628,11 +3099,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -3659,11 +3126,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -3690,11 +3153,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -3721,11 +3180,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -3752,11 +3207,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -3783,11 +3234,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         }
       ]
@@ -3819,11 +3266,7 @@
               "additionalProperties": false
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -3856,17 +3299,11 @@
                   }
                 }
               },
-              "required": [
-                "preload"
-              ],
+              "required": ["preload"],
               "additionalProperties": false
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -3893,11 +3330,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -3924,11 +3357,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -3955,11 +3384,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -3986,11 +3411,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -4017,11 +3438,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -4048,11 +3465,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -4079,11 +3492,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -4110,11 +3519,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         }
       ]
@@ -4146,11 +3551,7 @@
               "additionalProperties": false
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -4177,11 +3578,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -4208,11 +3605,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -4239,11 +3632,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -4270,11 +3659,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -4301,11 +3686,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -4332,11 +3713,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -4363,11 +3740,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         }
       ]
@@ -4399,11 +3772,7 @@
               "additionalProperties": false
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -4430,11 +3799,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -4461,11 +3826,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -4492,11 +3853,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -4523,11 +3880,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -4554,11 +3907,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -4585,11 +3934,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -4616,11 +3961,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         }
       ]
@@ -4654,17 +3995,11 @@
                   "$ref": "#/$defs/PromiseRecord"
                 }
               },
-              "required": [
-                "promise"
-              ],
+              "required": ["promise"],
               "additionalProperties": false
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -4691,11 +4026,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -4722,11 +4053,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -4753,11 +4080,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -4784,11 +4107,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -4815,11 +4134,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -4846,11 +4161,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -4877,11 +4188,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         }
       ]
@@ -4928,18 +4235,11 @@
                   }
                 }
               },
-              "required": [
-                "action",
-                "preload"
-              ],
+              "required": ["action", "preload"],
               "additionalProperties": false
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -4966,11 +4266,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -4997,11 +4293,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -5028,11 +4320,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -5059,11 +4347,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -5090,11 +4374,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -5121,11 +4401,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -5152,11 +4428,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         }
       ]
@@ -5188,11 +4460,7 @@
               "additionalProperties": false
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -5219,11 +4487,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -5250,11 +4514,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -5281,11 +4541,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -5312,11 +4568,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -5343,11 +4595,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         }
       ]
@@ -5387,17 +4635,11 @@
                   "type": "string"
                 }
               },
-              "required": [
-                "tasks"
-              ],
+              "required": ["tasks"],
               "additionalProperties": false
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -5424,11 +4666,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -5455,11 +4693,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -5486,11 +4720,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -5517,11 +4747,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -5548,11 +4774,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -5579,11 +4801,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         }
       ]
@@ -5617,17 +4835,11 @@
                   "$ref": "#/$defs/ScheduleRecord"
                 }
               },
-              "required": [
-                "schedule"
-              ],
+              "required": ["schedule"],
               "additionalProperties": false
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -5654,11 +4866,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -5685,11 +4893,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -5716,11 +4920,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -5747,11 +4947,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -5778,11 +4974,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -5809,11 +5001,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -5840,11 +5028,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         }
       ]
@@ -5878,17 +5062,11 @@
                   "$ref": "#/$defs/ScheduleRecord"
                 }
               },
-              "required": [
-                "schedule"
-              ],
+              "required": ["schedule"],
               "additionalProperties": false
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -5915,11 +5093,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -5946,11 +5120,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -5977,11 +5147,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -6008,11 +5174,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -6039,11 +5201,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -6070,11 +5228,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         }
       ]
@@ -6106,11 +5260,7 @@
               "additionalProperties": false
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -6137,11 +5287,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -6168,11 +5314,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -6199,11 +5341,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -6230,11 +5368,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -6261,11 +5395,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -6292,11 +5422,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -6323,11 +5449,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         }
       ]
@@ -6367,17 +5489,11 @@
                   "type": "string"
                 }
               },
-              "required": [
-                "schedules"
-              ],
+              "required": ["schedules"],
               "additionalProperties": false
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -6404,11 +5520,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -6435,11 +5547,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -6466,11 +5574,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -6497,11 +5601,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -6528,11 +5628,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -6559,11 +5655,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         }
       ]
@@ -6595,11 +5687,7 @@
               "additionalProperties": false
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -6626,11 +5714,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -6657,11 +5741,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -6688,11 +5768,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -6719,11 +5795,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -6750,11 +5822,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -6781,11 +5849,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         }
       ]
@@ -6817,11 +5881,7 @@
               "additionalProperties": false
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -6848,11 +5908,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -6879,11 +5935,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -6910,11 +5962,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -6941,11 +5989,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -6972,11 +6016,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -7003,11 +6043,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         }
       ]
@@ -7041,11 +6077,7 @@
               }
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -7072,11 +6104,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -7103,11 +6131,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -7134,11 +6158,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -7165,11 +6185,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -7196,11 +6212,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -7227,11 +6239,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         }
       ]
@@ -7279,10 +6287,7 @@
                         "type": "number"
                       }
                     },
-                    "required": [
-                      "id",
-                      "timeout"
-                    ],
+                    "required": ["id", "timeout"],
                     "additionalProperties": false
                   }
                 },
@@ -7298,10 +6303,7 @@
                         "type": "string"
                       }
                     },
-                    "required": [
-                      "awaiter",
-                      "awaited"
-                    ],
+                    "required": ["awaiter", "awaited"],
                     "additionalProperties": false
                   }
                 },
@@ -7317,10 +6319,7 @@
                         "type": "string"
                       }
                     },
-                    "required": [
-                      "id",
-                      "address"
-                    ],
+                    "required": ["id", "address"],
                     "additionalProperties": false
                   }
                 },
@@ -7345,11 +6344,7 @@
                         "type": "number"
                       }
                     },
-                    "required": [
-                      "id",
-                      "type",
-                      "timeout"
-                    ],
+                    "required": ["id", "type", "timeout"],
                     "additionalProperties": false
                   }
                 },
@@ -7371,10 +6366,7 @@
                         "type": "number"
                       }
                     },
-                    "required": [
-                      "id",
-                      "timeout"
-                    ],
+                    "required": ["id", "timeout"],
                     "additionalProperties": false
                   }
                 },
@@ -7390,30 +6382,16 @@
                         "$ref": "#/$defs/Message"
                       }
                     },
-                    "required": [
-                      "address",
-                      "message"
-                    ],
+                    "required": ["address", "message"],
                     "additionalProperties": false
                   }
                 }
               },
-              "required": [
-                "promises",
-                "promiseTimeouts",
-                "callbacks",
-                "tasks",
-                "taskTimeouts",
-                "messages"
-              ],
+              "required": ["promises", "promiseTimeouts", "callbacks", "tasks", "taskTimeouts", "messages"],
               "additionalProperties": false
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -7440,11 +6418,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -7471,11 +6445,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -7502,11 +6472,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -7533,11 +6499,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -7564,11 +6526,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -7595,11 +6553,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         }
       ]
@@ -7631,11 +6585,7 @@
               "additionalProperties": false
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -7662,11 +6612,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -7693,11 +6639,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -7724,11 +6666,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -7755,11 +6693,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -7786,11 +6720,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         },
         {
@@ -7817,11 +6747,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "kind",
-            "head",
-            "data"
-          ],
+          "required": ["kind", "head", "data"],
           "additionalProperties": false
         }
       ]
