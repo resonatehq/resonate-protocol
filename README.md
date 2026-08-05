@@ -22,3 +22,16 @@ A transport-agnostic durable execution protocol.
 | [spec/types-zod.ts](spec/types-zod.ts) | Zod schemas for runtime validation |
 | [spec/types-raw.ts](spec/types-raw.ts) | Raw TypeScript types (no dependencies) |
 | [spec/types.json](spec/types.json) | JSON Schema for all request, response, and message types |
+
+## gRPC
+
+Published to the Buf Schema Registry as [buf.build/resonatehq/resonate](https://buf.build/resonatehq/resonate).
+
+| File | Description |
+|------|-------------|
+| [spec/grpc/resonate/v1/types.proto](spec/grpc/resonate/v1/types.proto) | Shared types (promises, tasks, schedules, request/response heads) |
+| [spec/grpc/resonate/v1/promises.proto](spec/grpc/resonate/v1/promises.proto) | PromiseService and promise request/response types |
+| [spec/grpc/resonate/v1/tasks.proto](spec/grpc/resonate/v1/tasks.proto) | TaskService and task request/response types |
+| [spec/grpc/resonate/v1/schedules.proto](spec/grpc/resonate/v1/schedules.proto) | ScheduleService and schedule request/response types |
+| [spec/grpc/resonate/v1/debug.proto](spec/grpc/resonate/v1/debug.proto) | DebugService and debug request/response types |
+| [spec/grpc/resonate/v1/messages.proto](spec/grpc/resonate/v1/messages.proto) | Messages sent by the server to worker addresses |
