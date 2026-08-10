@@ -66,10 +66,24 @@ message PromiseCreateReq {
     //     parent promise that created this promise in the execution tree.
     //   - If a resonate:schedule tag is present, it identifies the schedule
     //     that created this promise.
+    //
+    // Must not contain resonate:target when state is not pending.
     map<string, string> tags = 3;
 
     // Unix timestamp in milliseconds when the promise will timeout.
     int64 timeout_at = 4;
+
+    // The initial promise state. Defaults to pending. Must not be
+    // rejected_timedout. If terminal, the promise is created already
+    // settled: when timeout_at is in the future, in the requested state with
+    // the requested value and created_at and settled_at set to the current
+    // time; when timeout_at has passed, in the rejected_timedout state
+    // (resolved if the resonate:timer tag is set to "true") with an empty
+    // value and created_at and settled_at set to timeout_at.
+    PromiseState state = 5;
+
+    // The promise result value, permitted iff state is not pending.
+    Value value = 6;
   }
 
   RequestHead head = 1;

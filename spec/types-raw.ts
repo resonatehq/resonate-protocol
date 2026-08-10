@@ -89,9 +89,11 @@ export type PromiseCreateReq = {
   head: RequestHead;
   data: {
     id: string;
+    state?: "pending" | "resolved" | "rejected" | "rejected_canceled";
     timeoutAt: number;
     param: Value;
     tags: Record<string, string>;
+    value?: Value;
   };
 };
 
@@ -854,12 +856,17 @@ export function isPromiseCreateReq(val: unknown): val is PromiseCreateReq {
   if (v.kind !== "promise.create" || !isRequestHead(v.head)) return false;
   if (typeof v.data !== "object" || v.data === null) return false;
   const d = v.data as Record<string, unknown>;
+  const state = d.state ?? "pending";
+  if (state !== "pending" && state !== "resolved" && state !== "rejected" && state !== "rejected_canceled") {
+    return false;
+  }
   return (
     typeof d.id === "string" &&
     typeof d.timeoutAt === "number" &&
     isValue(d.param) &&
     typeof d.tags === "object" &&
-    d.tags !== null
+    d.tags !== null &&
+    (state === "pending" ? d.value === undefined : d.value === undefined || isValue(d.value))
   );
 }
 

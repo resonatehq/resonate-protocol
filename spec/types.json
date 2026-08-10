@@ -374,6 +374,9 @@
                 "pattern": "\u0000"
               }
             },
+            "state": {
+              "enum": ["pending", "resolved", "rejected", "rejected_canceled"]
+            },
             "timeoutAt": {
               "type": "integer",
               "minimum": 0
@@ -383,10 +386,35 @@
             },
             "tags": {
               "$ref": "#/$defs/Tags"
+            },
+            "value": {
+              "$ref": "#/$defs/Value"
             }
           },
           "required": ["id", "timeoutAt", "param", "tags"],
-          "additionalProperties": false
+          "additionalProperties": false,
+          "if": {
+            "required": ["state"],
+            "properties": {
+              "state": {
+                "enum": ["resolved", "rejected", "rejected_canceled"]
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "tags": {
+                "properties": {
+                  "resonate:target": false
+                }
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "value": false
+            }
+          }
         }
       },
       "required": ["kind", "head", "data"],
@@ -561,6 +589,9 @@
                   "properties": {
                     "data": {
                       "properties": {
+                        "state": {
+                          "const": "pending"
+                        },
                         "tags": {
                           "required": ["resonate:target"],
                           "properties": {
