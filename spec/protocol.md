@@ -312,9 +312,11 @@ type PromiseCreateReq = {
   };
   data: {
     id: string;
+    state?: "pending" | "resolved" | "rejected" | "rejected_canceled";
     param: { headers?: { [key: string]: string }; data?: string };
     tags: { [key: string]: string };
     timeoutAt: number;
+    value?: { headers?: { [key: string]: string }; data?: string };
   };
 }
 ```
@@ -322,6 +324,10 @@ type PromiseCreateReq = {
 **id**
 
    The unique identifier for the promise.
+
+**state**
+
+   The initial promise state. Defaults to `pending`.
 
 **param**
 
@@ -343,10 +349,16 @@ type PromiseCreateReq = {
 
    Unix timestamp in milliseconds when the promise will timeout.
 
+**value**
+
+   The promise result value, permitted iff `state` is not `pending`. The `data` field must be base64 encoded.
+
 **Validation**
 
 - The promise `id` must not contain null bytes.
 - `timeoutAt` must be a non-negative integer.
+- `value` is permitted iff `state` is not `pending`.
+- `tags` must not contain `resonate:target` when `state` is not `pending`.
 - If a `resonate:delay` tag is present, its value must be a non-negative integer.
 - If a `resonate:delay` tag is present, its value must be less than `timeoutAt`.
 - If a `resonate:delay` tag is present, a `resonate:target` tag must also be present.
@@ -368,6 +380,11 @@ type PromiseCreateRes = {
 ```
 
 Returns the promise. If a promise with the same identifier already exists, returns the existing promise (idempotent).
+
+If `state` is terminal, the promise is created already settled. There are two cases:
+
+- `timeoutAt` is in the future: the promise is created in the requested state with the requested `value`. `createdAt` and `settledAt` are the current time.
+- `timeoutAt` has passed: the promise is created in the `rejected_timedout` state (`resolved` if the `resonate:timer` tag is `true`) with an empty `value`. `createdAt` and `settledAt` are `timeoutAt`.
 
 ### Settle
 
@@ -747,6 +764,7 @@ type TaskCreateReq = {
 
 **Validation**
 
+- The action `state` must be absent or `pending`.
 - The action must have a `resonate:target` tag.
 - The action must not have a `resonate:delay` tag.
 

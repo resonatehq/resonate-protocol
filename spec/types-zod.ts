@@ -143,10 +143,18 @@ export const PromiseCreateReqSchema = z
         .string()
         .min(1, "Promise ID is required")
         .refine((s) => !s.includes("\x00"), "Promise ID must not contain null bytes"),
+      state: z.enum(["pending", "resolved", "rejected", "rejected_canceled"]).optional(),
       timeoutAt: z.number().int().nonnegative("TimeoutAt must be a non-negative integer"),
       param: ValueSchema,
       tags: z.record(z.string(), z.string()),
+      value: ValueSchema.optional(),
     }),
+  })
+  .refine((r) => ((r.data.state ?? "pending") === "pending" ? r.data.value === undefined : true), {
+    message: "Value is permitted only when state is not pending",
+  })
+  .refine((r) => (r.data.state ?? "pending") === "pending" || !("resonate:target" in r.data.tags), {
+    message: "resonate:target is not permitted when state is not pending",
   })
   .refine(
     (r) => {
@@ -294,6 +302,9 @@ export const TaskCreateReqSchema = z.object({
       pid: z.string().min(1, "Process ID is required"),
       ttl: z.number().int().positive("TTL must be a positive integer"),
       action: PromiseCreateReqSchema,
+    })
+    .refine((r) => (r.action.data.state ?? "pending") === "pending", {
+      message: "Action state must be pending",
     })
     .refine((r) => "resonate:target" in r.action.data.tags, {
       message: "Action must have a resonate:target tag",

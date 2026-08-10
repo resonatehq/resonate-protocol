@@ -48,8 +48,8 @@ message TaskCreateReq {
     int64 ttl = 2;
 
     // A PromiseCreateReq specifying the promise to create for this task.
-    // The action must have a resonate:target tag and must not have a
-    // resonate:delay tag.
+    // The action state must be unspecified or pending, the action must have
+    // a resonate:target tag, and must not have a resonate:delay tag.
     PromiseCreateReq action = 3;
   }
 
