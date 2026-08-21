@@ -58,35 +58,6 @@ p.sub {
   color: var(--muted);
   font-size: 0.875rem;
 }
-.legend {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.25rem 1rem;
-  margin: 0.6rem 0 0;
-  color: var(--muted);
-  font-size: 0.78rem;
-}
-.legend span {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-}
-.legend i {
-  display: inline-block;
-  border-radius: 2px;
-}
-.legend i.claim {
-  width: 20px;
-  height: 11px;
-  background: var(--claim);
-  outline: 1px solid var(--border);
-}
-.legend i.act {
-  width: 20px;
-  height: 11px;
-  background: var(--activation);
-  outline: 1px solid var(--border);
-}
 nav {
   margin-top: 0.7rem;
   display: flex;
