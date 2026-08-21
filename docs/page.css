@@ -228,15 +228,6 @@ aside h2 {
   font-weight: 600;
   margin: 0.5rem 0 0.1rem;
 }
-aside .route {
-  color: var(--muted);
-  font-size: 0.8rem;
-  margin: 0 0 0.75rem;
-}
-aside .route b {
-  font-weight: 600;
-  color: var(--fg);
-}
 aside .label {
   font:
     0.8rem / 1.4 ui-monospace,
