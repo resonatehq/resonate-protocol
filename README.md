@@ -6,6 +6,17 @@ A transport-agnostic durable execution protocol.
 
 `2026-04-01`
 
+## Diagrams
+
+Interactive sequence diagrams of the protocol, published from [`docs/`](docs):
+
+| Page | Description |
+|------|-------------|
+| [The protocol](https://resonatehq.github.io/resonate-protocol/) | One pass of the loop, in placeholders: dispatch, claim, fenced steps, and a pass that ends either suspended or completed. |
+| [A worked example](https://resonatehq.github.io/resonate-protocol/example.html) | `foo` calls `bar` across two workers, with real ids and values. Click any message for the step explained, the promise store as it stands, and the message itself in JSON. |
+
+Every message shown validates against [spec/types.json](spec/types.json).
+
 ## Types
 
 | File | Description |

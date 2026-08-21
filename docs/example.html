@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sequence — worked example</title>
+<link rel="stylesheet" href="page.css">
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>foo calls bar — end to end, including the replay</h1>
+    <p class="sub">Two workers, two passes of <code>foo</code>, one execution of <code>bar</code></p>
+    <p class="legend">
+      <span><i class="claim"></i> the worker's claim — acquired until released; fenced writes accepted</span>
+      <span><i class="act"></i> SDK activation — a worker holds the task, a program instance is alive</span>
+    </p>
+    <nav>
+      <a href="index.html">The protocol</a>
+      <a href="example.html" aria-current="page">A worked example</a>
+    </nav>
+  </header>
+
+  <div class="source" id="code">
+<pre><span class="ln" data-n="1">function foo(context, n) {</span><span class="ln" data-n="2">  let p = context.rpc(bar, n);</span><span class="ln" data-n="3">  let v = await p;</span><span class="ln" data-n="4">  return v;</span><span class="ln" data-n="5">}</span><span class="ln" data-n="6"> </span><span class="ln" data-n="7">function bar(context, n) {</span><span class="ln" data-n="8">  return n * 2;</span><span class="ln" data-n="9">}</span></pre>
+  </div>
+
+  <div class="layout">
+    <div class="frame">
+<pre class="mermaid">
+sequenceDiagram
+  autonumber
+  participant C as Client
+  participant S as Server
+  participant WA as Worker A
+  participant PA as Program A
+  participant WB as Worker B
+  participant PB as Program B
+
+  C->>S: promise.create foo.1 = foo(5)<br/>target = app.example.org
+  S-->>C: pending
+
+  S->>WA: task.execute foo.1, ver=1
+  WA->>S: task.acquire foo.1, ver=1
+  S-->>WA: claimed preload=[]
+  WA->>PA: execute until blocked foo(5)
+  PA->>WA: yield promise.create foo.1:1 = bar(5)
+  WA->>S: task.fence foo.1, ver=1<br/>promise.create foo.1:1 = bar(5)<br/>target = app.example.org
+  S-->>WA: pending
+  WA-->>PA: pending
+  PA-->>WA: suspended blocked=[foo.1:1]
+  WA->>S: task.suspend foo.1
+  S-->>WA: released
+
+  S->>WB: task.execute foo.1:1, ver=1
+  WB->>S: task.acquire foo.1:1, ver=1
+  S-->>WB: claimed preload=[]
+  WB->>PB: execute until blocked bar(5)
+  PB-->>WB: completed = 10
+  WB->>S: task.fulfill foo.1:1 = 10
+  S-->>WB: fulfilled
+
+  S->>WB: task.execute foo.1, ver=2
+  WB->>S: task.acquire foo.1, ver=2
+  S-->>WB: claimed preload=[]
+  WB->>PB: execute until blocked foo(5)
+  PB->>WB: yield promise.create foo.1:1 = bar(5)
+  WB->>S: task.fence foo.1, ver=2<br/>promise.create foo.1:1 = bar(5)<br/>target = app.example.org
+  S-->>WB: resolved = 10
+  WB-->>PB: resolved = 10
+  PB-->>WB: completed = 10
+  WB->>S: task.fulfill foo.1 = 10
+  S-->>WB: fulfilled
+  S->>C: deliver foo.1 = 10
+</pre>
+    </div>
+
+    <aside id="detail" aria-live="polite"></aside>
+  </div>
+</div>
+
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+  import { mermaidConfig, mountDiagram } from './diagram.js';
+  import { STEPS } from './example.js';
+  import { STORE } from './example-store.js';
+  import { WIRE } from './example-wire.js';
+
+  // the message behind each arrow, alongside the prose
+  for (const [n, json] of Object.entries(WIRE)) {
+    if (!STEPS[n]) continue;
+    if (json) STEPS[n].json = json; else STEPS[n].offWire = true;
+  }
+  for (const [n, snapshot] of Object.entries(STORE)) {
+    if (STEPS[n]) STEPS[n].store = snapshot;
+  }
+
+  mermaid.initialize(mermaidConfig({ actorMargin: 130 }));  // six lifelines: buy back some width
+  await mountDiagram(mermaid, {
+    steps: STEPS,
+    emphasize: [6, 11, 17, 18, 24, 29],   // execute until blocked, and what the program yields back
+    activations: [
+      { from: 4,  to: 13, full: true, tone: 'claim' },
+      { from: 15, to: 20, full: true, tone: 'claim' },
+      { from: 22, to: 31, full: true, tone: 'claim' },
+      { from: 6,  to: 11, full: true },
+      { from: 17, to: 18, full: true },
+      { from: 24, to: 29, full: true }
+    ],
+    hint: `<p class="hint">Click a message to read that step; the matching source line lights up above.
+      Arrow keys walk the whole exchange, <kbd>Esc</kbd> clears. Steps 7–11 and 25–28 are the same two
+      lines of <code>foo</code> — once blocking, once walking straight through.</p>`
+  });
+</script>
+</body>
+</html>

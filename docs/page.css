@@ -1,0 +1,419 @@
+:root {
+  color-scheme: light dark;
+  --bg: #fbfbfa;
+  --fg: #1c1c1a;
+  --muted: #6b6b66;
+  --panel: #ffffff;
+  --border: #e2e2dd;
+  --accent: #0d6d86;
+  --accent-soft: rgba(13, 109, 134, 0.1);
+  --code-bg: #f1f1ee;
+  --activation: rgba(28, 28, 26, 0.055);
+  --claim: rgba(28, 28, 26, 0.034);
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #17171a;
+    --fg: #ececea;
+    --muted: #9a9a95;
+    --panel: #1f1f23;
+    --border: #33333a;
+    --accent: #5cc2da;
+    --accent-soft: rgba(92, 194, 218, 0.14);
+    --code-bg: #2a2a30;
+    --activation: rgba(255, 255, 255, 0.07);
+    --claim: rgba(255, 255, 255, 0.045);
+  }
+}
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  padding: 2rem 1.5rem 4rem;
+  background: var(--bg);
+  color: var(--fg);
+  font:
+    15px / 1.55 ui-sans-serif,
+    -apple-system,
+    "Segoe UI",
+    Helvetica,
+    Arial,
+    sans-serif;
+}
+.wrap {
+  max-width: 1500px;
+  margin: 0 auto;
+}
+header {
+  margin-bottom: 1.25rem;
+}
+h1 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0 0 0.25rem;
+}
+p.sub {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1rem;
+  margin: 0.6rem 0 0;
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+.legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.legend i {
+  display: inline-block;
+  border-radius: 2px;
+}
+.legend i.claim {
+  width: 20px;
+  height: 11px;
+  background: var(--claim);
+  outline: 1px solid var(--border);
+}
+.legend i.act {
+  width: 20px;
+  height: 11px;
+  background: var(--activation);
+  outline: 1px solid var(--border);
+}
+nav {
+  margin-top: 0.7rem;
+  display: flex;
+  gap: 0.4rem;
+  font-size: 0.8rem;
+}
+nav a {
+  color: var(--muted);
+  text-decoration: none;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 0.2rem 0.7rem;
+}
+nav a:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+nav a[aria-current] {
+  color: var(--accent);
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1rem;
+  align-items: start;
+}
+@media (min-width: 1080px) {
+  .layout {
+    grid-template-columns: minmax(0, 1fr) 340px;
+  }
+}
+
+.frame,
+aside,
+.source {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+.frame {
+  padding: 1.25rem;
+  overflow-x: auto;
+}
+.mermaid {
+  display: flex;
+  justify-content: center;
+  min-width: min-content;
+}
+.mermaid svg {
+  max-width: 100%;
+  height: auto;
+}
+
+/* the worked example's source listing */
+.source {
+  padding: 0.9rem 1rem;
+  margin-bottom: 1rem;
+  overflow-x: auto;
+}
+.source pre {
+  margin: 0;
+  font:
+    0.82rem / 1.65 ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    monospace;
+}
+.source .ln {
+  display: block;
+  padding: 0 0.4rem;
+  border-radius: 4px;
+  transition:
+    background 0.12s,
+    opacity 0.12s;
+}
+.source .ln::before {
+  content: attr(data-n);
+  display: inline-block;
+  width: 1.6em;
+  color: var(--muted);
+  opacity: 0.7;
+  user-select: none;
+}
+.source.has-selection .ln {
+  opacity: 0.45;
+}
+.source .ln.on {
+  background: var(--accent-soft);
+  opacity: 1;
+}
+
+aside {
+  padding: 1.1rem 1.15rem 1.35rem;
+  position: sticky;
+  top: 1.5rem;
+}
+/* Narrow pane: the panel stacks under the diagram, so pin it to the bottom of
+   the viewport instead — the detail stays readable while you click around. */
+@media (max-width: 1079px) {
+  aside {
+    position: fixed;
+    inset: auto 0 0 0;
+    z-index: 5;
+    max-height: 46vh;
+    overflow: auto;
+    border-width: 1px 0 0;
+    border-radius: 12px 12px 0 0;
+    box-shadow: 0 -8px 26px rgba(0, 0, 0, 0.12);
+    transform: translateY(101%);
+    transition: transform 0.18s ease;
+  }
+  aside.is-open {
+    transform: none;
+  }
+  aside .hint {
+    display: none;
+  }
+}
+@media (max-width: 1079px) and (prefers-color-scheme: dark) {
+  aside {
+    box-shadow: 0 -8px 26px rgba(0, 0, 0, 0.5);
+  }
+}
+aside .step {
+  font:
+    600 0.72rem / 1 ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    monospace;
+  letter-spacing: 0.08em;
+  color: var(--accent);
+  text-transform: uppercase;
+}
+aside h2 {
+  font-size: 0.98rem;
+  font-weight: 600;
+  margin: 0.5rem 0 0.1rem;
+}
+aside .route {
+  color: var(--muted);
+  font-size: 0.8rem;
+  margin: 0 0 0.75rem;
+}
+aside .route b {
+  font-weight: 600;
+  color: var(--fg);
+}
+aside .label {
+  font:
+    0.8rem / 1.4 ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    monospace;
+  background: var(--code-bg);
+  border-radius: 6px;
+  padding: 0.5rem 0.6rem;
+  margin: 0 0 0.8rem;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+aside .body {
+  font-size: 0.875rem;
+  margin: 0;
+  color: var(--fg);
+}
+aside .body .note {
+  display: block;
+  margin-top: 0.6rem;
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+aside code {
+  font:
+    0.82em / 1 ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    monospace;
+  background: var(--code-bg);
+  padding: 0.1em 0.3em;
+  border-radius: 4px;
+}
+aside .hint {
+  color: var(--muted);
+  font-size: 0.85rem;
+  margin: 0;
+}
+aside .store {
+  margin-top: 0.9rem;
+}
+aside .store-head,
+aside .store table {
+  width: 100%;
+  border-collapse: collapse;
+  font:
+    0.74rem / 1.6 ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    monospace;
+}
+aside .store td {
+  padding: 0.12rem 0.4rem;
+  border-radius: 3px;
+}
+aside .store td.id {
+  color: var(--fg);
+}
+aside .store td.state,
+aside .store td.cb {
+  color: var(--muted);
+}
+aside .store tr.changed td {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+aside .store .empty {
+  margin: 0;
+  font: italic 0.8rem / 1.4 inherit;
+  color: var(--muted);
+}
+aside .store-note {
+  margin: 0.45rem 0 0;
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+
+aside .wire {
+  margin-top: 0.9rem;
+}
+aside .wire pre {
+  margin: 0;
+  max-height: 40vh;
+  overflow: auto;
+  background: var(--code-bg);
+  border-radius: 6px;
+  padding: 0.55rem 0.65rem;
+  font:
+    0.72rem / 1.5 ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    monospace;
+}
+aside .decoded {
+  list-style: none;
+  margin: 0.45rem 0 0;
+  padding: 0;
+  font-size: 0.74rem;
+  color: var(--muted);
+}
+aside .decoded li {
+  margin-top: 0.15rem;
+  overflow-wrap: anywhere;
+}
+aside .decoded span {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+aside .decoded code {
+  background: none;
+  padding: 0;
+  color: var(--fg);
+}
+aside .offwire {
+  margin: 0.9rem 0 0;
+  font-size: 0.8rem;
+  color: var(--muted);
+  font-style: italic;
+}
+aside .nav {
+  margin-top: 1rem;
+  display: flex;
+  gap: 0.4rem;
+  align-items: center;
+}
+aside button {
+  font: inherit;
+  font-size: 0.8rem;
+  color: var(--fg);
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0.25rem 0.6rem;
+  cursor: pointer;
+}
+aside button:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+aside .keys {
+  margin-left: auto;
+  color: var(--muted);
+  font-size: 0.72rem;
+}
+
+/* the SDK activation underlay: one worker holding one task, one program alive */
+.activation {
+  fill: var(--activation);
+}
+.activation.claim {
+  fill: var(--claim);
+}
+
+.loopCaption {
+  fill: var(--muted);
+  font-size: 11.5px;
+  font-style: italic;
+}
+
+/* --- diagram interaction --- */
+.hit {
+  fill: transparent;
+  cursor: pointer;
+}
+.hit:hover {
+  fill: var(--accent-soft);
+}
+.hit:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+svg.has-selection .dim {
+  opacity: 0.35;
+  transition: opacity 0.12s;
+}
+.sel-band {
+  fill: var(--accent-soft);
+  pointer-events: none;
+}
+/* the selected message is painted inline in diagram.js — mermaid's own rules are id-scoped */
