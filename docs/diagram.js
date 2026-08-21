@@ -178,20 +178,6 @@ function buildMessages(svg) {
   return bands;
 }
 
-const actorName = (svg, x) => {
-  let best = null,
-    bestD = Infinity;
-  for (const r of svg.querySelectorAll("rect.actor")) {
-    const d = Math.abs(+r.getAttribute("x") + +r.getAttribute("width") / 2 - x);
-    if (d < bestD) {
-      bestD = d;
-      best = r;
-    }
-  }
-  const label = best?.parentNode.querySelector("text");
-  return label ? label.textContent.trim() : "?";
-};
-
 // name -> lifeline x, for placing decorations that span named participants
 const actorCenters = (svg) => {
   const out = {};
@@ -519,12 +505,9 @@ function wire(svg, { steps, panel, hint, code, activations, emphasize }) {
       return;
     }
     const s = steps[m.n] || { title: `Step ${m.n}`, body: "" };
-    const a = actorName(svg, m.x1),
-      b = actorName(svg, m.x2);
     panel.innerHTML = `
       <div class="step">Step ${m.n} of ${msgs.length}</div>
       <h2>${s.title}</h2>
-      <p class="route"><b>${a}</b> ${m.dashed ? "⇠ reply ⇢" : "→"} <b>${b}</b></p>
       <p class="label">${esc(s.wire || m.label)}</p>
       <div class="body">${s.body}</div>
       ${s.store ? storeBlock(s.store) : ""}
