@@ -280,6 +280,24 @@ aside .store {
   margin-top: 0.9rem;
 }
 aside .store-head,
+aside .wire-head,
+aside .lean-head {
+  display: block;
+  margin-bottom: 0.35rem;
+  font:
+    600 0.68rem / 1 ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    monospace;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+aside .store-head a,
+aside .wire-head a,
+aside .lean-head a {
+  color: inherit;
+}
 aside .store table {
   width: 100%;
   border-collapse: collapse;
@@ -318,21 +336,6 @@ aside .store-note {
 aside .lean {
   margin-top: 0.9rem;
 }
-aside .lean-head {
-  display: block;
-  margin-bottom: 0.35rem;
-  font:
-    600 0.68rem / 1 ui-monospace,
-    SFMono-Regular,
-    Menlo,
-    monospace;
-  letter-spacing: 0.09em;
-  text-transform: uppercase;
-  color: var(--muted);
-}
-aside .lean-head a {
-  color: inherit;
-}
 aside .lean pre {
   margin: 0;
   max-height: 34vh;
@@ -362,6 +365,15 @@ aside .lean .l.on {
 
 aside .wire {
   margin-top: 0.9rem;
+}
+aside .wire pre + pre {
+  margin-top: 0.4rem;
+}
+aside .wire.types pre {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  padding-left: 2.2ch;
+  text-indent: -2.2ch;
 }
 aside .wire pre {
   margin: 0;

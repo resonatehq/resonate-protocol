@@ -250,7 +250,13 @@ const wireBlock = (json) => {
 
 // The spec handler that processes a message, with the arm this message takes
 // highlighted. Sources are quoted from the Lean abstract model in example-lean.js.
+const SPEC_TYPES = "https://github.com/resonatehq/resonate-protocol/blob/main/spec/types-raw.ts";
 const SPEC_BASE = "https://github.com/resonatehq/resonate-specification/blob/main/spec/02-abstract";
+
+const typesBlock = (types) =>
+  `<div class="wire types"><span class="wire-head">message schema · <a href="${SPEC_TYPES}" target="_blank" rel="noreferrer">types-raw.ts</a></span>` +
+  types.map((t) => `<pre>${esc(t)}</pre>`).join("") +
+  `</div>`;
 
 const leanBlock = (lean) => {
   const lines = lean.src.split("\n");
@@ -496,6 +502,7 @@ function wire(svg, { steps, panel, hint, code, activations, emphasize }) {
       <div class="body">${s.body}</div>
       ${s.store ? storeBlock(s.store) : ""}
       ${s.lean ? leanBlock(s.lean) : ""}
+      ${s.types ? typesBlock(s.types) : ""}
       ${
         s.json
           ? wireBlock(s.json)

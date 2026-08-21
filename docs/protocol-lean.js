@@ -21,3 +21,25 @@ export const LEAN = {
   15: { handler: "taskSuspend", arm: "match ← checkAwaited now req.actions with", only: true },
   16: { handler: "processListener", arm: "else if p.listeners.contains address then" },
 };
+
+// The message type each arrow carries, from spec/types-raw.ts. Where an arrow
+// shows a branch it carries two, and both are named. The steps that cross the
+// SDK boundary carry none, because they carry no message.
+export const TYPES_FOR = {
+  1: ["PromiseCreateReq"],
+  2: ["PromiseCreateRes"],
+  3: ["PromiseRegisterListenerReq"],
+  4: ["PromiseRegisterListenerRes"],
+  5: ["ExecuteMsg"],
+  6: ["TaskAcquireReq"],
+  7: ["TaskAcquireRes"],
+  8: null,
+  9: null,
+  10: ["TaskFenceReq"],
+  11: ["TaskFenceRes"],
+  12: null,
+  13: null,
+  14: ["TaskSuspendReq", "TaskFulfillReq"],
+  15: ["TaskSuspendRes", "TaskFulfillRes"],
+  16: ["UnblockMsg"],
+};
