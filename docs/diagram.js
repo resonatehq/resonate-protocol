@@ -253,9 +253,36 @@ const wireBlock = (json) => {
 const SPEC_TYPES = "https://github.com/resonatehq/resonate-protocol/blob/main/spec/types-raw.ts";
 const SPEC_BASE = "https://github.com/resonatehq/resonate-specification/blob/main/spec/02-abstract";
 
+// A response type is a union of one or two branches that carry something and a
+// tail of error branches that carry only a message. Show the first, and say how
+// many of the second there were rather than printing seven near-identical lines.
+const trimUnion = (src) => {
+  const parts = src.split("\n  | ");
+  if (parts.length < 2) return { text: src, elided: [] };
+  const kept = [];
+  const elided = [];
+  for (const part of parts.slice(1)) {
+    const status = part.match(/ResponseHead<(\d+)>/)?.[1];
+    if (/data: string/.test(part) && status) elided.push(status);
+    else kept.push(part.replace(/;\s*$/, ""));
+  }
+  const text = [parts[0], ...kept.map((k) => `  | ${k}`)].join("\n") + ";";
+  return { text, elided };
+};
+
 const typesBlock = (types) =>
   `<div class="wire types"><span class="wire-head">message schema · <a href="${SPEC_TYPES}" target="_blank" rel="noreferrer">types-raw.ts</a></span>` +
-  types.map((t) => `<pre>${esc(t)}</pre>`).join("") +
+  types
+    .map((t) => {
+      const { text, elided } = trimUnion(t);
+      return (
+        `<pre>${esc(text)}</pre>` +
+        (elided.length
+          ? `<p class="elided">plus ${elided.length} error ${elided.length === 1 ? "branch" : "branches"} — ${elided.join(", ")} — each carrying a message</p>`
+          : "")
+      );
+    })
+    .join("") +
   `</div>`;
 
 const leanBlock = (lean) => {

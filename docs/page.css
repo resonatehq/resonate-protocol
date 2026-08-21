@@ -407,6 +407,11 @@ aside .decoded code {
   padding: 0;
   color: var(--fg);
 }
+aside .elided {
+  margin: 0.3rem 0 0;
+  font-size: 0.74rem;
+  color: var(--muted);
+}
 aside .offwire {
   margin: 0.9rem 0 0;
   font-size: 0.8rem;
