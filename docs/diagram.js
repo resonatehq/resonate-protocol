@@ -289,34 +289,39 @@ const leanBlock = (lean) => {
   return `<div class="lean"><span class="lean-head">handler · <a href="${SPEC_BASE}/${lean.file}.lean" target="_blank" rel="noreferrer">${lean.file}.lean</a></span><pre>${body}</pre></div>`;
 };
 
-// The server's state as it stands after a step: promises as a tree, and under
-// each one the task that advances it — same id, so they belong together.
+// The server's state as it stands after a step. A promise is a block: its own
+// row, then the records that hang off it — the task, if the promise carries a
+// target tag, and any callback or listener registered against it. Children are
+// nested under their parent, so the shape of the call graph is visible.
 const storeBlock = (st) => {
-  const promiseRow = (r) => `<tr class="${r.changed ? "changed" : ""}">
-      <td class="id${r.depth ? " child" : ""}">${esc(r.id)}</td>
-      <td class="state">${esc(r.state)}${r.value !== undefined ? ` = ${esc(r.value)}` : ""}</td>
-      <td class="cb">${[
-        r.callbacks.length ? `wakes ${r.callbacks.map(esc).join(", ")}` : "",
-        r.listeners.length ? `notifies ${r.listeners.map(esc).join(", ")}` : "",
-      ]
-        .filter(Boolean)
-        .join(" · ")}</td>
-    </tr>`;
+  const badge = (state) => `<span class="badge ${esc(state)}">${esc(state)}</span>`;
 
-  const taskRow = (r) =>
-    r.task
-      ? `<tr class="task ${r.changed ? "changed" : ""}">
-      <td class="id${r.depth ? " child" : ""}">task</td>
-      <td class="state">${esc(r.task.state)} · v${r.task.version}</td>
-      <td class="cb">${r.task.pid ? esc(r.task.pid) : ""}</td>
-    </tr>`
-      : "";
+  const block = (r) => {
+    const rows = [
+      `<tr class="p ${r.changed ? "changed" : ""}" style="--depth:${r.depth}">
+         <td class="id">${esc(r.id)}</td>
+         <td class="v">${badge(r.state)}${r.value !== undefined ? ` <span class="val">= ${esc(r.value)}</span>` : ""}</td>
+       </tr>`,
+    ];
+    if (r.task)
+      rows.push(`<tr class="sub ${r.changed ? "changed" : ""}" style="--depth:${r.depth}">
+         <td class="k">task</td>
+         <td class="v">${badge(r.task.state)} <span class="dim">v${r.task.version}${r.task.pid ? ` · ${esc(r.task.pid)}` : ""}</span></td>
+       </tr>`);
+    for (const c of r.callbacks)
+      rows.push(`<tr class="sub ${r.changed ? "changed" : ""}" style="--depth:${r.depth}">
+         <td class="k">callback</td><td class="v"><span class="dim">wakes ${esc(c)}</span></td>
+       </tr>`);
+    for (const l of r.listeners)
+      rows.push(`<tr class="sub ${r.changed ? "changed" : ""}" style="--depth:${r.depth}">
+         <td class="k">listener</td><td class="v"><span class="dim">${esc(l)}</span></td>
+       </tr>`);
+    return rows.join("");
+  };
 
   return (
     `<div class="store"><span class="store-head">server state</span>` +
-    (st.rows.length
-      ? `<table>${st.rows.map((r) => promiseRow(r) + taskRow(r)).join("")}</table>`
-      : `<p class="empty">empty</p>`) +
+    (st.rows.length ? `<table>${st.rows.map(block).join("")}</table>` : `<p class="empty">empty</p>`) +
     (st.note ? `<p class="store-note">${st.note}</p>` : "") +
     `</div>`
   );

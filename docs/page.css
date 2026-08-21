@@ -270,58 +270,64 @@ aside .hint {
 aside .store {
   margin-top: 0.9rem;
 }
-aside .store-head,
-aside .wire-head,
-aside .lean-head {
-  display: block;
-  margin-bottom: 0.35rem;
-  font:
-    600 0.68rem / 1 ui-monospace,
-    SFMono-Regular,
-    Menlo,
-    monospace;
-  letter-spacing: 0.09em;
-  text-transform: uppercase;
-  color: var(--muted);
-}
-aside .store-head a,
-aside .wire-head a,
-aside .lean-head a {
-  color: inherit;
-}
 aside .store table {
   width: 100%;
   border-collapse: collapse;
   font:
-    0.74rem / 1.6 ui-monospace,
+    0.74rem / 1.7 ui-monospace,
     SFMono-Regular,
     Menlo,
     monospace;
 }
-aside .store td.id.child {
-  padding-left: 1.2rem;
+aside .store td {
+  padding: 0.05rem 0.35rem;
 }
-aside .store tr.task td {
+aside .store tr.p td.id {
+  padding-left: calc(0.35rem + var(--depth) * 1.1rem);
+  color: var(--fg);
+  font-weight: 600;
+}
+aside .store tr.sub td.k {
+  padding-left: calc(1.3rem + var(--depth) * 1.1rem);
   color: var(--muted);
-  opacity: 0.85;
-}
-aside .store tr.task td.id {
   font-style: italic;
 }
-aside .store td {
-  padding: 0.12rem 0.4rem;
-  border-radius: 3px;
+aside .store td.v {
+  text-align: right;
+  white-space: nowrap;
 }
-aside .store td.id {
-  color: var(--fg);
-}
-aside .store td.state,
-aside .store td.cb {
+aside .store .dim {
   color: var(--muted);
+}
+aside .store .val {
+  color: var(--fg);
 }
 aside .store tr.changed td {
   background: var(--accent-soft);
+}
+aside .store tr.p.changed td.id {
+  border-top-left-radius: 3px;
+}
+
+/* promise and task states, coloured by what they mean rather than by name */
+aside .store .badge {
+  font-size: 0.7rem;
+  letter-spacing: 0.02em;
+  padding: 0.02rem 0.3rem;
+  border-radius: 3px;
+  background: var(--code-bg);
+  color: var(--muted);
+}
+aside .store .badge.acquired {
   color: var(--accent);
+  background: var(--accent-soft);
+}
+aside .store .badge.resolved,
+aside .store .badge.fulfilled {
+  color: var(--fg);
+}
+aside .store .badge.suspended {
+  font-style: italic;
 }
 aside .store .empty {
   margin: 0;
@@ -480,3 +486,24 @@ svg.has-selection .dim {
   pointer-events: none;
 }
 /* the selected message is painted inline in diagram.js — mermaid's own rules are id-scoped */
+
+/* the three section headings in the panel */
+aside .store-head,
+aside .wire-head,
+aside .lean-head {
+  display: block;
+  margin-bottom: 0.35rem;
+  font:
+    600 0.68rem / 1 ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    monospace;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+aside .store-head a,
+aside .wire-head a,
+aside .lean-head a {
+  color: inherit;
+}
