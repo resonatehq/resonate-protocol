@@ -37,7 +37,7 @@ sequenceDiagram
   participant WB as Worker B
   participant PB as Program B
 
-  C->>S: promise.create foo.1 = foo(5)<br/>target = app.example.org
+  C->>S: promise.create foo.1 = foo(5)<br/>target = worker.example.org
   S-->>C: pending
   C->>S: promise.registerListener foo.1
   S-->>C: registered
@@ -47,7 +47,7 @@ sequenceDiagram
   S-->>WA: claimed preload=[]
   WA->>PA: execute until blocked foo(5)
   PA->>WA: yield promise.create foo.1:1 = bar(5)
-  WA->>S: task.fence foo.1, ver=1<br/>promise.create foo.1:1 = bar(5)<br/>target = app.example.org
+  WA->>S: task.fence foo.1, ver=1<br/>promise.create foo.1:1 = bar(5)<br/>target = worker.example.org
   S-->>WA: pending
   WA-->>PA: pending
   PA-->>WA: suspended blocked=[foo.1:1]
@@ -67,7 +67,7 @@ sequenceDiagram
   S-->>WB: claimed preload=[]
   WB->>PB: execute until blocked foo(5)
   PB->>WB: yield promise.create foo.1:1 = bar(5)
-  WB->>S: task.fence foo.1, ver=2<br/>promise.create foo.1:1 = bar(5)<br/>target = app.example.org
+  WB->>S: task.fence foo.1, ver=2<br/>promise.create foo.1:1 = bar(5)<br/>target = worker.example.org
   S-->>WB: resolved = 10
   WB-->>PB: resolved = 10
   PB-->>WB: completed = 10

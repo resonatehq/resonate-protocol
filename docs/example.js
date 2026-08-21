@@ -2,7 +2,7 @@
 // including the replay pass. `lines` highlights the matching source lines.
 export const STEPS = {
   1: {
-    wire: `promise.create foo.1 = foo(5)\ntarget = https://app.example.org`,
+    wire: `promise.create foo.1 = foo(5)\ntarget = http://worker.example.org`,
     title: "The client asks for foo(5)",
     body: `Nothing is running yet. The client writes down what it wants — the function, the argument,
               and where to deliver the answer — and that record is the durable object the rest of this
@@ -19,13 +19,13 @@ export const STEPS = {
               and collect the result later; the work is no longer tied to this connection.`,
   },
   3: {
-    wire: `promise.registerListener foo.1\naddress = https://app.example.org`,
+    wire: `promise.registerListener foo.1\naddress = http://client.example.org`,
     title: "The client asks to be told",
-    body: `Two addresses, two different jobs. The <code>target</code> on the create routes the <em>task</em>
-           — it is how the server finds a worker willing to run <code>foo</code>. This one is where the
-           <em>client</em> hears back, and registering it is a separate act because the party that starts
-           an execution and the party that wants the answer need not be the same, or alive at the same
-           time.`,
+    body: `Two addresses, two different jobs. Step 1's <code>target</code> is a worker address — it is
+           how the server finds someone willing to <em>run</em> <code>foo</code>. This is a client
+           address, where the answer is <em>delivered</em>. Registering it is a separate act because the
+           party that starts an execution and the party that wants the answer need not be the same, or
+           alive at the same time.`,
   },
   4: {
     wire: `promise.registerListener res foo.1, registered`,
@@ -37,7 +37,7 @@ export const STEPS = {
   5: {
     wire: `task.execute foo.1, ver=1`,
     title: "Dispatched to Worker A",
-    body: `The server offers the task to a worker subscribed to <code>https://app.example.org</code>. Worker A gets
+    body: `The server offers the task to a worker subscribed to <code>http://worker.example.org</code>. Worker A gets
               it, but only because it happened to be there — nothing about <code>foo</code> belongs to
               Worker A yet. The offer carries a version, and it has to: the dispatch may be redelivered or
               raced, and the version is what decides which single worker ends up holding the task.`,
@@ -72,7 +72,7 @@ export const STEPS = {
               asks for this very promise instead of a new one.</span>`,
   },
   10: {
-    wire: `task.fence foo.1, ver=1\n  promise.create foo.1:1 = bar(5)\n  target = app.example.org`,
+    wire: `task.fence foo.1, ver=1\n  promise.create foo.1:1 = bar(5)\n  target = http://worker.example.org`,
     title: "The same create, wrapped in the claim",
     body: `Look at what is inside the fence: it is step 1 again. The client's request and the program's
               request are the same kind of thing — create this promise, with these arguments, deliverable
@@ -199,7 +199,7 @@ export const STEPS = {
                is derived, not invented, it asks for the same <code>foo.1:1</code> as before.`,
   },
   28: {
-    wire: `task.fence foo.1, ver=2\n  promise.create foo.1:1 = bar(5)\n  target = app.example.org`,
+    wire: `task.fence foo.1, ver=2\n  promise.create foo.1:1 = bar(5)\n  target = http://worker.example.org`,
     title: "The same envelope, a new claim",
     body: `Byte for byte the request Worker A sent in step 10, under a different claim —
                <code>ver=2</code>, because this is a later dispatch and a different worker. Every durable
@@ -244,7 +244,8 @@ export const STEPS = {
   34: {
     wire: `deliver foo.1 = 10`,
     title: "The client is notified",
-    body: `Delivered to <code>https://app.example.org</code>, the target recorded back in step 1. Two workers, two
+    body: `Delivered to <code>http://client.example.org</code>, the address the listener named in step 3 — not the
+           target from step 1, which routed the task to a worker. Two workers, two
                passes of <code>foo</code>, one execution of <code>bar</code>, and a client that only ever
                asked for <code>foo(5)</code>.`,
   },
