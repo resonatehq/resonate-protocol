@@ -298,6 +298,16 @@ aside .store table {
     Menlo,
     monospace;
 }
+aside .store td.id.child {
+  padding-left: 1.2rem;
+}
+aside .store tr.task td {
+  color: var(--muted);
+  opacity: 0.85;
+}
+aside .store tr.task td.id {
+  font-style: italic;
+}
 aside .store td {
   padding: 0.12rem 0.4rem;
   border-radius: 3px;

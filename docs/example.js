@@ -31,11 +31,11 @@ export const STEPS = {
     wire: `promise.registerListener res foo.1, registered`,
     title: "Registered",
     body: `The subscription is durable too, so it survives the wait — no socket held open, no polling
-           loop. It is now part of <code>foo.1</code>'s record, which is why the store below grows a
-           second line without the promise itself changing.`,
+           loop. It is now part of <code>foo.1</code>'s record, which is why the state below gains a
+           listener without the promise itself changing.`,
   },
   5: {
-    wire: `task.execute foo.1, ver=1`,
+    wire: `task.execute foo.1, ver=0`,
     title: "Dispatched to Worker A",
     body: `The server offers the task to a worker subscribed to <code>http://worker.example.org</code>. Worker A gets
               it, but only because it happened to be there — nothing about <code>foo</code> belongs to
@@ -43,7 +43,7 @@ export const STEPS = {
               raced, and the version is what decides which single worker ends up holding the task.`,
   },
   6: {
-    wire: `task.acquire req foo.1, ver=1`,
+    wire: `task.acquire req foo.1, ver=0`,
     title: "Worker A acquires",
     body: `The worker claims the task at the version it was offered, and holds it for a lease.`,
   },
@@ -116,20 +116,21 @@ export const STEPS = {
     body: `The suspend is answered, and on the happy path nothing is done with the answer. It matters
                when it is a refusal: had <code>foo.1:1</code> settled while the program was reporting
                back, there would be nothing left to wait for, and the server would say so rather than let
-               <code>foo.1</code> stand down with a runnable promise underneath it.
+               <code>foo.1</code> stand down with a runnable promise underneath it. Watch its task below:
+               <code>suspended</code>, held at the version it was acquired with, and no worker against it.
                <span class="note">The suspend carried a callback with it —
                <code>register_callback(awaited: foo.1:1, awaiter: foo.1)</code> — which is the
-               <em>wakes foo.1</em> now sitting on that row in the store. A worker on its way out arranges
+               <em>wakes foo.1</em> now sitting on that row in the state below. A worker on its way out arranges
                its own resumption; without it nothing would know to run <code>foo</code> again.</span>`,
   },
   16: {
-    wire: `task.execute foo.1:1, ver=1`,
+    wire: `task.execute foo.1:1, ver=0`,
     title: "bar is dispatched — to a different worker",
     body: `<code>foo.1:1</code> is just another task, so it goes to whichever worker is available. Here
                that is Worker B. The call graph of the program does not have to fit on one machine.`,
   },
   17: {
-    wire: `task.acquire req foo.1:1, ver=1`,
+    wire: `task.acquire req foo.1:1, ver=0`,
     title: "Worker B acquires",
     body: `The same claim protocol as Worker A used. Worker B knows nothing about <code>foo</code>
                and does not need to.`,
@@ -165,14 +166,14 @@ export const STEPS = {
                promise.`,
   },
   23: {
-    wire: `task.execute foo.1, ver=2`,
+    wire: `task.execute foo.1, ver=1`,
     title: "foo is dispatched again — to Worker B",
     body: `The next pass of <code>foo</code> lands on Worker B, which has never run <code>foo</code>
                before. Worker A may have been redeployed, scaled down, or crashed; it makes no
                difference. Nothing about the execution lived there.`,
   },
   24: {
-    wire: `task.acquire req foo.1, ver=2`,
+    wire: `task.acquire req foo.1, ver=1`,
     title: "Worker B acquires foo",
     body: `A new version, since the task has been dispatched again. If Worker A ever came back holding
                the old version, it would be refused — which is what makes handing work between workers

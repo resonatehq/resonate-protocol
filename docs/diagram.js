@@ -289,27 +289,38 @@ const leanBlock = (lean) => {
   return `<div class="lean"><span class="lean-head">handler · <a href="${SPEC_BASE}/${lean.file}.lean" target="_blank" rel="noreferrer">${lean.file}.lean</a></span><pre>${body}</pre></div>`;
 };
 
-// The server's promise store as it stands after a step, touched row marked.
-const storeBlock = (st) =>
-  `<div class="store"><span class="store-head">promise store</span>` +
-  (st.rows.length
-    ? `<table>${st.rows
-        .map(
-          (r) => `<tr class="${r.changed ? "changed" : ""}">
-         <td class="id">${esc(r.id)}</td>
-         <td class="state">${esc(r.state)}${r.value !== undefined ? ` = ${esc(r.value)}` : ""}</td>
-         <td class="cb">${[
-           r.callbacks.length ? `wakes ${r.callbacks.map(esc).join(", ")}` : "",
-           r.listeners?.length ? `notifies ${r.listeners.map(esc).join(", ")}` : "",
-         ]
-           .filter(Boolean)
-           .join(" · ")}</td>
-       </tr>`,
-        )
-        .join("")}</table>`
-    : `<p class="empty">empty</p>`) +
-  (st.note ? `<p class="store-note">${st.note}</p>` : "") +
-  `</div>`;
+// The server's state as it stands after a step: promises as a tree, and under
+// each one the task that advances it — same id, so they belong together.
+const storeBlock = (st) => {
+  const promiseRow = (r) => `<tr class="${r.changed ? "changed" : ""}">
+      <td class="id${r.depth ? " child" : ""}">${esc(r.id)}</td>
+      <td class="state">${esc(r.state)}${r.value !== undefined ? ` = ${esc(r.value)}` : ""}</td>
+      <td class="cb">${[
+        r.callbacks.length ? `wakes ${r.callbacks.map(esc).join(", ")}` : "",
+        r.listeners.length ? `notifies ${r.listeners.map(esc).join(", ")}` : "",
+      ]
+        .filter(Boolean)
+        .join(" · ")}</td>
+    </tr>`;
+
+  const taskRow = (r) =>
+    r.task
+      ? `<tr class="task ${r.changed ? "changed" : ""}">
+      <td class="id${r.depth ? " child" : ""}">task</td>
+      <td class="state">${esc(r.task.state)} · v${r.task.version}</td>
+      <td class="cb">${r.task.pid ? esc(r.task.pid) : ""}</td>
+    </tr>`
+      : "";
+
+  return (
+    `<div class="store"><span class="store-head">server state</span>` +
+    (st.rows.length
+      ? `<table>${st.rows.map((r) => promiseRow(r) + taskRow(r)).join("")}</table>`
+      : `<p class="empty">empty</p>`) +
+    (st.note ? `<p class="store-note">${st.note}</p>` : "") +
+    `</div>`
+  );
+};
 
 const esc = (s) => s.replace(/[&<>]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" })[c]);
 
