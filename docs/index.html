@@ -31,9 +31,9 @@ sequenceDiagram
   participant W as Worker
   participant P as Program
 
-  C->>S: promise.create id = func(args)<br/>target = url
+  C->>S: promise.create id<br/>param = func(args), target = worker-url
   S-->>C: pending
-  C->>S: promise.registerListener id
+  C->>S: promise.registerListener id<br/>address = client-url
   S-->>C: registered
 
   loop while the program suspends
@@ -43,7 +43,7 @@ sequenceDiagram
     W->>P: execute until blocked func(args)
     loop 
       P->>W: yield promise.create | promise.settle id:n
-      W->>S: task.fence id, ver=n<br/>promise.create | promise.settle id:n<br/>target = url
+      W->>S: task.fence id, ver=n<br/>promise.create | promise.settle id:n
       S-->>W: pending | settled
       W-->>P: pending | settled
     end
