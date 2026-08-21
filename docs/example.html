@@ -39,6 +39,8 @@ sequenceDiagram
 
   C->>S: promise.create foo.1 = foo(5)<br/>target = app.example.org
   S-->>C: pending
+  C->>S: promise.registerListener foo.1
+  S-->>C: registered
 
   S->>WA: task.execute foo.1, ver=1
   WA->>S: task.acquire foo.1, ver=1
@@ -71,7 +73,7 @@ sequenceDiagram
   PB-->>WB: completed = 10
   WB->>S: task.fulfill foo.1 = 10
   S-->>WB: fulfilled
-  S->>C: deliver foo.1 = 10
+  S->>C: unblock foo.1 = 10
 </pre>
     </div>
 
@@ -103,17 +105,17 @@ sequenceDiagram
   mermaid.initialize(mermaidConfig({ actorMargin: 130 }));  // six lifelines: buy back some width
   await mountDiagram(mermaid, {
     steps: STEPS,
-    emphasize: [6, 11, 17, 18, 24, 29],   // execute until blocked, and what the program yields back
+    emphasize: [8, 13, 19, 20, 26, 31],   // execute until blocked, and what the program yields back
     activations: [
-      { from: 4,  to: 13, full: true, tone: 'claim' },
-      { from: 15, to: 20, full: true, tone: 'claim' },
-      { from: 22, to: 31, full: true, tone: 'claim' },
-      { from: 6,  to: 11, full: true },
-      { from: 17, to: 18, full: true },
-      { from: 24, to: 29, full: true }
+      { from: 6,  to: 15, full: true, tone: 'claim' },
+      { from: 17, to: 22, full: true, tone: 'claim' },
+      { from: 24, to: 33, full: true, tone: 'claim' },
+      { from: 8,  to: 13, full: true },
+      { from: 19, to: 20, full: true },
+      { from: 26, to: 31, full: true }
     ],
     hint: `<p class="hint">Click a message to read that step; the matching source line lights up above.
-      Arrow keys walk the whole exchange, <kbd>Esc</kbd> clears. Steps 7–11 and 25–28 are the same two
+      Arrow keys walk the whole exchange, <kbd>Esc</kbd> clears. Steps 9–13 and 27–30 are the same two
       lines of <code>foo</code> — once blocking, once walking straight through.</p>`
   });
 </script>

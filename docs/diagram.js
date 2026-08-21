@@ -279,7 +279,12 @@ const storeBlock = (st) =>
           (r) => `<tr class="${r.changed ? "changed" : ""}">
          <td class="id">${esc(r.id)}</td>
          <td class="state">${esc(r.state)}${r.value !== undefined ? ` = ${esc(r.value)}` : ""}</td>
-         <td class="cb">${r.callbacks.length ? `wakes ${r.callbacks.map(esc).join(", ")}` : ""}</td>
+         <td class="cb">${[
+           r.callbacks.length ? `wakes ${r.callbacks.map(esc).join(", ")}` : "",
+           r.listeners?.length ? `notifies ${r.listeners.map(esc).join(", ")}` : "",
+         ]
+           .filter(Boolean)
+           .join(" · ")}</td>
        </tr>`,
         )
         .join("")}</table>`

@@ -87,9 +87,24 @@ export const WIRE = {
     "promise": ${FOO_PENDING}
   }
 }`,
-  3: execute("foo.1", 1),
-  4: acquire("c-2", "foo.1", 1, "worker-a"),
-  5: `{
+  3: `{
+  "kind": "promise.register_listener",
+  "head": { "corrId": "c-1b", "version": "1" },
+  "data": {
+    "awaited": "foo.1",
+    "address": "https://app.example.org"
+  }
+}`,
+  4: `{
+  "kind": "promise.register_listener",
+  "head": { "corrId": "c-1b", "status": 200, "version": "1" },
+  "data": {
+    "promise": ${FOO_PENDING}
+  }
+}`,
+  5: execute("foo.1", 1),
+  6: acquire("c-2", "foo.1", 1, "worker-a"),
+  7: `{
   "kind": "task.acquire",
   "head": { "corrId": "c-2", "status": 200, "version": "1" },
   "data": {
@@ -98,9 +113,9 @@ export const WIRE = {
     "preload": []
   }
 }`,
-  6: null,
-  7: null,
-  8: `{
+  8: null,
+  9: null,
+  10: `{
   "kind": "task.fence",
   "head": { "corrId": "c-3", "version": "1" },
   "data": {
@@ -109,7 +124,7 @@ export const WIRE = {
     "action": ${createChild("c-3.1")}
   }
 }`,
-  9: `{
+  11: `{
   "kind": "task.fence",
   "head": { "corrId": "c-3", "status": 200, "version": "1" },
   "data": {
@@ -121,9 +136,9 @@ export const WIRE = {
     "preload": []
   }
 }`,
-  10: null,
-  11: null,
-  12: `{
+  12: null,
+  13: null,
+  14: `{
   "kind": "task.suspend",
   "head": { "corrId": "c-4", "version": "1" },
   "data": {
@@ -138,14 +153,14 @@ export const WIRE = {
     ]
   }
 }`,
-  13: `{
+  15: `{
   "kind": "task.suspend",
   "head": { "corrId": "c-4", "status": 200, "version": "1" },
   "data": {}
 }`,
-  14: execute("foo.1:1", 1),
-  15: acquire("c-5", "foo.1:1", 1, "worker-b"),
-  16: `{
+  16: execute("foo.1:1", 1),
+  17: acquire("c-5", "foo.1:1", 1, "worker-b"),
+  18: `{
   "kind": "task.acquire",
   "head": { "corrId": "c-5", "status": 200, "version": "1" },
   "data": {
@@ -154,9 +169,9 @@ export const WIRE = {
     "preload": []
   }
 }`,
-  17: null,
-  18: null,
-  19: `{
+  19: null,
+  20: null,
+  21: `{
   "kind": "task.fulfill",
   "head": { "corrId": "c-6", "version": "1" },
   "data": {
@@ -169,16 +184,16 @@ export const WIRE = {
     }
   }
 }`,
-  20: `{
+  22: `{
   "kind": "task.fulfill",
   "head": { "corrId": "c-6", "status": 200, "version": "1" },
   "data": {
     "promise": ${CHILD_RESOLVED}
   }
 }`,
-  21: execute("foo.1", 2),
-  22: acquire("c-7", "foo.1", 2, "worker-b"),
-  23: `{
+  23: execute("foo.1", 2),
+  24: acquire("c-7", "foo.1", 2, "worker-b"),
+  25: `{
   "kind": "task.acquire",
   "head": { "corrId": "c-7", "status": 200, "version": "1" },
   "data": {
@@ -187,9 +202,9 @@ export const WIRE = {
     "preload": []
   }
 }`,
-  24: null,
-  25: null,
-  26: `{
+  26: null,
+  27: null,
+  28: `{
   "kind": "task.fence",
   "head": { "corrId": "c-8", "version": "1" },
   "data": {
@@ -198,7 +213,7 @@ export const WIRE = {
     "action": ${createChild("c-8.1")}
   }
 }`,
-  27: `{
+  29: `{
   "kind": "task.fence",
   "head": { "corrId": "c-8", "status": 200, "version": "1" },
   "data": {
@@ -210,9 +225,9 @@ export const WIRE = {
     "preload": []
   }
 }`,
-  28: null,
-  29: null,
-  30: `{
+  30: null,
+  31: null,
+  32: `{
   "kind": "task.fulfill",
   "head": { "corrId": "c-9", "version": "1" },
   "data": {
@@ -225,7 +240,7 @@ export const WIRE = {
     }
   }
 }`,
-  31: `{
+  33: `{
   "kind": "task.fulfill",
   "head": { "corrId": "c-9", "status": 200, "version": "1" },
   "data": {
@@ -241,7 +256,7 @@ export const WIRE = {
     }
   }
 }`,
-  32: `{
+  34: `{
   "kind": "unblock",
   "head": { "serverUrl": "https://resonate.example.org" },
   "data": {
