@@ -1,6 +1,8 @@
 node_modules/
 dist/
 *.js
+# docs/ ships hand-written JS for the diagram pages, not build output
+!docs/*.js
 *.d.ts
 *.map
 package-lock.json

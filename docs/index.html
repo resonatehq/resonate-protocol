@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sequence — the protocol</title>
+<link rel="stylesheet" href="page.css">
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Durable execution — replay, fence, fulfill</h1>
+    <p class="sub">A fresh program every pass: it replays, it does not resume. Click any message for detail.</p>
+    <p class="legend">
+      <span><i class="claim"></i> the worker's claim — acquired until released; fenced writes accepted</span>
+      <span><i class="act"></i> SDK activation — a worker holds the task, a program instance is alive</span>
+    </p>
+    <nav>
+      <a href="index.html" aria-current="page">The protocol</a>
+      <a href="example.html">A worked example</a>
+    </nav>
+  </header>
+
+  <div class="layout">
+    <div class="frame">
+<pre class="mermaid">
+sequenceDiagram
+  autonumber
+  participant C as Client
+  participant S as Server
+  participant W as Worker
+  participant P as Program
+
+  C->>S: promise.create id = func(args)<br/>target = url
+  S-->>C: pending
+  C->>S: promise.registerListener id
+  S-->>C: registered
+
+  loop while the program suspends
+    S->>W: task.execute id, ver=n
+    W->>S: task.acquire id, ver=n
+    S-->>W: claimed preload=[...]
+    W->>P: execute until blocked func(args)
+    loop 
+      P->>W: yield promise.create | promise.settle id:n
+      W->>S: task.fence id, ver=n<br/>promise.create | promise.settle id:n<br/>target = url
+      S-->>W: pending | settled
+      W-->>P: pending | settled
+    end
+    P-->>W: suspended blocked=[...] | completed = value
+    W->>S: task.suspend id | task.fulfill id = value
+    S-->>W: released | fulfilled
+  end
+
+  S->>C: unblock id = value
+</pre>
+    </div>
+
+    <aside id="detail" aria-live="polite"></aside>
+  </div>
+</div>
+
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+  import { mermaidConfig, mountDiagram } from './diagram.js';
+  import { STEPS } from './steps.js';
+
+  mermaid.initialize(mermaidConfig());
+  await mountDiagram(mermaid, {
+    steps: STEPS,
+    emphasize: [8, 13],          // execute until blocked, and what the program yields back
+    activations: [
+      { from: 6, to: 15, full: true, tone: 'claim' },
+      { from: 8, to: 13, full: true }
+    ],
+    hint: `<p class="hint">Click a message in the diagram to read what that step does and why it is
+      there. Arrow keys step through the exchange; <kbd>Esc</kbd> clears.
+      For the same protocol with real code behind it, see
+      <a href="example.html">a worked example</a>.</p>`
+  });
+</script>
+</body>
+</html>
