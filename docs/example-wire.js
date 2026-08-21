@@ -20,7 +20,7 @@ const FOO_PENDING = `{
       "state": "pending",
       "param": { "data": "${FOO_CALL}" },
       "value": {},
-      "tags": { "resonate:invoke": "http://worker.example.org" },
+      "tags": { "resonate:target": "http://worker.example.org" },
       "timeoutAt": 1767225600000,
       "createdAt": 1767139200000
     }`;
@@ -30,7 +30,7 @@ const CHILD_PENDING = `{
         "state": "pending",
         "param": { "data": "${BAR_CALL}" },
         "value": {},
-        "tags": { "resonate:invoke": "http://worker.example.org" },
+        "tags": { "resonate:target": "http://worker.example.org" },
         "timeoutAt": 1767225600000,
         "createdAt": 1767139205000
       }`;
@@ -40,7 +40,7 @@ const CHILD_RESOLVED = `{
         "state": "resolved",
         "param": { "data": "${BAR_CALL}" },
         "value": { "data": "${TEN}" },
-        "tags": { "resonate:invoke": "http://worker.example.org" },
+        "tags": { "resonate:target": "http://worker.example.org" },
         "timeoutAt": 1767225600000,
         "createdAt": 1767139205000,
         "settledAt": 1767139211000
@@ -53,7 +53,7 @@ const createChild = (corr) => `{
       "id": "foo.1:1",
       "timeoutAt": 1767225600000,
       "param": { "data": "${BAR_CALL}" },
-      "tags": { "resonate:invoke": "http://worker.example.org" }
+      "tags": { "resonate:target": "http://worker.example.org" }
     }
   }`;
 
@@ -77,7 +77,7 @@ export const WIRE = {
     "id": "foo.1",
     "timeoutAt": 1767225600000,
     "param": { "data": "${FOO_CALL}" },
-    "tags": { "resonate:invoke": "http://worker.example.org" }
+    "tags": { "resonate:target": "http://worker.example.org" }
   }
 }`,
   2: `{
@@ -102,8 +102,8 @@ export const WIRE = {
     "promise": ${FOO_PENDING}
   }
 }`,
-  5: execute("foo.1", 1),
-  6: acquire("c-2", "foo.1", 1, "worker-a"),
+  5: execute("foo.1", 0),
+  6: acquire("c-2", "foo.1", 0, "worker-a"),
   7: `{
   "kind": "task.acquire",
   "head": { "corrId": "c-2", "status": 200, "version": "1" },
@@ -158,8 +158,8 @@ export const WIRE = {
   "head": { "corrId": "c-4", "status": 200, "version": "1" },
   "data": {}
 }`,
-  16: execute("foo.1:1", 1),
-  17: acquire("c-5", "foo.1:1", 1, "worker-b"),
+  16: execute("foo.1:1", 0),
+  17: acquire("c-5", "foo.1:1", 0, "worker-b"),
   18: `{
   "kind": "task.acquire",
   "head": { "corrId": "c-5", "status": 200, "version": "1" },
@@ -191,8 +191,8 @@ export const WIRE = {
     "promise": ${CHILD_RESOLVED}
   }
 }`,
-  23: execute("foo.1", 2),
-  24: acquire("c-7", "foo.1", 2, "worker-b"),
+  23: execute("foo.1", 1),
+  24: acquire("c-7", "foo.1", 1, "worker-b"),
   25: `{
   "kind": "task.acquire",
   "head": { "corrId": "c-7", "status": 200, "version": "1" },
@@ -249,7 +249,7 @@ export const WIRE = {
       "state": "resolved",
       "param": { "data": "${FOO_CALL}" },
       "value": { "data": "${TEN}" },
-      "tags": { "resonate:invoke": "http://worker.example.org" },
+      "tags": { "resonate:target": "http://worker.example.org" },
       "timeoutAt": 1767225600000,
       "createdAt": 1767139200000,
       "settledAt": 1767139216000
@@ -265,7 +265,7 @@ export const WIRE = {
       "state": "resolved",
       "param": { "data": "${FOO_CALL}" },
       "value": { "data": "${TEN}" },
-      "tags": { "resonate:invoke": "http://worker.example.org" },
+      "tags": { "resonate:target": "http://worker.example.org" },
       "timeoutAt": 1767225600000,
       "createdAt": 1767139200000,
       "settledAt": 1767139216000

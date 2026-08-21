@@ -3,18 +3,14 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Sequence — worked example</title>
+<title>Resonate Durable Execution — a worked example</title>
 <link rel="stylesheet" href="page.css">
 </head>
 <body>
 <div class="wrap">
   <header>
-    <h1>foo calls bar — end to end, including the replay</h1>
-    <p class="sub">Two workers, two passes of <code>foo</code>, one execution of <code>bar</code></p>
-    <p class="legend">
-      <span><i class="claim"></i> the worker's claim — acquired until released; fenced writes accepted</span>
-      <span><i class="act"></i> SDK activation — a worker holds the task, a program instance is alive</span>
-    </p>
+    <h1>Resonate Durable Execution</h1>
+    <p class="sub">Dead Simple</p>
     <nav>
       <a href="index.html">The protocol</a>
       <a href="example.html" aria-current="page">A worked example</a>
@@ -42,8 +38,8 @@ sequenceDiagram
   C->>S: promise.registerListener foo.1<br/>address = client.example.org
   S-->>C: registered
 
-  S->>WA: task.execute foo.1, ver=1
-  WA->>S: task.acquire foo.1, ver=1
+  S->>WA: task.execute foo.1, ver=0
+  WA->>S: task.acquire foo.1, ver=0
   S-->>WA: claimed preload=[]
   WA->>PA: execute until blocked foo(5)
   PA->>WA: yield promise.create foo.1:1<br/>param = bar(5), target = worker.example.org
@@ -54,16 +50,16 @@ sequenceDiagram
   WA->>S: task.suspend foo.1
   S-->>WA: released
 
-  S->>WB: task.execute foo.1:1, ver=1
-  WB->>S: task.acquire foo.1:1, ver=1
+  S->>WB: task.execute foo.1:1, ver=0
+  WB->>S: task.acquire foo.1:1, ver=0
   S-->>WB: claimed preload=[]
   WB->>PB: execute until blocked bar(5)
   PB-->>WB: completed = 10
   WB->>S: task.fulfill foo.1:1 = 10
   S-->>WB: fulfilled
 
-  S->>WB: task.execute foo.1, ver=2
-  WB->>S: task.acquire foo.1, ver=2
+  S->>WB: task.execute foo.1, ver=1
+  WB->>S: task.acquire foo.1, ver=1
   S-->>WB: claimed preload=[]
   WB->>PB: execute until blocked foo(5)
   PB->>WB: yield promise.create foo.1:1<br/>param = bar(5), target = worker.example.org

@@ -58,35 +58,6 @@ p.sub {
   color: var(--muted);
   font-size: 0.875rem;
 }
-.legend {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.25rem 1rem;
-  margin: 0.6rem 0 0;
-  color: var(--muted);
-  font-size: 0.78rem;
-}
-.legend span {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-}
-.legend i {
-  display: inline-block;
-  border-radius: 2px;
-}
-.legend i.claim {
-  width: 20px;
-  height: 11px;
-  background: var(--claim);
-  outline: 1px solid var(--border);
-}
-.legend i.act {
-  width: 20px;
-  height: 11px;
-  background: var(--activation);
-  outline: 1px solid var(--border);
-}
 nav {
   margin-top: 0.7rem;
   display: flex;
@@ -270,48 +241,64 @@ aside .hint {
 aside .store {
   margin-top: 0.9rem;
 }
-aside .store-head,
-aside .wire-head,
-aside .lean-head {
-  display: block;
-  margin-bottom: 0.35rem;
-  font:
-    600 0.68rem / 1 ui-monospace,
-    SFMono-Regular,
-    Menlo,
-    monospace;
-  letter-spacing: 0.09em;
-  text-transform: uppercase;
-  color: var(--muted);
-}
-aside .store-head a,
-aside .wire-head a,
-aside .lean-head a {
-  color: inherit;
-}
 aside .store table {
   width: 100%;
   border-collapse: collapse;
   font:
-    0.74rem / 1.6 ui-monospace,
+    0.74rem / 1.7 ui-monospace,
     SFMono-Regular,
     Menlo,
     monospace;
 }
 aside .store td {
-  padding: 0.12rem 0.4rem;
-  border-radius: 3px;
+  padding: 0.05rem 0.35rem;
 }
-aside .store td.id {
+aside .store tr.p td.id {
+  padding-left: 0.35rem;
   color: var(--fg);
+  font-weight: 600;
 }
-aside .store td.state,
-aside .store td.cb {
+aside .store tr.sub td.k {
+  padding-left: 1.3rem;
   color: var(--muted);
+  font-style: italic;
+}
+aside .store td.v {
+  text-align: right;
+  white-space: nowrap;
+}
+aside .store .dim {
+  color: var(--muted);
+}
+aside .store .val {
+  color: var(--fg);
 }
 aside .store tr.changed td {
   background: var(--accent-soft);
+}
+aside .store tr.p.changed td.id {
+  border-top-left-radius: 3px;
+}
+
+/* promise and task states, coloured by what they mean rather than by name */
+aside .store .badge {
+  font-size: 0.7rem;
+  letter-spacing: 0.02em;
+  padding: 0.02rem 0.3rem;
+  border-radius: 3px;
+  background: var(--code-bg);
+  color: var(--muted);
+}
+aside .store .badge.acquired {
   color: var(--accent);
+  background: var(--accent-soft);
+}
+aside .store .badge.resolved,
+aside .store .badge.fulfilled {
+  color: var(--fg);
+}
+aside .store .badge.suspended {
+  font-style: italic;
 }
 aside .store .empty {
   margin: 0;
@@ -470,3 +457,24 @@ svg.has-selection .dim {
   pointer-events: none;
 }
 /* the selected message is painted inline in diagram.js — mermaid's own rules are id-scoped */
+
+/* the three section headings in the panel */
+aside .store-head,
+aside .wire-head,
+aside .lean-head {
+  display: block;
+  margin-bottom: 0.35rem;
+  font:
+    600 0.68rem / 1 ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    monospace;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+aside .store-head a,
+aside .wire-head a,
+aside .lean-head a {
+  color: inherit;
+}

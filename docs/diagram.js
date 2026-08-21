@@ -289,27 +289,43 @@ const leanBlock = (lean) => {
   return `<div class="lean"><span class="lean-head">handler · <a href="${SPEC_BASE}/${lean.file}.lean" target="_blank" rel="noreferrer">${lean.file}.lean</a></span><pre>${body}</pre></div>`;
 };
 
-// The server's promise store as it stands after a step, touched row marked.
-const storeBlock = (st) =>
-  `<div class="store"><span class="store-head">promise store</span>` +
-  (st.rows.length
-    ? `<table>${st.rows
-        .map(
-          (r) => `<tr class="${r.changed ? "changed" : ""}">
+// The server's state as it stands after a step. A promise is a block: its own
+// row, then the records that hang off it — the task, if the promise carries a
+// target tag, and any callback or listener registered against it. Children are
+// nested under their parent, so the shape of the call graph is visible.
+const storeBlock = (st) => {
+  const badge = (state) => `<span class="badge ${esc(state)}">${esc(state)}</span>`;
+
+  const block = (r) => {
+    const rows = [
+      `<tr class="p ${r.changed ? "changed" : ""}">
          <td class="id">${esc(r.id)}</td>
-         <td class="state">${esc(r.state)}${r.value !== undefined ? ` = ${esc(r.value)}` : ""}</td>
-         <td class="cb">${[
-           r.callbacks.length ? `wakes ${r.callbacks.map(esc).join(", ")}` : "",
-           r.listeners?.length ? `notifies ${r.listeners.map(esc).join(", ")}` : "",
-         ]
-           .filter(Boolean)
-           .join(" · ")}</td>
+         <td class="v">${badge(r.state)}${r.value !== undefined ? ` <span class="val">= ${esc(r.value)}</span>` : ""}</td>
        </tr>`,
-        )
-        .join("")}</table>`
-    : `<p class="empty">empty</p>`) +
-  (st.note ? `<p class="store-note">${st.note}</p>` : "") +
-  `</div>`;
+    ];
+    if (r.task)
+      rows.push(`<tr class="sub ${r.changed ? "changed" : ""}">
+         <td class="k">task</td>
+         <td class="v">${badge(r.task.state)} <span class="dim">v${r.task.version}${r.task.pid ? ` · ${esc(r.task.pid)}` : ""}</span></td>
+       </tr>`);
+    for (const c of r.callbacks)
+      rows.push(`<tr class="sub ${r.changed ? "changed" : ""}">
+         <td class="k">callback</td><td class="v"><span class="dim">wakes ${esc(c)}</span></td>
+       </tr>`);
+    for (const l of r.listeners)
+      rows.push(`<tr class="sub ${r.changed ? "changed" : ""}">
+         <td class="k">listener</td><td class="v"><span class="dim">${esc(l)}</span></td>
+       </tr>`);
+    return rows.join("");
+  };
+
+  return (
+    `<div class="store"><span class="store-head">server state</span>` +
+    (st.rows.length ? `<table>${st.rows.map(block).join("")}</table>` : `<p class="empty">empty</p>`) +
+    (st.note ? `<p class="store-note">${st.note}</p>` : "") +
+    `</div>`
+  );
+};
 
 const esc = (s) => s.replace(/[&<>]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" })[c]);
 
