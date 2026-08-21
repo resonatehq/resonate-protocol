@@ -257,10 +257,12 @@ const leanBlock = (lean) => {
   const at = lines.findIndex((l) => l.trim().startsWith(lean.arm));
   const indent = at < 0 ? 0 : lines[at].search(/\S/);
   let end = at;
-  while (end + 1 < lines.length) {
-    const next = lines[end + 1];
-    if (next.trim() && next.search(/\S/) <= indent) break;
-    end++;
+  if (!lean.only) {
+    while (end + 1 < lines.length) {
+      const next = lines[end + 1];
+      if (next.trim() && next.search(/\S/) <= indent) break;
+      end++;
+    }
   }
   const body = lines
     .map((l, i) => `<span class="l${at >= 0 && i >= at && i <= end ? " on" : ""}">${esc(l) || " "}</span>`)
@@ -502,6 +504,15 @@ function wire(svg, { steps, panel, hint, code, activations, emphasize }) {
         <button type="button" data-close>close</button>
         <span class="keys">↑ ↓ · esc</span>
       </div>`;
+    // long handlers scroll; bring the highlighted arm into view rather than
+    // leaving the reader at the top of the block to hunt for it
+    const armRow = panel.querySelector(".lean .l.on");
+    if (armRow) {
+      const box = armRow.closest("pre");
+      const gap = armRow.getBoundingClientRect().top - box.getBoundingClientRect().top;
+      box.scrollTop += gap - box.clientHeight / 3;
+    }
+
     panel.querySelectorAll("[data-go]").forEach((btn) => {
       btn.addEventListener("click", () => select(m.n - 1 + +btn.dataset.go));
     });

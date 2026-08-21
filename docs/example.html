@@ -83,9 +83,10 @@ sequenceDiagram
   import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
   import { mermaidConfig, mountDiagram } from './diagram.js';
   import { STEPS } from './example.js';
-  import { HANDLERS, LEAN } from './example-lean.js';
+  import { LEAN } from './example-lean.js';
   import { STORE } from './example-store.js';
   import { WIRE } from './example-wire.js';
+  import { HANDLERS } from './spec-handlers.js';
 
   // the message behind each arrow, alongside the prose
   for (const [n, json] of Object.entries(WIRE)) {
@@ -96,7 +97,7 @@ sequenceDiagram
     if (STEPS[n]) STEPS[n].store = snapshot;
   }
   for (const [n, entry] of Object.entries(LEAN)) {
-    if (STEPS[n] && entry) STEPS[n].lean = { ...HANDLERS[entry.handler], arm: entry.arm };
+    if (STEPS[n] && entry) STEPS[n].lean = { ...HANDLERS[entry.handler], ...entry };
   }
 
   mermaid.initialize(mermaidConfig({ actorMargin: 130 }));  // six lifelines: buy back some width

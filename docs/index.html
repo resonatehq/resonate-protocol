@@ -63,7 +63,14 @@ sequenceDiagram
 <script type="module">
   import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
   import { mermaidConfig, mountDiagram } from './diagram.js';
+  import { LEAN } from './protocol-lean.js';
+  import { HANDLERS } from './spec-handlers.js';
   import { STEPS } from './steps.js';
+
+  // the handler that processes each message, from the Lean abstract model
+  for (const [n, entry] of Object.entries(LEAN)) {
+    if (STEPS[n] && entry) STEPS[n].lean = { ...HANDLERS[entry.handler], ...entry };
+  }
 
   mermaid.initialize(mermaidConfig());
   await mountDiagram(mermaid, {
