@@ -3,7 +3,7 @@
 // the step, with the touched row marked.
 const DELTAS = {
   2: { id: "foo.1", state: "pending" },
-  4: { id: "foo.1", listeners: ["app.example.org"] },
+  4: { id: "foo.1", listeners: ["client.example.org"] },
   11: { id: "foo.1:1", state: "pending" },
   15: { id: "foo.1:1", callbacks: ["foo.1"] },
   22: { id: "foo.1:1", state: "resolved", value: "10" },
