@@ -3,7 +3,7 @@
 // pass that suspends and the pass that completes.
 export const STEPS = {
   1: {
-    wire: `promise.create id = func(args)\ntarget = url`,
+    wire: `promise.create id\nparam = func(args)\ntarget = worker-url`,
     title: "The client records intent",
     body: `The client writes down what it wants — the function, its arguments, and where the resulting
               task should be routed. Creating the promise <em>is</em> the durable act: from here the work exists
@@ -16,7 +16,7 @@ export const STEPS = {
               immediately. The client may disconnect; completion is delivered later, to the target.`,
   },
   3: {
-    wire: `promise.registerListener id\naddress = url`,
+    wire: `promise.registerListener id\naddress = client-url`,
     title: "The client asks to be told",
     body: `Two addresses, two different jobs. The target on the create routes the <em>task</em> — it
               is how the server finds a worker willing to run this. A listener address is where the
@@ -78,7 +78,7 @@ export const STEPS = {
               replay asks for the same promise instead of making a new one.</span>`,
   },
   10: {
-    wire: `task.fence id, ver=n\n  promise.create id:n | promise.settle id:n\n  target = url`,
+    wire: `task.fence id, ver=n\n  promise.create id:n | promise.settle id:n`,
     title: "The same request, wrapped in the claim",
     body: `Look at what is inside the fence: it is step 1 again. The client's request and the program's
               request are the same kind of thing, and a nested call is only that request arriving from

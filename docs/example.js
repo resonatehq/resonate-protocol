@@ -2,7 +2,7 @@
 // including the replay pass. `lines` highlights the matching source lines.
 export const STEPS = {
   1: {
-    wire: `promise.create foo.1 = foo(5)\ntarget = http://worker.example.org`,
+    wire: `promise.create foo.1\nparam = foo(5)\ntarget = http://worker.example.org`,
     title: "The client asks for foo(5)",
     body: `Nothing is running yet. The client writes down what it wants — the function, the argument,
               and where to deliver the answer — and that record is the durable object the rest of this
@@ -61,7 +61,7 @@ export const STEPS = {
   },
   9: {
     lines: [2],
-    wire: `yield promise.create foo.1:1 = bar(5)`,
+    wire: `yield promise.create foo.1:1\nparam = bar(5)\ntarget = http://worker.example.org`,
     title: "context.rpc(bar, n)",
     body: `The rpc call does not invoke <code>bar</code>. It asks for a promise — <code>foo.1:1</code> —
               whose eventual value is <code>bar(5)</code>. Calling a function has become writing down that
@@ -72,7 +72,7 @@ export const STEPS = {
               asks for this very promise instead of a new one.</span>`,
   },
   10: {
-    wire: `task.fence foo.1, ver=1\n  promise.create foo.1:1 = bar(5)\n  target = http://worker.example.org`,
+    wire: `task.fence foo.1, ver=1\n  promise.create foo.1:1\n  param = bar(5)\n  target = http://worker.example.org`,
     title: "The same create, wrapped in the claim",
     body: `Look at what is inside the fence: it is step 1 again. The client's request and the program's
               request are the same kind of thing — create this promise, with these arguments, deliverable
@@ -193,13 +193,13 @@ export const STEPS = {
   },
   27: {
     lines: [2],
-    wire: `yield promise.create foo.1:1 = bar(5)`,
+    wire: `yield promise.create foo.1:1\nparam = bar(5)\ntarget = http://worker.example.org`,
     title: "The same rpc line, reached again",
     body: `Replay means <code>context.rpc(bar, n)</code> executes a second time — and because the id
                is derived, not invented, it asks for the same <code>foo.1:1</code> as before.`,
   },
   28: {
-    wire: `task.fence foo.1, ver=2\n  promise.create foo.1:1 = bar(5)\n  target = http://worker.example.org`,
+    wire: `task.fence foo.1, ver=2\n  promise.create foo.1:1\n  param = bar(5)\n  target = http://worker.example.org`,
     title: "The same envelope, a new claim",
     body: `Byte for byte the request Worker A sent in step 10, under a different claim —
                <code>ver=2</code>, because this is a later dispatch and a different worker. Every durable

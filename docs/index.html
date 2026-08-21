@@ -31,9 +31,9 @@ sequenceDiagram
   participant W as Worker
   participant P as Program
 
-  C->>S: promise.create id = func(args)<br/>target = url
+  C->>S: promise.create id<br/>param = func(args), target = worker-url
   S-->>C: pending
-  C->>S: promise.registerListener id
+  C->>S: promise.registerListener id<br/>address = client-url
   S-->>C: registered
 
   loop while the program suspends
@@ -43,7 +43,7 @@ sequenceDiagram
     W->>P: execute until blocked func(args)
     loop 
       P->>W: yield promise.create | promise.settle id:n
-      W->>S: task.fence id, ver=n<br/>promise.create | promise.settle id:n<br/>target = url
+      W->>S: task.fence id, ver=n<br/>promise.create | promise.settle id:n
       S-->>W: pending | settled
       W-->>P: pending | settled
     end
@@ -63,13 +63,19 @@ sequenceDiagram
 <script type="module">
   import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
   import { mermaidConfig, mountDiagram } from './diagram.js';
-  import { LEAN } from './protocol-lean.js';
+  import { LEAN, TYPES_FOR } from './protocol-lean.js';
   import { HANDLERS } from './spec-handlers.js';
+  import { TYPES } from './spec-types.js';
   import { STEPS } from './steps.js';
 
   // the handler that processes each message, from the Lean abstract model
   for (const [n, entry] of Object.entries(LEAN)) {
     if (STEPS[n] && entry) STEPS[n].lean = { ...HANDLERS[entry.handler], ...entry };
+  }
+  for (const [n, names] of Object.entries(TYPES_FOR)) {
+    if (!STEPS[n]) continue;
+    if (names) STEPS[n].types = names.map((t) => TYPES[t]);
+    else STEPS[n].offWire = true;
   }
 
   mermaid.initialize(mermaidConfig());
