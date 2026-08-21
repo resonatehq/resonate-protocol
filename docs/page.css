@@ -283,12 +283,12 @@ aside .store td {
   padding: 0.05rem 0.35rem;
 }
 aside .store tr.p td.id {
-  padding-left: calc(0.35rem + var(--depth) * 1.1rem);
+  padding-left: 0.35rem;
   color: var(--fg);
   font-weight: 600;
 }
 aside .store tr.sub td.k {
-  padding-left: calc(1.3rem + var(--depth) * 1.1rem);
+  padding-left: 1.3rem;
   color: var(--muted);
   font-style: italic;
 }

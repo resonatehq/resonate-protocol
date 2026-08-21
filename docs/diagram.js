@@ -298,22 +298,22 @@ const storeBlock = (st) => {
 
   const block = (r) => {
     const rows = [
-      `<tr class="p ${r.changed ? "changed" : ""}" style="--depth:${r.depth}">
+      `<tr class="p ${r.changed ? "changed" : ""}">
          <td class="id">${esc(r.id)}</td>
          <td class="v">${badge(r.state)}${r.value !== undefined ? ` <span class="val">= ${esc(r.value)}</span>` : ""}</td>
        </tr>`,
     ];
     if (r.task)
-      rows.push(`<tr class="sub ${r.changed ? "changed" : ""}" style="--depth:${r.depth}">
+      rows.push(`<tr class="sub ${r.changed ? "changed" : ""}">
          <td class="k">task</td>
          <td class="v">${badge(r.task.state)} <span class="dim">v${r.task.version}${r.task.pid ? ` · ${esc(r.task.pid)}` : ""}</span></td>
        </tr>`);
     for (const c of r.callbacks)
-      rows.push(`<tr class="sub ${r.changed ? "changed" : ""}" style="--depth:${r.depth}">
+      rows.push(`<tr class="sub ${r.changed ? "changed" : ""}">
          <td class="k">callback</td><td class="v"><span class="dim">wakes ${esc(c)}</span></td>
        </tr>`);
     for (const l of r.listeners)
-      rows.push(`<tr class="sub ${r.changed ? "changed" : ""}" style="--depth:${r.depth}">
+      rows.push(`<tr class="sub ${r.changed ? "changed" : ""}">
          <td class="k">listener</td><td class="v"><span class="dim">${esc(l)}</span></td>
        </tr>`);
     return rows.join("");
