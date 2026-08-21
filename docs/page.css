@@ -315,6 +315,51 @@ aside .store-note {
   color: var(--muted);
 }
 
+aside .lean {
+  margin-top: 0.9rem;
+}
+aside .lean-head {
+  display: block;
+  margin-bottom: 0.35rem;
+  font:
+    600 0.68rem / 1 ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    monospace;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+aside .lean-head a {
+  color: inherit;
+}
+aside .lean pre {
+  margin: 0;
+  max-height: 34vh;
+  overflow: auto;
+  background: var(--code-bg);
+  border-radius: 6px;
+  padding: 0.55rem 0.65rem;
+  font:
+    0.7rem / 1.55 ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    monospace;
+  color: var(--muted);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+aside .lean .l {
+  display: block;
+  padding: 0 0.35rem 0 2.2ch;
+  text-indent: -2.2ch; /* wrapped lines keep the shape of the source */
+  border-radius: 3px;
+}
+aside .lean .l.on {
+  background: var(--accent-soft);
+  color: var(--fg);
+}
+
 aside .wire {
   margin-top: 0.9rem;
 }

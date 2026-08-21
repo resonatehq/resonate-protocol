@@ -248,6 +248,26 @@ const wireBlock = (json) => {
   );
 };
 
+// The spec handler that processes a message, with the arm this message takes
+// highlighted. Sources are quoted from the Lean abstract model in example-lean.js.
+const SPEC_BASE = "https://github.com/resonatehq/resonate-specification/blob/main/spec/02-abstract";
+
+const leanBlock = (lean) => {
+  const lines = lean.src.split("\n");
+  const at = lines.findIndex((l) => l.trim().startsWith(lean.arm));
+  const indent = at < 0 ? 0 : lines[at].search(/\S/);
+  let end = at;
+  while (end + 1 < lines.length) {
+    const next = lines[end + 1];
+    if (next.trim() && next.search(/\S/) <= indent) break;
+    end++;
+  }
+  const body = lines
+    .map((l, i) => `<span class="l${at >= 0 && i >= at && i <= end ? " on" : ""}">${esc(l) || " "}</span>`)
+    .join("");
+  return `<div class="lean"><span class="lean-head">handler · <a href="${SPEC_BASE}/${lean.file}.lean" target="_blank" rel="noreferrer">${lean.file}.lean</a></span><pre>${body}</pre></div>`;
+};
+
 // The server's promise store as it stands after a step, touched row marked.
 const storeBlock = (st) =>
   `<div class="store"><span class="store-head">promise store</span>` +
@@ -468,6 +488,7 @@ function wire(svg, { steps, panel, hint, code, activations, emphasize }) {
       <p class="label">${esc(s.wire || m.label)}</p>
       <div class="body">${s.body}</div>
       ${s.store ? storeBlock(s.store) : ""}
+      ${s.lean ? leanBlock(s.lean) : ""}
       ${
         s.json
           ? wireBlock(s.json)
